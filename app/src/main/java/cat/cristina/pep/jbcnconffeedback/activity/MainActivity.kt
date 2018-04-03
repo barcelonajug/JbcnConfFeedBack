@@ -10,7 +10,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import cat.cristina.pep.jbcnconffeedback.R
-import cat.cristina.pep.jbcnconffeedback.model.DatabaseHelper
 import cat.cristina.pep.jbcnconffeedback.model.UtilDAOImpl
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -39,6 +38,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         for(speaker in speakers)
             Log.d(MainActivity::class.java.name, speaker.toString())
+
+        val talks = dao.lookupTalks()
+
+        val speakerTalks = dao.lookupSpeakerForTalk(talks[0])
+        Log.d(MainActivity::class.java.name, "AQUI " + speakerTalks)
     }
 
     override fun onBackPressed() {

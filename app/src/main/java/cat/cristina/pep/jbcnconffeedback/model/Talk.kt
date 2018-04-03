@@ -6,7 +6,7 @@ import com.j256.ormlite.table.DatabaseTable
 
 @DatabaseTable(tableName = "talks")
 data class Talk (
-        @DatabaseField(generatedId = true, columnName = Speaker.ID_FIELD_NAME, dataType = DataType.INTEGER)
+        @DatabaseField(generatedId = true, columnName = ID_FIELD_NAME, dataType = DataType.INTEGER)
         val id: Int = 0,
 
         @DatabaseField(columnName = TITLE_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)

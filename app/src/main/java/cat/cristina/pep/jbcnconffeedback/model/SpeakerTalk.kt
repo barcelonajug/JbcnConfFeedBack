@@ -6,14 +6,14 @@ import com.j256.ormlite.table.DatabaseTable
 
 @DatabaseTable(tableName = "speakertalk")
 data class SpeakerTalk (
-        @DatabaseField(generatedId = true, columnName = Speaker.ID_FIELD_NAME, dataType = DataType.INTEGER)
+        @DatabaseField(generatedId = true, columnName = ID_FIELD_NAME, dataType = DataType.INTEGER)
         val id: Int = 0,
 
         @DatabaseField(foreign = true, columnName = SPEAKER_ID_FIELD_NAME)
-        val speaker: Speaker,
+        val speaker: Speaker? = null,
 
         @DatabaseField(foreign = true, columnName = TALK_ID_FIELD_NAME)
-        val talk: Talk
+        val talk: Talk? = null
 ) {
 
     companion object {
