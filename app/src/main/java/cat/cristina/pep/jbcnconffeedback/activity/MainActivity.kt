@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val talks = dao.lookupTalks()
 
-        val speakerTalks = dao.lookupSpeakerForTalk(talks[0])
+        val speakerTalks = dao.lookupSpeakersForTalk(talks[0])
         Log.d(MainActivity::class.java.name, "AQUI " + speakerTalks)
     }
 

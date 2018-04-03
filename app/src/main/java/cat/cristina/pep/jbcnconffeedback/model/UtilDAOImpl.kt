@@ -36,7 +36,7 @@ data class UtilDAOImpl(val context: Context) {
         return queryBuilder.query()
     }
 
-    fun lookupSpeakerForTalk(talk: Talk) : List<Speaker> {
+    fun lookupSpeakersForTalk(talk: Talk) : List<Speaker> {
         var speakers: List<Speaker>? = null
         val joinQueryBuilder = speakerTalkDao?.queryBuilder()
         joinQueryBuilder?.selectColumns(SpeakerTalk.SPEAKER_ID_FIELD_NAME)
