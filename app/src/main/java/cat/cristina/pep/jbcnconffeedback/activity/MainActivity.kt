@@ -1,4 +1,4 @@
-package cat.cristina.pep.jbcnconffeedback
+package cat.cristina.pep.jbcnconffeedback.activity
 
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -6,8 +6,11 @@ import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import cat.cristina.pep.jbcnconffeedback.R
+import cat.cristina.pep.jbcnconffeedback.model.UtilDAOImpl
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
@@ -29,6 +32,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+
+        val dao = UtilDAOImpl(applicationContext)
+        val speakers = dao.lookupSpeakers()
+
+        for(speaker in speakers)
+            Log.d(MainActivity::class.java.name, speaker.toString())
+
+        val talks = dao.lookupTalks()
+
+        val speakerTalks = dao.lookupSpeakersForTalk(talks[0])
+        Log.d(MainActivity::class.java.name, "AQUI " + speakerTalks)
     }
 
     override fun onBackPressed() {

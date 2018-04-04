@@ -32,4 +32,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    implementation group: 'com.j256.ormlite', name: 'ormlite-android', version: '5.0'
+    testImplementation 'org.robolectric:robolectric:3.0'
 }
