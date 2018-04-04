@@ -9,7 +9,7 @@ import com.j256.ormlite.stmt.SelectArg
 
 /** CRUD operations **/
 data class UtilDAOImpl(val context: Context) {
-    private var databaseHelper: DatabaseHelper? = null
+    var databaseHelper: DatabaseHelper? = null
     private var speakerDao: Dao<Speaker, Int>? = null
     private var talkDao: Dao<Talk, Int>? = null
     private var speakerTalkDao: Dao<SpeakerTalk, Int>? = null
