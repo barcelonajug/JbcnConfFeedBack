@@ -7,17 +7,15 @@
     android:layout_height="match_parent"
     tools:context=".VoteFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <TextView
         android:id="@+id/tvTalk"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
-        android:text="Nombre de la Conferencia"
-        android:textSize="30sp"
+        android:layout_height="@dimen/zero"
+        android:layout_marginEnd="@dimen/eight"
+        android:layout_marginStart="@dimen/eight"
+        android:layout_marginTop="@dimen/twenty_four"
+        android:text="@string/talk_title"
+        android:textSize="@dimen/text_thirty"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,11 +24,11 @@
     <TextView
         android:id="@+id/tvSpeaker"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Autor de la Conferencia"
+        android:layout_height="@dimen/zero"
+        android:layout_marginEnd="@dimen/eight"
+        android:layout_marginStart="@dimen/eight"
+        android:layout_marginTop="@dimen/eight"
+        android:text="@string/speaker_name"
         android:textStyle="italic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
@@ -41,10 +39,10 @@
         android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="64dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginBottom="@dimen/sixty_four"
+        android:layout_marginEnd="@dimen/eight"
+        android:layout_marginStart="@dimen/eight"
+        android:layout_marginTop="@dimen/thirty_two"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -53,28 +51,28 @@
         app:layout_constraintVertical_bias="0.26999998">
 
         <ImageButton
-            android:id="@+id/imageButton17"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_margin="32dp"
+            android:id="@+id/imgBtnLove"
+            android:layout_width="@dimen/smily_size"
+            android:layout_height="@dimen/smily_size"
+            android:layout_margin="@dimen/smily_margin"
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:src="@drawable/love" />
 
         <ImageButton
-            android:id="@+id/imageButton16"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_margin="32dp"
+            android:id="@+id/imgBtnSmile"
+            android:layout_width="@dimen/smily_size"
+            android:layout_height="@dimen/smily_size"
+            android:layout_margin="@dimen/smily_margin"
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:src="@drawable/smile" />
 
         <ImageButton
-            android:id="@+id/imageButton15"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_margin="32dp"
+            android:id="@+id/imgBtnNormal"
+            android:layout_width="@dimen/smily_size"
+            android:layout_height="@dimen/smily_size"
+            android:layout_margin="@dimen/smily_margin"
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:src="@drawable/normal" />
@@ -85,10 +83,10 @@
         android:id="@+id/linearLayout2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="72dp"
+        android:layout_marginBottom="@dimen/thirty_two"
+        android:layout_marginEnd="@dimen/eight"
+        android:layout_marginStart="@dimen/eight"
+        android:layout_marginTop="@dimen/seventy_two"
         android:layout_weight="1"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -97,19 +95,19 @@
         app:layout_constraintTop_toBottomOf="@+id/tvSpeaker">
 
         <ImageButton
-            android:id="@+id/imageButton19"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_margin="32dp"
+            android:id="@+id/imgBtnSleepy"
+            android:layout_width="@dimen/smily_size"
+            android:layout_height="@dimen/smily_size"
+            android:layout_margin="@dimen/smily_margin"
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:src="@drawable/sleepy" />
 
         <ImageButton
-            android:id="@+id/imageButton18"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_margin="32dp"
+            android:id="@+id/imgBtnCry"
+            android:layout_width="@dimen/smily_size"
+            android:layout_height="@dimen/smily_size"
+            android:layout_margin="@dimen/smily_margin"
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:src="@drawable/cry" />
