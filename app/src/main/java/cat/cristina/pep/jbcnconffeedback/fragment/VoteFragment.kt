@@ -1,4 +1,4 @@
-package cat.cristina.pep.jbcnconffeedback
+package cat.cristina.pep.jbcnconffeedback.fragment
 
 import android.content.Context
 import android.net.Uri
@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import cat.cristina.pep.jbcnconffeedback.R
 
 
 // TODO: Rename parameter arguments, choose names that match
