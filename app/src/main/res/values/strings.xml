@@ -6,4 +6,9 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+
+    <!-- Main Activity -->
+    <string name="talk_title">Talk Title</string>
+    <string name="speaker_name">Speaker Name</string>
+
 </resources>
