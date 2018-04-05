@@ -1,5 +1,6 @@
 package cat.cristina.pep.jbcnconffeedback.activity
 
+import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
@@ -11,8 +12,18 @@ import android.view.Menu
 import android.view.MenuItem
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.model.UtilDAOImpl
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import android.net.NetworkInfo
+import android.content.Context.CONNECTIVITY_SERVICE
+import android.net.ConnectivityManager
+import com.android.volley.RequestQueue
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -37,12 +48,36 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val speakers = dao.lookupSpeakers()
 
         for(speaker in speakers)
-            Log.d(MainActivity::class.java.name, speaker.toString())
+            Log.d(tag, speaker.toString())
 
         val talks = dao.lookupTalks()
 
         val speakerTalks = dao.lookupSpeakersForTalk(talks[0])
-        Log.d(MainActivity::class.java.name, "AQUI " + speakerTalks)
+        Log.d(tag, "AQUI " + speakerTalks)
+
+        if(isDeviceConnectedToWifi()) {
+            val queue = Volley.newRequestQueue(this)
+            retrieveSpeakersFromWeb(queue)
+        }
+    }
+
+    private fun retrieveSpeakersFromWeb(queue:RequestQueue) {
+        val urlSpeakers = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
+
+        val speakersRequest = JsonObjectRequest(Request.Method.GET, urlSpeakers, null,
+                Response.Listener { speakersResponse ->
+                    Log.d(tag, "Speakers Response: %s".format( speakersResponse.toString()))
+                },
+                Response.ErrorListener { error ->
+                    Log.d(tag, "Speakers Response: %s".format(error))
+                })
+        queue.add(speakersRequest)
+    }
+
+    fun isDeviceConnectedToWifi(): Boolean {
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val netInfo = cm.activeNetworkInfo
+        return netInfo != null && netInfo.isConnectedOrConnecting()
     }
 
     override fun onBackPressed() {
@@ -94,5 +129,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    companion object {
+        val tag = MainActivity::class.java.name
     }
 }
