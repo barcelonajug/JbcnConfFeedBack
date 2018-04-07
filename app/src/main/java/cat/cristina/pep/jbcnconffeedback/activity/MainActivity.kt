@@ -15,17 +15,24 @@ import cat.cristina.pep.jbcnconffeedback.model.UtilDAOImpl
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import android.net.NetworkInfo
-import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
+import cat.cristina.pep.jbcnconffeedback.model.DatabaseHelper
+import cat.cristina.pep.jbcnconffeedback.model.Speaker
+import cat.cristina.pep.jbcnconffeedback.model.Talk
 import com.android.volley.RequestQueue
+import com.google.gson.Gson
+import com.j256.ormlite.android.apptools.OpenHelperManager
+import com.j256.ormlite.dao.Dao
+import org.json.JSONObject
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+    private var databaseHelper: DatabaseHelper? = null
+    private var speakerDao: Dao<Speaker, Int>? = null
+    private var talkDao: Dao<Talk, Int>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,37 +51,82 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         nav_view.setNavigationItemSelectedListener(this)
 
-        val dao = UtilDAOImpl(applicationContext)
-        val speakers = dao.lookupSpeakers()
-
-        for(speaker in speakers)
-            Log.d(tag, speaker.toString())
-
-        val talks = dao.lookupTalks()
-
-        val speakerTalks = dao.lookupSpeakersForTalk(talks[0])
-        Log.d(tag, "AQUI " + speakerTalks)
-
-        if(isDeviceConnectedToWifi()) {
+        if (isDeviceConnectedToWifi()) {
             val queue = Volley.newRequestQueue(this)
+            getDatabaseHelper()
             retrieveSpeakersFromWeb(queue)
+            retrieveTalksFromWeb(queue)
         }
     }
 
-    private fun retrieveSpeakersFromWeb(queue:RequestQueue) {
+    private fun getDatabaseHelper(): DatabaseHelper {
+        if (databaseHelper == null) {
+            databaseHelper = OpenHelperManager.getHelper(applicationContext, DatabaseHelper::class.java)
+        }
+        return databaseHelper!!
+    }
+
+    private fun retrieveSpeakersFromWeb(queue: RequestQueue) {
         val urlSpeakers = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
 
         val speakersRequest = JsonObjectRequest(Request.Method.GET, urlSpeakers, null,
-                Response.Listener { speakersResponse ->
-                    Log.d(tag, "Speakers Response: %s".format( speakersResponse.toString()))
+                Response.Listener { response ->
+                    Log.d(tag, "Speakers Response: %s".format(response.toString()))
+                    parseSpeakers(response.toString())
                 },
                 Response.ErrorListener { error ->
-                    Log.d(tag, "Speakers Response: %s".format(error))
+                    Log.d(tag, error.toString())
                 })
         queue.add(speakersRequest)
     }
 
-    fun isDeviceConnectedToWifi(): Boolean {
+    private fun retrieveTalksFromWeb(queue: RequestQueue) {
+        val urlTalks = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/talks.json "
+
+        val talksRequest = JsonObjectRequest(Request.Method.GET, urlTalks, null,
+                Response.Listener { response ->
+                    Log.d(tag, "Talks Response: %s".format(response.toString()))
+                    parseTalks(response.toString())
+                },
+                Response.ErrorListener { error ->
+                    Log.d(tag, error.toString())
+                })
+        queue.add(talksRequest)
+    }
+
+    private fun parseTalks(talks: String) {
+        val json: JSONObject = JSONObject(talks)
+        val items = json.getJSONArray("items")
+        talkDao = databaseHelper!!.getTalkDao()
+        val gson: Gson = Gson()
+
+        for(i in 0 until (items.length())) {
+            var talkObject = items.getJSONObject(i)
+            var talk = gson.fromJson(talkObject.toString(), Talk::class.java)
+            talkDao!!.create(talk)
+        }
+        val dao = UtilDAOImpl(applicationContext)
+        val talks = dao.lookupTalks()
+
+        for (talk in talks)
+            Log.d(tag, "ADIOS -> " + talk.toString())
+    }
+
+    private fun parseSpeakers(speakers: String) {
+        val json: JSONObject = JSONObject(speakers)
+        val items = json.getJSONArray("items")
+        getDatabaseHelper()
+        speakerDao = databaseHelper!!.getSpeakerDao()
+        val gson: Gson = Gson()
+
+        for (i in 0 until (items.length())) {
+            var speakerObject = items.getJSONObject(i)
+            var speaker = gson.fromJson(speakerObject.toString(), Speaker::class.java)
+            speakerDao!!.create(speaker)
+        }
+    }
+
+    private fun isDeviceConnectedToWifi(): Boolean {
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val netInfo = cm.activeNetworkInfo
         return netInfo != null && netInfo.isConnectedOrConnecting()
@@ -133,5 +185,33 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     companion object {
         val tag = MainActivity::class.java.name
+    }
+
+    private fun parseSpeakers2(speakers: String) {
+        val json: JSONObject = JSONObject(speakers)
+        val items = json.getJSONArray("items")
+        speakerDao = databaseHelper!!.getSpeakerDao()
+
+        for (i in 0 until (items.length())) {
+            var speakerObject = items.getJSONObject(i)
+            var speaker = Speaker(
+                    0,
+                    speakerObject.get("enabled").toString(),
+                    speakerObject.get("name").toString(),
+                    speakerObject.get("description").toString(),
+                    speakerObject.get("biography").toString(),
+                    speakerObject.get("image").toString(),
+                    speakerObject.get("url").toString(),
+                    speakerObject.get("ref").toString(),
+                    speakerObject.get("twitter").toString()
+            )
+            speakerDao!!.create(speaker)
+
+        }
+        val dao = UtilDAOImpl(applicationContext)
+        val speakers = dao.lookupSpeakers()
+
+        for (speaker in speakers)
+            Log.d(tag, speaker.toString())
     }
 }
