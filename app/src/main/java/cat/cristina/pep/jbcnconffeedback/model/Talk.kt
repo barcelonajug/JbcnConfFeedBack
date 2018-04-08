@@ -9,7 +9,7 @@ data class Talk (
         @DatabaseField(generatedId = true, columnName = ID_FIELD_NAME, dataType = DataType.INTEGER)
         val id: Int = 0,
 
-        @DatabaseField(columnName = TITLE_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
+        @DatabaseField(columnName = TITLE_FIELD_NAME, dataType = DataType.STRING, canBeNull = false, unique = true)
         var title: String = "",
 
         @DatabaseField(columnName = ABSTRACT_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)

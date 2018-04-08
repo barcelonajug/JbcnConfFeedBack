@@ -9,7 +9,7 @@ import com.j256.ormlite.support.ConnectionSource
 import com.j256.ormlite.table.TableUtils
 
 data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
-    var speakerDao: Dao<Speaker, Int>? = null
+    private var speakerDao: Dao<Speaker, Int>? = null
     private var talkDao: Dao<Talk, Int>? = null
     private var speakerTalkDao: Dao<SpeakerTalk, Int>? = null
 
@@ -33,14 +33,17 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
         speakerDao = getSpeakerDao()
         talkDao = getTalkDao()
 
-        val tags = mutableListOf("BlockChain", "Java", "Spring Boot")
+        val speakersOfTalk1 = arrayOf("TWljaGVsU2NodWRlbG1pY2hlbC5zY2h1ZGVsQGdtYWlsLmNvbQ==")
         val talk1 = Talk(
                 0,
                 "Let's build a blockchain in 50 minutes!",
                 "Blockchain technology is hot! But how does it actually work? I always found that the best way to get familiar with new technology is to build something with it. \\n\\nSo, let's build a blockchain, then!\\n\\nIn this live coding session, I will build a blockchain from scratch, using Java 8 with a little SpringBoot sprinkled over it. The talk will include all concepts of a blockchain, like transactions, blocks, immutability, proof-of-work, and consensus in the network. After this session you will have a better understanding of how blockchains work and how to implement them!",
                 "talk",
                 //tags,
-                "middle")
+                "middle",
+                speakersOfTalk1
+        )
+
         talkDao!!.create(talk1)
 
         val speaker1 = Speaker(
@@ -56,14 +59,15 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
         )
         speakerDao!!.create(speaker1)
 
-        val tags2 = mutableListOf("Serverless", "Kubernets", "Cloud","FaaS")
+        val speakersOfTalk2: Array<String> = arrayOf("TWVyY2VkZXNXeXNzbWVyY2VkZXMud3lzc0Bwb3dlcnd0ZWNobm9sb2d5LmNvbQ==")
         val talk2 = Talk(
                 0,
                 "Serverless in Deep",
                 "Maybe You have been listening about Serverless. But, do you really know what is Serverless? If you don't have any knowledge, or want to delve into the subject, this is the talk for you. We will discuss what is Serverless, its principles, how it relates to FaaS (Functions as a Service), its benefits and drawbacks. But the most import its architecture in deep, the most relevant use cases or Design Patterns, which technologies and tools we have in the market for implement Serverless, and how they come to relate the Serverless with containers.",
                 "talk",
                 //tags2,
-                "middle"
+                "middle",
+                speakersOfTalk2
         )
         talkDao!!.create(talk2)
 

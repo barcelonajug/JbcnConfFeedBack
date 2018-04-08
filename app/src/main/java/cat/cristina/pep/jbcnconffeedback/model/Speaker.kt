@@ -12,7 +12,7 @@ data class Speaker(
         @DatabaseField(columnName = ENABLED_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
         var isEnabled: String = "",
 
-        @DatabaseField(columnName = NAME_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
+        @DatabaseField(columnName = NAME_FIELD_NAME, dataType = DataType.STRING, canBeNull = false, unique = true)
         var name: String = "",
 
         @DatabaseField(columnName = DESCRIPTION_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)

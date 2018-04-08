@@ -11,7 +11,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import cat.cristina.pep.jbcnconffeedback.R
-import cat.cristina.pep.jbcnconffeedback.model.UtilDAOImpl
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
@@ -19,20 +18,22 @@ import com.android.volley.toolbox.Volley
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import android.net.ConnectivityManager
-import cat.cristina.pep.jbcnconffeedback.model.DatabaseHelper
-import cat.cristina.pep.jbcnconffeedback.model.Speaker
-import cat.cristina.pep.jbcnconffeedback.model.Talk
+import cat.cristina.pep.jbcnconffeedback.model.*
 import com.android.volley.RequestQueue
 import com.google.gson.Gson
 import com.j256.ormlite.android.apptools.OpenHelperManager
 import com.j256.ormlite.dao.Dao
+import kotlinx.android.synthetic.main.content_main.*
 import org.json.JSONObject
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    private val tag = MainActivity::class.java.name
     private var databaseHelper: DatabaseHelper? = null
     private var speakerDao: Dao<Speaker, Int>? = null
     private var talkDao: Dao<Talk, Int>? = null
+    private var speakerTalkDao: Dao<SpeakerTalk, Int>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +82,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun retrieveTalksFromWeb(queue: RequestQueue) {
-        val urlTalks = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/talks.json "
+        val urlTalks = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/talks.json"
 
         val talksRequest = JsonObjectRequest(Request.Method.GET, urlTalks, null,
                 Response.Listener { response ->
@@ -98,31 +99,65 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val json: JSONObject = JSONObject(talks)
         val items = json.getJSONArray("items")
         talkDao = databaseHelper!!.getTalkDao()
+        speakerTalkDao = databaseHelper!!.getSpeakerTalkDao()
         val gson: Gson = Gson()
 
         for(i in 0 until (items.length())) {
             var talkObject = items.getJSONObject(i)
             var talk = gson.fromJson(talkObject.toString(), Talk::class.java)
-            talkDao!!.create(talk)
-        }
-        val dao = UtilDAOImpl(applicationContext)
-        val talks = dao.lookupTalks()
 
-        for (talk in talks)
-            Log.d(tag, "ADIOS -> " + talk.toString())
+            try {
+                talkDao!!.create(talk)
+            }catch ( e: Exception) {
+                Log.e(tag, "Could not insert talk ${e}")
+            }
+
+            for(j in 0 until (talk.speakers!!.size)) {
+                var speakerRef: String = talk.speakers!!.get(j)
+                val dao = UtilDAOImpl(applicationContext)
+                val speaker: Speaker = dao.lookupSpeakerByRef(speakerRef)
+                val speakerTalk = SpeakerTalk(
+                        0,
+                        speaker,
+                        talk
+                )
+                speakerTalkDao!!.create(speakerTalk)
+            }
+        }
+
+//        val dao : UtilDAOImpl = UtilDAOImpl(this)
+//        val talks = dao.lookupTalks()
+//
+//        for(i in 0 until(talks.size)) {
+//            Log.d(tag, "AQUI -> " + talks.get(i).title)
+//        }
     }
 
     private fun parseSpeakers(speakers: String) {
         val json: JSONObject = JSONObject(speakers)
         val items = json.getJSONArray("items")
-        getDatabaseHelper()
         speakerDao = databaseHelper!!.getSpeakerDao()
-        val gson: Gson = Gson()
+
 
         for (i in 0 until (items.length())) {
             var speakerObject = items.getJSONObject(i)
-            var speaker = gson.fromJson(speakerObject.toString(), Speaker::class.java)
-            speakerDao!!.create(speaker)
+            var speaker = Speaker(
+                    0,
+                    speakerObject.get("enabled").toString(),
+                    speakerObject.get("name").toString(),
+                    speakerObject.get("description").toString(),
+                    speakerObject.get("biography").toString(),
+                    speakerObject.get("image").toString(),
+                    speakerObject.get("url").toString(),
+                    speakerObject.get("ref").toString(),
+                    speakerObject.get("twitter").toString()
+            )
+            try {
+                speakerDao!!.create(speaker)
+            }catch ( e: Exception) {
+                Log.e(tag, "Could not insert speaker ${e}")
+            }
+
         }
     }
 
@@ -184,34 +219,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     companion object {
-        val tag = MainActivity::class.java.name
-    }
 
-    private fun parseSpeakers2(speakers: String) {
-        val json: JSONObject = JSONObject(speakers)
-        val items = json.getJSONArray("items")
-        speakerDao = databaseHelper!!.getSpeakerDao()
-
-        for (i in 0 until (items.length())) {
-            var speakerObject = items.getJSONObject(i)
-            var speaker = Speaker(
-                    0,
-                    speakerObject.get("enabled").toString(),
-                    speakerObject.get("name").toString(),
-                    speakerObject.get("description").toString(),
-                    speakerObject.get("biography").toString(),
-                    speakerObject.get("image").toString(),
-                    speakerObject.get("url").toString(),
-                    speakerObject.get("ref").toString(),
-                    speakerObject.get("twitter").toString()
-            )
-            speakerDao!!.create(speaker)
-
-        }
-        val dao = UtilDAOImpl(applicationContext)
-        val speakers = dao.lookupSpeakers()
-
-        for (speaker in speakers)
-            Log.d(tag, speaker.toString())
     }
 }
