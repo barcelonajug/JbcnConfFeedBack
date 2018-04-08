@@ -23,7 +23,6 @@ import com.android.volley.RequestQueue
 import com.google.gson.Gson
 import com.j256.ormlite.android.apptools.OpenHelperManager
 import com.j256.ormlite.dao.Dao
-import kotlinx.android.synthetic.main.content_main.*
 import org.json.JSONObject
 
 
