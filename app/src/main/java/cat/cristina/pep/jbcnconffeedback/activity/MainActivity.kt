@@ -18,6 +18,7 @@ import com.android.volley.toolbox.Volley
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import android.net.ConnectivityManager
+import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.model.*
 import com.android.volley.RequestQueue
 import com.google.gson.Gson
@@ -51,11 +52,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         nav_view.setNavigationItemSelectedListener(this)
 
-        if (isDeviceConnectedToWifi()) {
+        if (isDeviceConnectedToWifiOrData()) {
             val queue = Volley.newRequestQueue(this)
             getDatabaseHelper()
             retrieveSpeakersFromWeb(queue)
             retrieveTalksFromWeb(queue)
+        } else {
+            Toast.makeText(applicationContext, "There is no network connection and cannot retrieve data for database!!!", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -95,24 +98,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun parseTalks(talks: String) {
-        val json: JSONObject = JSONObject(talks)
+        val json = JSONObject(talks)
         val items = json.getJSONArray("items")
         talkDao = databaseHelper!!.getTalkDao()
         speakerTalkDao = databaseHelper!!.getSpeakerTalkDao()
-        val gson: Gson = Gson()
+        val gson = Gson()
 
-        for(i in 0 until (items.length())) {
-            var talkObject = items.getJSONObject(i)
-            var talk = gson.fromJson(talkObject.toString(), Talk::class.java)
+        for (i in 0 until (items.length())) {
+            val talkObject = items.getJSONObject(i)
+            val talk = gson.fromJson(talkObject.toString(), Talk::class.java)
 
             try {
                 talkDao!!.create(talk)
-            }catch ( e: Exception) {
+            } catch (e: Exception) {
                 Log.e(tag, "Could not insert talk ${e}")
             }
 
-            for(j in 0 until (talk.speakers!!.size)) {
-                var speakerRef: String = talk.speakers!!.get(j)
+            for (j in 0 until (talk.speakers!!.size)) {
+                val speakerRef: String = talk.speakers!!.get(j)
                 val dao = UtilDAOImpl(applicationContext)
                 val speaker: Speaker = dao.lookupSpeakerByRef(speakerRef)
                 val speakerTalk = SpeakerTalk(
@@ -133,14 +136,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun parseSpeakers(speakers: String) {
-        val json: JSONObject = JSONObject(speakers)
+        val json = JSONObject(speakers)
         val items = json.getJSONArray("items")
         speakerDao = databaseHelper!!.getSpeakerDao()
 
 
         for (i in 0 until (items.length())) {
-            var speakerObject = items.getJSONObject(i)
-            var speaker = Speaker(
+            val speakerObject = items.getJSONObject(i)
+            val speaker = Speaker(
                     0,
                     speakerObject.get("enabled").toString(),
                     speakerObject.get("name").toString(),
@@ -153,14 +156,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             )
             try {
                 speakerDao!!.create(speaker)
-            }catch ( e: Exception) {
+            } catch (e: Exception) {
                 Log.e(tag, "Could not insert speaker ${e}")
             }
 
         }
     }
 
-    private fun isDeviceConnectedToWifi(): Boolean {
+    private fun isDeviceConnectedToWifiOrData(): Boolean {
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val netInfo = cm.activeNetworkInfo
         return netInfo != null && netInfo.isConnectedOrConnecting()
