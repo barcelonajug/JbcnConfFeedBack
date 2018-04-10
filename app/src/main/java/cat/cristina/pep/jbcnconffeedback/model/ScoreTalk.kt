@@ -17,7 +17,7 @@ data class ScoreTalk (
 
 ){
 
-    companion object {
+    companion object ScoreTalksData {
         const val ID_FIELD_NAME = "_id"
         const val SCORE_ID_FIELD_NAME = "score_id"
         const val TALK_ID_FIELD_NAME = "talk_id"

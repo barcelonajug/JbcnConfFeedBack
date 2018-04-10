@@ -107,7 +107,7 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
             Log.i(DatabaseHelper::class.java.name, "onUpgrade")
 
             // Drop older db if existed
-            database?.execSQL("DROP DATABASE " + DATABASE_NAME);
+            database?.execSQL("DROP DATABASE " + DATABASE_NAME)
 
             // Create tables again
             onCreate(database)
@@ -136,7 +136,7 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
         } else speakerTalkDao!!
     }
 
-    companion object {
+    companion object DatabaseHelperData {
         private val DATABASE_NAME = "db_feedback.sql"
         private val DATABASE_VERSION = 1
     }

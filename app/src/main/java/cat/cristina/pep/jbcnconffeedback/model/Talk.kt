@@ -28,7 +28,7 @@ data class Talk (
         var speakers: Array<String>? = null
 ) {
 
-    companion object {
+    companion object TalkData {
         const val ID_FIELD_NAME = "_id"
         const val TITLE_FIELD_NAME = "title"
         const val ABSTRACT_FIELD_NAME = "abstract"

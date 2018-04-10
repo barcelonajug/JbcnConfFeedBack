@@ -126,13 +126,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 speakerTalkDao!!.create(speakerTalk)
             }
         }
-
-//        val dao : UtilDAOImpl = UtilDAOImpl(this)
-//        val talks = dao.lookupTalks()
-//
-//        for(i in 0 until(talks.size)) {
-//            Log.d(tag, "AQUI -> " + talks.get(i).title)
-//        }
     }
 
     private fun parseSpeakers(speakers: String) {
@@ -218,9 +211,5 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
-    }
-
-    companion object {
-
     }
 }

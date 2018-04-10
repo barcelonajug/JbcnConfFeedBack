@@ -44,7 +44,7 @@ data class Speaker(
 //        var gender: Int = 0
 ) {
 
-    companion object {
+    companion object SpeakerData {
         const val ID_FIELD_NAME = "_id"
         const val ENABLED_FIELD_NAME = "enabled"
         const val NAME_FIELD_NAME = "name"
