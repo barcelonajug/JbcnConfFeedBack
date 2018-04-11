@@ -5,7 +5,7 @@ import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
 
 @DatabaseTable(tableName = "scores")
-data class Score public constructor (
+data class Score constructor (
         @DatabaseField(generatedId = true, columnName = ID_FIELD_NAME, dataType = DataType.INTEGER)
         val id: Int = 0,
 
@@ -14,7 +14,7 @@ data class Score public constructor (
 
 ) {
 
-    companion object {
+    companion object ScoreData {
         const val ID_FIELD_NAME = "_id"
         const val SCORE_FIELD_NAME = "score"
     }

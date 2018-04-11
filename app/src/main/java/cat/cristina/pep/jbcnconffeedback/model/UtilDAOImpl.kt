@@ -3,8 +3,10 @@ package cat.cristina.pep.jbcnconffeedback.model
 import android.content.Context
 import com.j256.ormlite.android.apptools.OpenHelperManager
 import com.j256.ormlite.dao.Dao
+import com.j256.ormlite.stmt.PreparedQuery
+import com.j256.ormlite.stmt.QueryBuilder
 import com.j256.ormlite.stmt.SelectArg
-
+import com.j256.ormlite.stmt.Where
 
 
 /** CRUD operations **/
@@ -51,6 +53,19 @@ data class UtilDAOImpl(val context: Context) {
         speakers = speakerDao?.query(preparedQuery)
 
         return speakers!!
+    }
+
+    fun lookupSpeakerByRef(ref: String) : Speaker {
+        val qb: QueryBuilder<Speaker, Int> =  speakerDao!!.queryBuilder()
+        val where: Where<Speaker, Int> = qb.where()
+        val selectArg: SelectArg = SelectArg()
+
+        qb.where().eq(Speaker.REF_FIELD_NAME, selectArg)
+        val pq: PreparedQuery<Speaker> = qb.prepare()
+        selectArg.setValue(ref)
+
+        val speaker: Speaker = speakerDao!!.queryForFirst(pq)
+        return speaker
     }
 
     private fun getSetup() {

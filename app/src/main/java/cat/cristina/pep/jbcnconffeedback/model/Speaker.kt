@@ -9,38 +9,42 @@ data class Speaker(
         @DatabaseField(generatedId = true, columnName = ID_FIELD_NAME, dataType = DataType.INTEGER)
         val id: Int = 0,
 
-        @DatabaseField(columnName = ENABLED_FIELD_NAME, dataType = DataType.INTEGER, canBeNull = false)
-        var isEnabled: Int = 0,
+        @DatabaseField(columnName = ENABLED_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
+        var isEnabled: String = "",
 
-        @DatabaseField(columnName = NAME_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
-        var name: String? = null,
+        @DatabaseField(columnName = NAME_FIELD_NAME, dataType = DataType.STRING, canBeNull = false, unique = true)
+        var name: String = "",
 
         @DatabaseField(columnName = DESCRIPTION_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
-        var description: String? = null,
+        var description: String = "",
 
         @DatabaseField(columnName = BIOGRAPHY_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
-        var biogaphy: String? = null,
+        var biogaphy: String = "",
 
         @DatabaseField(columnName = IMAGE_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
-        var image: String? = null,
+        var image: String = "",
 
         @DatabaseField(columnName = URL_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
-        var url: String? = null,
+        var url: String = "",
 
         @DatabaseField(columnName = REF_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
-        var ref: String? = null,
+        var ref: String = "",
 
         @DatabaseField(columnName = TWITTER_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
-        var twitter: String? = null,
+        var twitter: String = "",
 
-        @DatabaseField(columnName = HOMEPAGE_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
-        var homepage: String? = null,
+        @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true, columnName = TALK_ID_FIELD_NAME)
+        var talk: Talk? = null
 
-        @DatabaseField(columnName = GENDER_FIELD_NAME, dataType = DataType.INTEGER, canBeNull = true)
-        var gender: Int = 0
+
+//        @DatabaseField(columnName = HOMEPAGE_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
+//        var homepage: String = "",
+//
+//        @DatabaseField(columnName = GENDER_FIELD_NAME, dataType = DataType.INTEGER, canBeNull = true)
+//        var gender: Int = 0
 ) {
 
-    companion object {
+    companion object SpeakerData {
         const val ID_FIELD_NAME = "_id"
         const val ENABLED_FIELD_NAME = "enabled"
         const val NAME_FIELD_NAME = "name"
@@ -50,8 +54,10 @@ data class Speaker(
         const val URL_FIELD_NAME = "url"
         const val REF_FIELD_NAME = "ref"
         const val TWITTER_FIELD_NAME = "twitter"
-        const val HOMEPAGE_FIELD_NAME = "homepage"
-        const val GENDER_FIELD_NAME = "gender"
+        const val TALK_ID_FIELD_NAME = "talk_id"
+        const val FOREIGN_FIELD = "talk"
+//        const val HOMEPAGE_FIELD_NAME = "homepage"
+//        const val GENDER_FIELD_NAME = "gender"
     }
 
 }

@@ -16,7 +16,7 @@ data class SpeakerTalk (
         val talk: Talk? = null
 ) {
 
-    companion object {
+    companion object SpeakerTalkData {
         const val ID_FIELD_NAME = "_id"
         const val SPEAKER_ID_FIELD_NAME = "speaker_id"
         const val TALK_ID_FIELD_NAME = "talk_id"
