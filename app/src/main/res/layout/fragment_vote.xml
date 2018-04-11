@@ -36,81 +36,68 @@
         app:layout_constraintTop_toBottomOf="@+id/tvTalk" />
 
     <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/sixty_four"
-        android:layout_marginEnd="@dimen/eight"
-        android:layout_marginStart="@dimen/eight"
-        android:layout_marginTop="@dimen/thirty_two"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvSpeaker"
-        app:layout_constraintVertical_bias="0.26999998">
-
-        <ImageButton
-            android:id="@+id/imgBtnLove"
-            android:layout_width="@dimen/smily_size"
-            android:layout_height="@dimen/smily_size"
-            android:layout_margin="@dimen/smily_margin"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:src="@drawable/love" />
-
-        <ImageButton
-            android:id="@+id/imgBtnSmile"
-            android:layout_width="@dimen/smily_size"
-            android:layout_height="@dimen/smily_size"
-            android:layout_margin="@dimen/smily_margin"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:src="@drawable/smile" />
-
-        <ImageButton
-            android:id="@+id/imgBtnNormal"
-            android:layout_width="@dimen/smily_size"
-            android:layout_height="@dimen/smily_size"
-            android:layout_margin="@dimen/smily_margin"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:src="@drawable/normal" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/thirty_two"
-        android:layout_marginEnd="@dimen/eight"
-        android:layout_marginStart="@dimen/eight"
-        android:layout_marginTop="@dimen/seventy_two"
-        android:layout_weight="1"
-        android:orientation="horizontal"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvSpeaker">
 
-        <ImageButton
-            android:id="@+id/imgBtnSleepy"
-            android:layout_width="@dimen/smily_size"
-            android:layout_height="@dimen/smily_size"
-            android:layout_margin="@dimen/smily_margin"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:src="@drawable/sleepy" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/imgBtnCry"
-            android:layout_width="@dimen/smily_size"
-            android:layout_height="@dimen/smily_size"
-            android:layout_margin="@dimen/smily_margin"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:src="@drawable/cry" />
+            <ImageButton
+                android:id="@+id/imageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:src="@drawable/love" />
+
+            <ImageButton
+                android:id="@+id/imageButton2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:src="@drawable/smile" />
+
+            <ImageButton
+                android:id="@+id/imageButton3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:src="@drawable/normal" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/imageButton4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:src="@drawable/sleepy" />
+
+            <ImageButton
+                android:id="@+id/imageButton5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:src="@drawable/cry" />
+        </LinearLayout>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
