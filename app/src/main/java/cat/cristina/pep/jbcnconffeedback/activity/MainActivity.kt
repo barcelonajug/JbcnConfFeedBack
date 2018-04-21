@@ -30,10 +30,10 @@ import org.json.JSONObject
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private val tag = MainActivity::class.java.name
-    private var databaseHelper: DatabaseHelper? = null
-    private var speakerDao: Dao<Speaker, Int>? = null
-    private var talkDao: Dao<Talk, Int>? = null
-    private var speakerTalkDao: Dao<SpeakerTalk, Int>? = null
+    lateinit private var databaseHelper: DatabaseHelper
+    lateinit private var speakerDao: Dao<Speaker, Int>
+    lateinit private var talkDao: Dao<Talk, Int>
+    lateinit private var speakerTalkDao: Dao<SpeakerTalk, Int>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,19 +54,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         if (isDeviceConnectedToWifiOrData()) {
             val queue = Volley.newRequestQueue(this)
-            getDatabaseHelper()
+            databaseHelper =  OpenHelperManager.getHelper(applicationContext, DatabaseHelper::class.java)
             retrieveSpeakersFromWeb(queue)
             retrieveTalksFromWeb(queue)
         } else {
             Toast.makeText(applicationContext, "There is no network connection and cannot retrieve data for database!!!", Toast.LENGTH_LONG).show()
         }
-    }
-
-    private fun getDatabaseHelper(): DatabaseHelper {
-        if (databaseHelper == null) {
-            databaseHelper = OpenHelperManager.getHelper(applicationContext, DatabaseHelper::class.java)
-        }
-        return databaseHelper!!
     }
 
     private fun retrieveSpeakersFromWeb(queue: RequestQueue) {
@@ -100,8 +93,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun parseTalks(talks: String) {
         val json = JSONObject(talks)
         val items = json.getJSONArray("items")
-        talkDao = databaseHelper!!.getTalkDao()
-        speakerTalkDao = databaseHelper!!.getSpeakerTalkDao()
+        talkDao = databaseHelper.getTalkDao()
+        speakerTalkDao = databaseHelper.getSpeakerTalkDao()
         val gson = Gson()
 
         for (i in 0 until (items.length())) {
@@ -109,21 +102,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val talk = gson.fromJson(talkObject.toString(), Talk::class.java)
 
             try {
-                talkDao!!.create(talk)
+                talkDao.create(talk)
             } catch (e: Exception) {
                 Log.e(tag, "Could not insert talk ${e}")
             }
 
             for (j in 0 until (talk.speakers!!.size)) {
                 val speakerRef: String = talk.speakers!!.get(j)
-                val dao = UtilDAOImpl(applicationContext)
+                val dao = UtilDAOImpl(applicationContext, databaseHelper)
                 val speaker: Speaker = dao.lookupSpeakerByRef(speakerRef)
                 val speakerTalk = SpeakerTalk(
                         0,
                         speaker,
                         talk
                 )
-                speakerTalkDao!!.create(speakerTalk)
+                speakerTalkDao.create(speakerTalk)
             }
         }
     }
@@ -131,7 +124,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun parseSpeakers(speakers: String) {
         val json = JSONObject(speakers)
         val items = json.getJSONArray("items")
-        speakerDao = databaseHelper!!.getSpeakerDao()
+        speakerDao = databaseHelper.getSpeakerDao()
 
 
         for (i in 0 until (items.length())) {
@@ -147,7 +140,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     speakerObject.get("twitter").toString()
             )
             try {
-                speakerDao!!.create(speaker)
+                speakerDao.create(speaker)
             } catch (e: Exception) {
                 Log.e(tag, "Could not insert speaker ${e}")
             }

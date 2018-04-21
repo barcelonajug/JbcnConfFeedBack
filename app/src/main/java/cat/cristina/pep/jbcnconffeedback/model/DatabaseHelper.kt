@@ -9,9 +9,9 @@ import com.j256.ormlite.support.ConnectionSource
 import com.j256.ormlite.table.TableUtils
 
 data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
-    private var speakerDao: Dao<Speaker, Int>? = null
-    private var talkDao: Dao<Talk, Int>? = null
-    private var speakerTalkDao: Dao<SpeakerTalk, Int>? = null
+    lateinit private var speakerDao: Dao<Speaker, Int>
+    lateinit private var talkDao: Dao<Talk, Int>
+    lateinit private var speakerTalkDao: Dao<SpeakerTalk, Int>
 
     override fun onCreate(database: SQLiteDatabase?, connectionSource: ConnectionSource?) {
         Log.i(DatabaseHelper::class.java.name, "in onCreate")
@@ -44,7 +44,7 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
                 speakersOfTalk1
         )
 
-        talkDao!!.create(talk1)
+        talkDao.create(talk1)
 
         val speaker1 = Speaker(
                 0,
@@ -56,7 +56,7 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
                 "TWljaGVsU2NodWRlbG1pY2hlbC5zY2h1ZGVsQGdtYWlsLmNvbQ==",
                 "@michelschudel"
         )
-        speakerDao!!.create(speaker1)
+        speakerDao.create(speaker1)
 
         val speakersOfTalk2: Array<String> = arrayOf("TWVyY2VkZXNXeXNzbWVyY2VkZXMud3lzc0Bwb3dlcnd0ZWNobm9sb2d5LmNvbQ==")
         val talk2 = Talk(
@@ -68,7 +68,7 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
                 "middle",
                 speakersOfTalk2
         )
-        talkDao!!.create(talk2)
+        talkDao.create(talk2)
 
         val speaker2 = Speaker(
                 0,
@@ -80,7 +80,7 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
                 "TWVyY2VkZXNXeXNzbWVyY2VkZXMud3lzc0Bwb3dlcnd0ZWNobm9sb2d5LmNvbQ==",
                 "@itrjwyss"
         )
-        speakerDao!!.create(speaker2)
+        speakerDao.create(speaker2)
 
         speakerTalkDao = getSpeakerTalkDao()
 
@@ -90,14 +90,14 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
                 talk1
         )
 
-        speakerTalkDao!!.create(speakerTalk1)
+        speakerTalkDao.create(speakerTalk1)
 
         val speakerTalk2 = SpeakerTalk(
                 0,
                 speaker2,
                 talk2
         )
-        speakerTalkDao!!.create(speakerTalk2)
+        speakerTalkDao.create(speakerTalk2)
     }
 
     override fun onUpgrade(database: SQLiteDatabase?, connectionSource: ConnectionSource?, oldVersion: Int, newVersion: Int) {
@@ -116,23 +116,11 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
         }
     }
 
-    internal fun getSpeakerDao(): Dao<Speaker, Int> {
-        return if (speakerDao == null) {
-            getDao(Speaker::class.java)
-        } else speakerDao!!
-    }
+    internal fun getSpeakerDao(): Dao<Speaker, Int> = getDao(Speaker::class.java)
 
-    internal fun getTalkDao(): Dao<Talk, Int> {
-        return if (talkDao == null) {
-            getDao(Talk::class.java)
-        } else talkDao!!
-    }
+    internal fun getTalkDao(): Dao<Talk, Int> = getDao(Talk::class.java)
 
-    internal fun getSpeakerTalkDao(): Dao<SpeakerTalk, Int> {
-        return if (speakerTalkDao == null) {
-            getDao(SpeakerTalk::class.java)
-        } else speakerTalkDao!!
-    }
+    internal fun getSpeakerTalkDao(): Dao<SpeakerTalk, Int> = getDao(SpeakerTalk::class.java)
 
     companion object DatabaseHelperData {
         private val DATABASE_NAME = "db_feedback.sql"
