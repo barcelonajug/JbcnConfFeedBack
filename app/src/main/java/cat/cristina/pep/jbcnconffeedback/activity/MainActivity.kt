@@ -138,7 +138,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val speakerObject = items.getJSONObject(i)
             val speaker = Speaker(
                     0,
-                    speakerObject.get("enabled").toString(),
                     speakerObject.get("name").toString(),
                     speakerObject.get("description").toString(),
                     speakerObject.get("biography").toString(),

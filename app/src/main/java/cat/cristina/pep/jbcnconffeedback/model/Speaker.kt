@@ -9,9 +9,6 @@ data class Speaker(
         @DatabaseField(generatedId = true, columnName = ID_FIELD_NAME, dataType = DataType.INTEGER)
         val id: Int = 0,
 
-        @DatabaseField(columnName = ENABLED_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
-        var isEnabled: String = "",
-
         @DatabaseField(columnName = NAME_FIELD_NAME, dataType = DataType.STRING, canBeNull = false, unique = true)
         var name: String = "",
 
@@ -46,7 +43,6 @@ data class Speaker(
 
     companion object SpeakerData {
         const val ID_FIELD_NAME = "_id"
-        const val ENABLED_FIELD_NAME = "enabled"
         const val NAME_FIELD_NAME = "name"
         const val DESCRIPTION_FIELD_NAME = "description"
         const val BIOGRAPHY_FIELD_NAME = "biography"

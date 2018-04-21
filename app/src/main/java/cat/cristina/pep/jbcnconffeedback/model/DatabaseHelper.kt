@@ -48,7 +48,6 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
 
         val speaker1 = Speaker(
                 0,
-                "1",
                 "Michel Schudel",
                 "Java developer Dutch Railways",
                 "Michel Schudel has been a passionate Java developer since 1998, building various Java solutions for banks, insurance companies and telecom providers. Since then he has seen the good, the bad and the ugly in Java land. He loves agile development and coding with micro and meso frameworks like SpringBoot and SparkJava to get up-and-running as fast as possible. Futhermore, he likes to coach junior developers in Core Java. Michel is currently working for Dutch Railways in the Netherlands.",
@@ -73,7 +72,6 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
 
         val speaker2 = Speaker(
                 0,
-                "1",
                 "Mercedes Wyss",
                 "CTO at Produactivity",
                 "She is a software engineer with more than six years of experience in backend, frontend, and Android development using Java and Kotlin. Currently, Mercedes is the CTO at Produactivity, a startup based in Guatemala.\\\\n\\\\nOutside of work, she was previously organizing meetings in Guatemala Java Users Group. Now she is focused on increasing women's participation in STEAM by running a JDuchess chapter in Guatemala and helping new communities to make their first steps. \\\\n\\\\nShe is a Developer Champion and an Auth0 Ambassador, has a Duke's Choice Award in Educational Outreach, and is the leader of a Google community, Devs+502.",
