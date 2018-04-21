@@ -4,7 +4,7 @@ import com.j256.ormlite.field.DataType
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
 
-@DatabaseTable(tableName = "talks")
+@DatabaseTable(tableName = Talk.TABLE_NAME)
 data class Talk (
         @DatabaseField(generatedId = true, columnName = ID_FIELD_NAME, dataType = DataType.INTEGER)
         val id: Int = 0,
@@ -25,10 +25,10 @@ data class Talk (
         var level: String = "",
 
         @DatabaseField(columnName = SPEAKERS_FIELD_NAME, dataType = DataType.SERIALIZABLE, canBeNull = false)
-        var speakers: Array<String>? = null
-) {
+        var speakers: Array<String>? = null) {
 
     companion object TalkData {
+        const val TABLE_NAME = "talks"
         const val ID_FIELD_NAME = "_id"
         const val TITLE_FIELD_NAME = "title"
         const val ABSTRACT_FIELD_NAME = "abstract"

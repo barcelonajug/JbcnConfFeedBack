@@ -21,19 +21,25 @@ import android.net.ConnectivityManager
 import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.model.*
 import com.android.volley.RequestQueue
+import com.android.volley.toolbox.RequestFuture
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.j256.ormlite.android.apptools.OpenHelperManager
 import com.j256.ormlite.dao.Dao
 import org.json.JSONObject
+import java.util.concurrent.TimeUnit
 
+private val TAG = MainActivity::class.java.name
+private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
+private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/talks.json"
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    private val tag = MainActivity::class.java.name
-    lateinit private var databaseHelper: DatabaseHelper
-    lateinit private var speakerDao: Dao<Speaker, Int>
-    lateinit private var talkDao: Dao<Talk, Int>
-    lateinit private var speakerTalkDao: Dao<SpeakerTalk, Int>
+    private lateinit var databaseHelper: DatabaseHelper
+    private lateinit var speakerDao: Dao<Speaker, Int>
+    private lateinit var talkDao: Dao<Talk, Int>
+    private lateinit var speakerTalkDao: Dao<SpeakerTalk, Int>
+    private lateinit var requestQueue: RequestQueue
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,41 +59,58 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.setNavigationItemSelectedListener(this)
 
         if (isDeviceConnectedToWifiOrData()) {
-            val queue = Volley.newRequestQueue(this)
+            requestQueue = Volley.newRequestQueue(this)
             databaseHelper =  OpenHelperManager.getHelper(applicationContext, DatabaseHelper::class.java)
-            retrieveSpeakersFromWeb(queue)
-            retrieveTalksFromWeb(queue)
+            val responseSpeakers = retrieveSpeakersFromWeb()
+            val responseTalks = retrieveTalksFromWeb()
+            parseTalks(responseTalks)
+            parseSpeakers(responseSpeakers)
         } else {
-            Toast.makeText(applicationContext, "There is no network connection and cannot retrieve data for database!!!", Toast.LENGTH_LONG).show()
+            Toast.makeText(applicationContext, "There is no network connection try later.", Toast.LENGTH_LONG).show()
         }
     }
 
-    private fun retrieveSpeakersFromWeb(queue: RequestQueue) {
-        val urlSpeakers = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
+    private fun retrieveSpeakersFromWeb(): String {
 
-        val speakersRequest = JsonObjectRequest(Request.Method.GET, urlSpeakers, null,
-                Response.Listener { response ->
-                    Log.d(tag, "Speakers Response: %s".format(response.toString()))
-                    parseSpeakers(response.toString())
-                },
-                Response.ErrorListener { error ->
-                    Log.d(tag, error.toString())
-                })
-        queue.add(speakersRequest)
+        val requestFuture: RequestFuture<JSONObject> = RequestFuture.newFuture()
+        val jsonObjectRequest: JsonObjectRequest = JsonObjectRequest(SPEAKERS_URL, null, requestFuture, requestFuture)
+        requestQueue.add(jsonObjectRequest)
+        /* La llamada a get() es síncrona por eso hay un timeout */
+        val jsonObject: JSONObject = requestFuture.get(30, TimeUnit.SECONDS)
+        return jsonObject.toString()
+
+
+//        val speakersRequest: JsonObjectRequest = JsonObjectRequest(Request.Method.GET, SPEAKERS_URL, null,
+//                Response.Listener { response ->
+//                    Log.d(TAG, "Speakers Response: %s".format(response.toString()))
+//                    parseSpeakers(response.toString())
+//                },
+//                Response.ErrorListener { error ->
+//                    Log.d(TAG, error.toString())
+//                })
+//        requestQueue.add(speakersRequest)
+
     }
 
-    private fun retrieveTalksFromWeb(queue: RequestQueue) {
-        val urlTalks = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/talks.json"
+    private fun retrieveTalksFromWeb(): String {
 
-        val talksRequest = JsonObjectRequest(Request.Method.GET, urlTalks, null,
-                Response.Listener { response ->
-                    Log.d(tag, "Talks Response: %s".format(response.toString()))
-                    parseTalks(response.toString())
-                },
-                Response.ErrorListener { error ->
-                    Log.d(tag, error.toString())
-                })
-        queue.add(talksRequest)
+        val requestFuture: RequestFuture<JSONObject> = RequestFuture.newFuture()
+        val jsonObjectRequest: JsonObjectRequest = JsonObjectRequest(TALKS_URL, null, requestFuture, requestFuture)
+        requestQueue.add(jsonObjectRequest)
+        /* La llamada a get() es síncrona por eso hay un timeout */
+        val jsonObject: JSONObject = requestFuture.get(30, TimeUnit.SECONDS)
+        return jsonObject.toString()
+
+//        val talksRequest = JsonObjectRequest(Request.Method.GET, TALKS_URL, null,
+//                Response.Listener { response ->
+//                    Log.d(TAG, "Talks Response: %s".format(response.toString()))
+//                    parseTalks(response.toString())
+//                },
+//                Response.ErrorListener { error ->
+//                    Log.d(TAG, error.toString())
+//                })
+//        requestQueue.add(talksRequest)
+        return ""
     }
 
     private fun parseTalks(talks: String) {
@@ -99,13 +122,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         for (i in 0 until (items.length())) {
             val talkObject = items.getJSONObject(i)
-            val talk = gson.fromJson(talkObject.toString(), Talk::class.java)
+            val talk: Talk = gson.fromJson(talkObject.toString(), Talk::class.java)
 
             try {
                 talkDao.create(talk)
+                Log.e(TAG, "Talk $talk created")
             } catch (e: Exception) {
-                Log.e(tag, "Could not insert talk ${e}")
+                Log.e(TAG, "Could not insert talk $talk")
             }
+        }
+
+
+        for (i in 0 until (items.length())) {
+            val talkObject = items.getJSONObject(i)
+            val talk: Talk = gson.fromJson(talkObject.toString(), Talk::class.java)
 
             for (j in 0 until (talk.speakers!!.size)) {
                 val speakerRef: String = talk.speakers!!.get(j)
@@ -119,6 +149,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 speakerTalkDao.create(speakerTalk)
             }
         }
+
     }
 
     private fun parseSpeakers(speakers: String) {
@@ -141,8 +172,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             )
             try {
                 speakerDao.create(speaker)
+                Log.e(TAG, "Speaker $speaker inserted")
             } catch (e: Exception) {
-                Log.e(tag, "Could not insert speaker ${e}")
+                Log.e(TAG, "Could not insert speaker $speaker")
             }
 
         }
