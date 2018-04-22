@@ -1,45 +1,49 @@
 package cat.cristina.pep.jbcnconffeedback.model
 
 import android.content.Context
+import android.util.Log
 import com.j256.ormlite.android.apptools.OpenHelperManager
-import com.j256.ormlite.dao.Dao
 import com.j256.ormlite.stmt.PreparedQuery
 import com.j256.ormlite.stmt.QueryBuilder
 import com.j256.ormlite.stmt.SelectArg
 import com.j256.ormlite.stmt.Where
 
 
+private val TAG: String = UtilDAOImpl::class.java.name
+
 /** CRUD operations **/
-data class UtilDAOImpl(val context: Context, val databaseHelper: DatabaseHelper) {
+data class UtilDAOImpl(val context: Context, private val databaseHelper: DatabaseHelper) {
 
-    fun lookupSpeakers(): List<Speaker> {
-        val queryBuilder = databaseHelper.getSpeakerDao().queryBuilder()
-        return queryBuilder.query()
-    }
+    fun lookupSpeakers(): List<Speaker> = databaseHelper.getSpeakerDao().queryBuilder().query()
 
-    fun lookupTalks(): List<Talk> {
-        val queryBuilder = databaseHelper.getTalkDao().queryBuilder()
-        return queryBuilder.query()
-    }
+    fun lookupTalks(): List<Talk> = databaseHelper.getTalkDao().queryBuilder().query()
 
     fun lookupSpeakersForTalk(talk: Talk) : List<Speaker> {
-        var speakers: List<Speaker>? = null
-        val joinQueryBuilder = databaseHelper.getSpeakerTalkDao().queryBuilder()
-        joinQueryBuilder?.selectColumns(SpeakerTalk.SPEAKER_ID_FIELD_NAME)
-        val userSelectArg = SelectArg()
-        joinQueryBuilder?.where()!!.eq(SpeakerTalk.TALK_ID_FIELD_NAME, userSelectArg)
 
-        val modulQueryBuilder = databaseHelper.getSpeakerDao().queryBuilder()
-        modulQueryBuilder?.where()!!.`in`(Speaker.ID_FIELD_NAME, joinQueryBuilder)
-        modulQueryBuilder.orderBy(Speaker.ID_FIELD_NAME, true)
-        val preparedQuery = modulQueryBuilder!!.prepare()
+        val joinQueryBuilder: QueryBuilder<SpeakerTalk, Int> = databaseHelper
+                .getSpeakerTalkDao().queryBuilder()
+        joinQueryBuilder.selectColumns(SpeakerTalk.SPEAKER_ID_FIELD_NAME)
+        joinQueryBuilder.where().eq(SpeakerTalk.TALK_ID_FIELD_NAME, SelectArg())
+
+        val moduleQueryBuilder: QueryBuilder<Speaker, Int> = databaseHelper
+                .getSpeakerDao().queryBuilder()
+        moduleQueryBuilder.where().`in`(Speaker.ID_FIELD_NAME, joinQueryBuilder)
+        moduleQueryBuilder.orderBy(Speaker.ID_FIELD_NAME, true)
+        val preparedQuery: PreparedQuery<Speaker> = moduleQueryBuilder.prepare()
         preparedQuery.setArgumentHolderValue(0, talk)
-        speakers = databaseHelper.getSpeakerDao().query(preparedQuery)
 
-        return speakers!!
+        return databaseHelper.getSpeakerDao().query(preparedQuery)
     }
 
+    /*
+    * Q2hyaXN0aWFuUG9zdGFjaHJpc3RpYW4ucG9zdGFAZ21haWwuY29t
+    *
+    * Q2hyaXN0aWFuUG9zdGFjaHJpc3RpYW4ucG9zdGFAZ21haWwuY29t
+    *
+    * */
     fun lookupSpeakerByRef(ref: String) : Speaker {
+        Log.d(TAG, ref)
+
         val qb: QueryBuilder<Speaker, Int> =  databaseHelper.getSpeakerDao().queryBuilder()
         val where: Where<Speaker, Int> = qb.where()
         val selectArg: SelectArg = SelectArg()
@@ -48,8 +52,7 @@ data class UtilDAOImpl(val context: Context, val databaseHelper: DatabaseHelper)
         val pq: PreparedQuery<Speaker> = qb.prepare()
         selectArg.setValue(ref)
 
-        val speaker: Speaker = databaseHelper.getSpeakerDao().queryForFirst(pq)
-        return speaker
+        return databaseHelper.getSpeakerDao().queryForFirst(pq)
     }
 
     fun onDestroy() {

@@ -8,22 +8,25 @@ import com.j256.ormlite.dao.Dao
 import com.j256.ormlite.support.ConnectionSource
 import com.j256.ormlite.table.TableUtils
 
+private val TAG: String = DatabaseHelper::class.java.name
+
 data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
-    lateinit private var speakerDao: Dao<Speaker, Int>
-    lateinit private var talkDao: Dao<Talk, Int>
-    lateinit private var speakerTalkDao: Dao<SpeakerTalk, Int>
+    private lateinit var speakerDao: Dao<Speaker, Int>
+    private lateinit var talkDao: Dao<Talk, Int>
+    private lateinit var speakerTalkDao: Dao<SpeakerTalk, Int>
 
     override fun onCreate(database: SQLiteDatabase?, connectionSource: ConnectionSource?) {
-        Log.i(DatabaseHelper::class.java.name, "in onCreate")
+        Log.i(TAG, "in onCreate")
+        setUp(connectionSource)
+    }
 
+    private fun setUp(connectionSource: ConnectionSource?) {
         try {
             TableUtils.createTable(connectionSource, Speaker::class.java)
             TableUtils.createTable(connectionSource, Talk::class.java)
             TableUtils.createTable(connectionSource, SpeakerTalk::class.java)
-
-            //populate()
         } catch (e: Exception) {
-            Log.e(DatabaseHelper::class.java.name, e.toString())
+            Log.e(TAG, e.message)
         }
     }
 
@@ -100,18 +103,19 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
         speakerTalkDao.create(speakerTalk2)
     }
 
+    @Throws()
     override fun onUpgrade(database: SQLiteDatabase?, connectionSource: ConnectionSource?, oldVersion: Int, newVersion: Int) {
         try {
-            Log.i(DatabaseHelper::class.java.name, "onUpgrade")
+            Log.i(TAG, "onUpgrade")
 
             // Drop older db if existed
-            database?.execSQL("DROP DATABASE " + DATABASE_NAME)
+            database?.execSQL("DROP DATABASE IF EXISTS " + DATABASE_NAME)
 
             // Create tables again
-            onCreate(database)
+            setUp(connectionSource)
 
         } catch (e: Exception) {
-            Log.i(DatabaseHelper::class.java.name, e.message)
+            Log.i(TAG, e.message)
             throw RuntimeException(e)
         }
     }
@@ -126,4 +130,5 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
         private val DATABASE_NAME = "db_feedback.sql"
         private val DATABASE_VERSION = 1
     }
+
 }
