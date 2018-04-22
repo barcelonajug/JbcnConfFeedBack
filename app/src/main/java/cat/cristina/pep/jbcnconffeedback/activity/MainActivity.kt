@@ -82,6 +82,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun parseSpeakers(speakers: String) {
+
+        retrieveTalksFromWeb()
+
         val json = JSONObject(speakers)
         val items = json.getJSONArray("items")
         speakerDao = databaseHelper.getSpeakerDao()
@@ -98,7 +101,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
         }
-        retrieveTalksFromWeb()
     }
 
     private fun retrieveTalksFromWeb() {
