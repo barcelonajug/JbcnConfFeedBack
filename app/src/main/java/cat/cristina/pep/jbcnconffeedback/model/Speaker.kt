@@ -15,13 +15,13 @@ data class Speaker(
         @DatabaseField(columnName = DESCRIPTION_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
         var description: String = "",
 
-        @DatabaseField(columnName = BIOGRAPHY_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
+        @DatabaseField(columnName = BIOGRAPHY_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
         var biogaphy: String = "",
 
-        @DatabaseField(columnName = IMAGE_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
+        @DatabaseField(columnName = IMAGE_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
         var image: String = "",
 
-        @DatabaseField(columnName = URL_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
+        @DatabaseField(columnName = URL_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
         var url: String = "",
 
         @DatabaseField(columnName = REF_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)

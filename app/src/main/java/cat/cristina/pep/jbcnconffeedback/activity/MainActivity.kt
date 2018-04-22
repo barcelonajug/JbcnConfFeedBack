@@ -59,8 +59,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             requestQueue = Volley.newRequestQueue(this)
             databaseHelper = OpenHelperManager.getHelper(applicationContext, DatabaseHelper::class.java)
             retrieveSpeakersFromWeb()
-            //retrieveTalksFromWeb()
-
         } else {
             Toast.makeText(applicationContext, "There is no network connection try later.", Toast.LENGTH_LONG).show()
             // exitProcess(-1)

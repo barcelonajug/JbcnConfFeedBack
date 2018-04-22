@@ -12,16 +12,16 @@ data class Talk (
         @DatabaseField(columnName = TITLE_FIELD_NAME, dataType = DataType.STRING, canBeNull = false, unique = true)
         var title: String = "",
 
-        @DatabaseField(columnName = ABSTRACT_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
+        @DatabaseField(columnName = ABSTRACT_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
         var description: String = "",
 
-        @DatabaseField(columnName = TYPE_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
+        @DatabaseField(columnName = TYPE_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
         var type: String = "",
 
 //        @DatabaseField(columnName = TAGS_FIELD_NAME, dataType = DataType.SERIALIZABLE, canBeNull = false)
 //        var tags: Array<String>? = null,
 
-        @DatabaseField(columnName = LEVEL_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
+        @DatabaseField(columnName = LEVEL_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
         var level: String = "",
 
         @DatabaseField(columnName = SPEAKERS_FIELD_NAME, dataType = DataType.SERIALIZABLE, canBeNull = false)
