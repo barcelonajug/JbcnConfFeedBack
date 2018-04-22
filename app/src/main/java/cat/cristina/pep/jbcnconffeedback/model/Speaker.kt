@@ -27,7 +27,7 @@ data class Speaker(
         @DatabaseField(columnName = REF_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
         var ref: String = "",
 
-        @DatabaseField(columnName = TWITTER_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
+        @DatabaseField(columnName = TWITTER_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
         var twitter: String = "",
 
         @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true, columnName = TALK_ID_FIELD_NAME)

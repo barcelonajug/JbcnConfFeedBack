@@ -25,7 +25,6 @@ import com.j256.ormlite.dao.Dao
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import org.json.JSONObject
-import java.util.concurrent.CyclicBarrier
 
 private val TAG = MainActivity::class.java.name
 private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
@@ -38,8 +37,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var talkDao: Dao<Talk, Int>
     private lateinit var speakerTalkDao: Dao<SpeakerTalk, Int>
     private lateinit var requestQueue: RequestQueue
-    private val cyclicBarrier: CyclicBarrier = CyclicBarrier(2)
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +63,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         } else {
             Toast.makeText(applicationContext, "There is no network connection try later.", Toast.LENGTH_LONG).show()
+            // exitProcess(-1)
         }
     }
 
@@ -83,29 +81,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
-    fun parseSpeakers(speakers: String) {
+    private fun parseSpeakers(speakers: String) {
         val json = JSONObject(speakers)
         val items = json.getJSONArray("items")
         speakerDao = databaseHelper.getSpeakerDao()
-
+        val gson = Gson()
 
         for (i in 0 until (items.length())) {
             val speakerObject = items.getJSONObject(i)
-            val speaker = Speaker(
-                    0,
-                    speakerObject.get("name").toString(),
-                    speakerObject.get("description").toString(),
-                    speakerObject.get("biography").toString(),
-                    speakerObject.get("image").toString(),
-                    speakerObject.get("url").toString(),
-                    speakerObject.get("ref").toString(),
-                    speakerObject.get("twitter").toString()
-            )
+            val speaker: Speaker = gson.fromJson(speakerObject.toString(), Speaker::class.java)
             try {
                 speakerDao.create(speaker)
                 Log.e(TAG, "Speaker ${speaker.id} inserted")
             } catch (e: Exception) {
-                Log.e(TAG, "Could not insert speaker $speaker.id")
+                Log.e(TAG, "Could not insert speaker ${speaker.id} ${e.message}")
             }
 
         }
@@ -140,23 +129,30 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 /* Guardamos cada talk */
                 talkDao.create(talk)
                 Log.e(TAG, "Talk ${talk.id} created")
-
-                /* relacionamos cada talk con su speaker/s  */
-                for (j in 0 until (talk.speakers!!.size)) {
-                    val speakerRef: String = talk.speakers!!.get(j)
-                    val dao = UtilDAOImpl(applicationContext, databaseHelper)
-                    val speaker: Speaker = dao.lookupSpeakerByRef(speakerRef)
-                    val speakerTalk = SpeakerTalk(
-                            0,
-                            speaker,
-                            talk
-                    )
-                    speakerTalkDao.create(speakerTalk)
-                }
-
             } catch (e: Exception) {
                 Log.e(TAG, "Could not insert talk ${talk.id}")
             }
+
+            /* relacionamos cada talk con su speaker/s  */
+            for (j in 0 until (talk.speakers!!.size)) {
+                val speakerRef: String = talk.speakers!!.get(j)
+                val dao = UtilDAOImpl(applicationContext, databaseHelper)
+                Log.d(TAG, "Looking for ref $speakerRef")
+                val speaker: Speaker = dao.lookupSpeakerByRef(speakerRef)
+                val speakerTalk = SpeakerTalk(
+                        0,
+                        speaker,
+                        talk
+                )
+                try {
+                    speakerTalkDao.create(speakerTalk)
+                    Log.e(TAG, "Speaker-Talk ${speakerTalk.id} created")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Could not insert Speaker-Talk ${speakerTalk.id}")
+                }
+            }
+
+
         }
 
     }
