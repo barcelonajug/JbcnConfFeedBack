@@ -1,5 +1,6 @@
 package cat.cristina.pep.jbcnconffeedback.activity
 
+import android.app.FragmentTransaction
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
@@ -13,6 +14,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
+import cat.cristina.pep.jbcnconffeedback.fragment.ChooseTalkFragment
+import cat.cristina.pep.jbcnconffeedback.fragment.dummy.DummyContent
 import cat.cristina.pep.jbcnconffeedback.model.*
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -30,7 +33,7 @@ private val TAG = MainActivity::class.java.name
 private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
 private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/talks.json"
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ChooseTalkFragment.OnChooseTalkInteractionListener {
 
     private lateinit var databaseHelper: DatabaseHelper
     private lateinit var speakerDao: Dao<Speaker, Int>
@@ -61,8 +64,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             retrieveSpeakersFromWeb()
         } else {
             Toast.makeText(applicationContext, "There is no network connection try later.", Toast.LENGTH_LONG).show()
-            // exitProcess(-1)
         }
+
+        val transaction = supportFragmentManager.beginTransaction()
+        val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
+        transaction.replace(R.id.contentFragment, chooseTalkFragment)
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+        transaction.addToBackStack(null)
+        transaction.commit()
     }
 
     private fun retrieveSpeakersFromWeb() {
@@ -186,6 +195,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.action_settings -> return true
             else -> return super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onListFragmentInteraction(item: DummyContent.DummyItem?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
