@@ -18,7 +18,12 @@
     <dimen name="text_thirty">30sp</dimen>
 
     <!-- Smilies -->
-    <dimen name="smily_margin">32dp</dimen>
     <dimen name="smily_size">80dp</dimen>
+    <dimen name="smilies_margin_top">20dp</dimen>
+    <dimen name="smilies_separation_from_title">30dp</dimen>
+    <dimen name="smilies_margin_lateral">40dp</dimen>
+
+    <dimen name="talk_title">36sp</dimen>
+    <dimen name="speaker_name">30sp</dimen>
 
 </resources>
