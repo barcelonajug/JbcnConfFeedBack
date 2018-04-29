@@ -6,6 +6,7 @@ import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
+import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
@@ -15,6 +16,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.fragment.ChooseTalkFragment
+import cat.cristina.pep.jbcnconffeedback.fragment.VoteFragment
 import cat.cristina.pep.jbcnconffeedback.fragment.dummy.DummyContent
 import cat.cristina.pep.jbcnconffeedback.model.*
 import com.android.volley.Request
@@ -33,7 +35,8 @@ private val TAG = MainActivity::class.java.name
 private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
 private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/talks.json"
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ChooseTalkFragment.OnChooseTalkInteractionListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ChooseTalkFragment.OnChooseTalkListener, VoteFragment.OnVoteFragmentListener {
+
 
     private lateinit var databaseHelper: DatabaseHelper
     private lateinit var speakerDao: Dao<Speaker, Int>
@@ -66,9 +69,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             Toast.makeText(applicationContext, "There is no network connection try later.", Toast.LENGTH_LONG).show()
         }
 
-        val transaction = supportFragmentManager.beginTransaction()
         val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
-        transaction.replace(R.id.contentFragment, chooseTalkFragment)
+        switchFragment(chooseTalkFragment)
+    }
+
+    private fun switchFragment(fragment: Fragment): Unit {
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.contentFragment, fragment)
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         transaction.addToBackStack(null)
         transaction.commit()
@@ -197,8 +204,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    override fun onListFragmentInteraction(item: DummyContent.DummyItem?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onChooseTalk(item: DummyContent.DummyItem?) {
+        val voteFragment = VoteFragment.newInstance(null, null)
+        switchFragment(voteFragment)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -226,5 +234,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    override fun onVoteFragment(msg: String) {
+        
     }
 }

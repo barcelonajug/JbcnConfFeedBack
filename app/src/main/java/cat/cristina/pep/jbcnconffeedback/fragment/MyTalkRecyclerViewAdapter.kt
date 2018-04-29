@@ -8,7 +8,7 @@ import android.widget.TextView
 import cat.cristina.pep.jbcnconffeedback.R
 
 
-import cat.cristina.pep.jbcnconffeedback.fragment.ChooseTalkFragment.OnChooseTalkInteractionListener
+import cat.cristina.pep.jbcnconffeedback.fragment.ChooseTalkFragment.OnChooseTalkListener
 import cat.cristina.pep.jbcnconffeedback.fragment.dummy.DummyContent.DummyItem
 
 import kotlinx.android.synthetic.main.fragment_choose_talk.view.*
@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.fragment_choose_talk.view.*
  */
 class MyTalkRecyclerViewAdapter(
         private val mValues: List<DummyItem>,
-        private val mListener: OnChooseTalkInteractionListener?)
+        private val mListener: OnChooseTalkListener?)
     : RecyclerView.Adapter<MyTalkRecyclerViewAdapter.ViewHolder>() {
 
     private val mOnClickListener: View.OnClickListener
@@ -30,7 +30,7 @@ class MyTalkRecyclerViewAdapter(
             val item = v.tag as DummyItem
             // Notify the active callbacks interface (the activity, if the fragment is attached to
             // one) that an item has been selected.
-            mListener?.onListFragmentInteraction(item)
+            mListener?.onChooseTalk(item)
         }
     }
 

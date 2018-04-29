@@ -17,14 +17,13 @@ import cat.cristina.pep.jbcnconffeedback.fragment.dummy.DummyContent.DummyItem
 /**
  * A fragment representing a list of Items.
  * Activities containing this fragment MUST implement the
- * [ChooseTalkFragment.OnChooseTalkInteractionListener] interface.
+ * [ChooseTalkFragment.OnChooseTalkListener] interface.
  */
 class ChooseTalkFragment : Fragment() {
-
     // TODO: Customize parameters
     private var columnCount = 1
 
-    private var listener: OnChooseTalkInteractionListener? = null
+    private var listener: OnChooseTalkListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +52,7 @@ class ChooseTalkFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnChooseTalkInteractionListener) {
+        if (context is OnChooseTalkListener) {
             listener = context
         } else {
             throw RuntimeException(context.toString() + " must implement OnListFragmentInteractionListener")
@@ -76,9 +75,9 @@ class ChooseTalkFragment : Fragment() {
      * [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html)
      * for more information.
      */
-    interface OnChooseTalkInteractionListener {
+    interface OnChooseTalkListener {
         // TODO: Update argument type and name
-        fun onListFragmentInteraction(item: DummyItem?)
+        fun onChooseTalk(item: DummyItem?)
     }
 
     companion object {

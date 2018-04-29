@@ -1,13 +1,13 @@
 package cat.cristina.pep.jbcnconffeedback.fragment
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cat.cristina.pep.jbcnconffeedback.R
+import kotlinx.android.synthetic.main.fragment_vote.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -18,7 +18,7 @@ private const val ARG_PARAM2 = "param2"
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [VoteFragment.OnFragmentInteractionListener] interface
+ * [VoteFragment.OnVoteFragmentListener] interface
  * to handle interaction events.
  * Use the [VoteFragment.newInstance] factory method to
  * create an instance of this fragment.
@@ -28,7 +28,7 @@ class VoteFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private var listener: OnFragmentInteractionListener? = null
+    private var listener: OnVoteFragmentListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,16 +45,16 @@ class VoteFragment : Fragment() {
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
+    fun onButtonPressed(msg: String) {
+        listener?.onVoteFragment(msg)
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
+        if (context is OnVoteFragmentListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException(context.toString() + " must implement OnVoteFragmentListener")
         }
     }
 
@@ -74,9 +74,9 @@ class VoteFragment : Fragment() {
      * (http://developer.android.com/training/basics/fragments/communicating.html)
      * for more information.
      */
-    interface OnFragmentInteractionListener {
+    interface OnVoteFragmentListener {
         // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
+        fun onVoteFragment(msg: String)
     }
 
     companion object {
@@ -90,7 +90,7 @@ class VoteFragment : Fragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance(param1: String?, param2: String?) =
                 VoteFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_PARAM1, param1)
