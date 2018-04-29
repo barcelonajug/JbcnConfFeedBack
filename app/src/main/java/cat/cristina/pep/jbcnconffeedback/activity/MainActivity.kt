@@ -205,7 +205,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onChooseTalk(item: DummyContent.DummyItem?) {
-        val voteFragment = VoteFragment.newInstance(null, null)
+        val voteFragment = VoteFragment.newInstance(item?.id, item?.content)
         switchFragment(voteFragment)
     }
 
@@ -237,6 +237,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onVoteFragment(msg: String) {
-        
+
     }
 }
