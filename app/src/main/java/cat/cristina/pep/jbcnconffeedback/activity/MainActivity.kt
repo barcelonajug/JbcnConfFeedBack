@@ -1,10 +1,12 @@
 package cat.cristina.pep.jbcnconffeedback.activity
 
+import android.app.FragmentTransaction
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
+import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
@@ -13,6 +15,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
+import cat.cristina.pep.jbcnconffeedback.fragment.ChooseTalkFragment
+import cat.cristina.pep.jbcnconffeedback.fragment.VoteFragment
+import cat.cristina.pep.jbcnconffeedback.fragment.dummy.DummyContent
 import cat.cristina.pep.jbcnconffeedback.model.*
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -30,7 +35,8 @@ private val TAG = MainActivity::class.java.name
 private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
 private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/talks.json"
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ChooseTalkFragment.OnChooseTalkListener, VoteFragment.OnVoteFragmentListener {
+
 
     private lateinit var databaseHelper: DatabaseHelper
     private lateinit var speakerDao: Dao<Speaker, Int>
@@ -61,8 +67,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             retrieveSpeakersFromWeb()
         } else {
             Toast.makeText(applicationContext, "There is no network connection try later.", Toast.LENGTH_LONG).show()
-            // exitProcess(-1)
         }
+
+        val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
+        switchFragment(chooseTalkFragment)
+    }
+
+    private fun switchFragment(fragment: Fragment): Unit {
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.contentFragment, fragment)
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+        transaction.addToBackStack(null)
+        transaction.commit()
     }
 
     private fun retrieveSpeakersFromWeb() {
@@ -188,6 +204,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    override fun onChooseTalk(item: DummyContent.DummyItem?) {
+        val voteFragment = VoteFragment.newInstance(item?.id, item?.content)
+        switchFragment(voteFragment)
+    }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
@@ -213,5 +234,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    override fun onVoteFragment(msg: String) {
+
     }
 }
