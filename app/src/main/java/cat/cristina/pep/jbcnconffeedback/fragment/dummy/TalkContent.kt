@@ -11,11 +11,11 @@ private val TAG = TalkContent::class.java.name
 
 class TalkContent(val context: Context) {
 
-    private lateinit var databaseHelper: DatabaseHelper
-    private lateinit var utilDAOImpl: UtilDAOImpl
-    private lateinit var speakerDao: Dao<Speaker, Int>
-    private lateinit var talkDao: Dao<Talk, Int>
-    private lateinit var speakerTalkDao: Dao<SpeakerTalk, Int>
+    private var databaseHelper: DatabaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper::class.java)
+    private var utilDAOImpl: UtilDAOImpl
+    private var speakerDao: Dao<Speaker, Int>
+    private var talkDao: Dao<Talk, Int>
+    private var speakerTalkDao: Dao<SpeakerTalk, Int>
 
     /**
      * An array of talk items.
@@ -28,7 +28,6 @@ class TalkContent(val context: Context) {
     val ITEM_MAP: MutableMap<String, TalkItem> = HashMap()
 
     init {
-        databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper::class.java)
         utilDAOImpl = UtilDAOImpl(context, databaseHelper)
         talkDao = databaseHelper.getTalkDao()
         speakerDao = databaseHelper.getSpeakerDao()

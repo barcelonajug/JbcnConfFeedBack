@@ -3,7 +3,10 @@ package cat.cristina.pep.jbcnconffeedback.activity
 import android.app.FragmentTransaction
 import android.content.Context
 import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
@@ -24,6 +27,7 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import com.j256.ormlite.android.apptools.OpenHelperManager
 import com.j256.ormlite.dao.Dao
@@ -43,6 +47,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var talkDao: Dao<Talk, Int>
     private lateinit var speakerTalkDao: Dao<SpeakerTalk, Int>
     private lateinit var requestQueue: RequestQueue
+    private lateinit var vibrator: Vibrator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +73,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         } else {
             Toast.makeText(applicationContext, "There is no network connection try later.", Toast.LENGTH_LONG).show()
         }
+
+        vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
         switchFragment(chooseTalkFragment, false)
@@ -206,7 +213,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onChooseTalk(item: TalkContent.TalkItem?) {
-        val voteFragment = VoteFragment.newInstance(item?.id, item?.talk?.title)
+        val voteFragment = VoteFragment.newInstance(item?.talk?.id.toString(), item?.talk?.title!!, item?.speaker?.name)
         switchFragment(voteFragment)
     }
 
@@ -237,7 +244,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    override fun onVoteFragment(msg: String) {
-
+    override fun onVoteFragment(id_talk: Int, score: Int) {
+        val firestore = FirebaseFirestore.getInstance()
+        val scoringDoc = mapOf("id_talk" to id_talk, "score" to score, "date" to java.util.Date())
+        firestore
+                .collection("Scoring")
+                .add(scoringDoc)
+                .addOnSuccessListener {
+                    Log.d(TAG, "$scoringDoc added")
+                }
+                .addOnFailureListener {
+                    Log.d(TAG, it.message)
+                }
+        /* Some user feedback in the form of a light vibration */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            //deprecated in API 26
+            vibrator.vibrate(250)
+        }
     }
 }

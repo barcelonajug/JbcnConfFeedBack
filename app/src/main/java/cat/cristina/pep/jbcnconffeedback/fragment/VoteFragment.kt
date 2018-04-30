@@ -10,11 +10,9 @@ import android.view.ViewGroup
 import cat.cristina.pep.jbcnconffeedback.R
 import kotlinx.android.synthetic.main.fragment_vote.*
 
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+private const val ARG_TALK_ID = "talkId"
+private const val ARG_TALK_TITLE = "talkTitle"
+private const val ARG_SPEAKER_NAME = "speakerName"
 
 /**
  * A simple [Fragment] subclass.
@@ -25,17 +23,21 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  *
  */
+
 class VoteFragment : Fragment() {
+
     private val TAG = VoteFragment::class.java.name
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var talkId: String
+    private lateinit var talkTitle: String
+    private lateinit var speakerName: String
     private var listener: OnVoteFragmentListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            talkId = it.getString(ARG_TALK_ID)
+            talkTitle = it.getString(ARG_TALK_TITLE)
+            speakerName = it.getString(ARG_SPEAKER_NAME)
         }
     }
 
@@ -47,12 +49,29 @@ class VoteFragment : Fragment() {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "param1 -> " + param1 + ", param2 -> " + param2)
+        tvTalkTitle.text = talkTitle
+        tvSpeakerName.text = "By $speakerName"
+        ibLove.setOnClickListener {
+            onButtonPressed(talkId!!.toInt(), 5)
+        }
+        ibSmile.setOnClickListener {
+            onButtonPressed(talkId!!.toInt(), 4)
+        }
+        ibNormal.setOnClickListener {
+            onButtonPressed(talkId!!.toInt(), 3)
+        }
+        ibSleepy.setOnClickListener {
+            onButtonPressed(talkId!!.toInt(), 2)
+        }
+        ibCry.setOnClickListener {
+            onButtonPressed(talkId!!.toInt(), 1)
+        }
+        Log.d(TAG, "talkTitle -> " + talkTitle + ", speakerName -> " + speakerName)
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(msg: String) {
-        listener?.onVoteFragment(msg)
+    /* TODO("Record vote") */
+    fun onButtonPressed(id_talk: Int, score: Int) {
+        listener?.onVoteFragment(id_talk, score)
     }
 
     override fun onAttach(context: Context) {
@@ -82,7 +101,7 @@ class VoteFragment : Fragment() {
      */
     interface OnVoteFragmentListener {
         // TODO: Update argument type and name
-        fun onVoteFragment(msg: String)
+        fun onVoteFragment(id_talk: Int, score: Int)
     }
 
     companion object {
@@ -90,17 +109,18 @@ class VoteFragment : Fragment() {
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
          *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
+         * @param talkId Parameter 1.
+         * @param talkTitle Parameter 2.
+         * @param speakerName Parameter 3.
          * @return A new instance of fragment VoteFragment.
          */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String?, param2: String?) =
+        fun newInstance(talkId: String, talkTitle: String, speakerName: String) =
                 VoteFragment().apply {
                     arguments = Bundle().apply {
-                        putString(ARG_PARAM1, param1)
-                        putString(ARG_PARAM2, param2)
+                        putString(ARG_TALK_ID, talkId)
+                        putString(ARG_TALK_TITLE, talkTitle)
+                        putString(ARG_SPEAKER_NAME, speakerName)
                     }
                 }
     }
