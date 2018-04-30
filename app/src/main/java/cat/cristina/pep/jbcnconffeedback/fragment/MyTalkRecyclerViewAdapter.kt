@@ -58,9 +58,9 @@ class MyTalkRecyclerViewAdapter(
         holder.mIdView.text = item.id
         Glide
                 .with(context)
-                .load("https://github.com/barcelonajug/jbcnconf_web/blob/master/2018/assets/img/speakers/abrauner.jpg")
+                //.load("https://github.com/barcelonajug/jbcnconf_web/blob/master/2018/assets/img/speakers/abrauner.jpg")
                 //.load(URL_SPEAKERS_IMAGES + item.speaker.image)
-                //.load("https://images.freeimages.com/images/large-previews/981/cow-1380252.jpg")
+                .load("https://images.freeimages.com/images/large-previews/981/cow-1380252.jpg")
                 .override(65, 43)
                 .error(R.drawable.cry)
                 .into(holder.mSpeakerImageView)
