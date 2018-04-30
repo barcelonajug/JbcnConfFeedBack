@@ -17,7 +17,7 @@ import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.fragment.ChooseTalkFragment
 import cat.cristina.pep.jbcnconffeedback.fragment.VoteFragment
-import cat.cristina.pep.jbcnconffeedback.fragment.dummy.DummyContent
+import cat.cristina.pep.jbcnconffeedback.fragment.dummy.TalkContent
 import cat.cristina.pep.jbcnconffeedback.model.*
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -70,14 +70,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
-        switchFragment(chooseTalkFragment)
+        switchFragment(chooseTalkFragment, false)
     }
 
-    private fun switchFragment(fragment: Fragment): Unit {
+    private fun switchFragment(fragment: Fragment, addToStack: Boolean = true): Unit {
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.contentFragment, fragment)
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        transaction.addToBackStack(null)
+        if (addToStack)
+            transaction.addToBackStack(null)
         transaction.commit()
     }
 
@@ -204,8 +205,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    override fun onChooseTalk(item: DummyContent.DummyItem?) {
-        val voteFragment = VoteFragment.newInstance(item?.id, item?.content)
+    override fun onChooseTalk(item: TalkContent.TalkItem?) {
+        val voteFragment = VoteFragment.newInstance(item?.id, item?.talk?.title)
         switchFragment(voteFragment)
     }
 
