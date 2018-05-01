@@ -11,8 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import cat.cristina.pep.jbcnconffeedback.R
 
-import cat.cristina.pep.jbcnconffeedback.fragment.dummy.DummyContent
-import cat.cristina.pep.jbcnconffeedback.fragment.dummy.DummyContent.DummyItem
+import cat.cristina.pep.jbcnconffeedback.fragment.dummy.TalkContent
+import cat.cristina.pep.jbcnconffeedback.fragment.dummy.TalkContent.TalkItem
+import cat.cristina.pep.jbcnconffeedback.model.Talk
 
 /**
  * A fragment representing a list of Items.
@@ -20,6 +21,9 @@ import cat.cristina.pep.jbcnconffeedback.fragment.dummy.DummyContent.DummyItem
  * [ChooseTalkFragment.OnChooseTalkListener] interface.
  */
 class ChooseTalkFragment : Fragment() {
+
+    private lateinit var talkContent: TalkContent
+
     // TODO: Customize parameters
     private var columnCount = 1
 
@@ -31,6 +35,7 @@ class ChooseTalkFragment : Fragment() {
         arguments?.let {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
         }
+        talkContent = TalkContent(activity.applicationContext)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -44,7 +49,7 @@ class ChooseTalkFragment : Fragment() {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                adapter = MyTalkRecyclerViewAdapter(DummyContent.ITEMS, listener)
+                adapter = MyTalkRecyclerViewAdapter(talkContent.ITEMS, listener, context)
             }
         }
         return view
@@ -77,7 +82,7 @@ class ChooseTalkFragment : Fragment() {
      */
     interface OnChooseTalkListener {
         // TODO: Update argument type and name
-        fun onChooseTalk(item: DummyItem?)
+        fun onChooseTalk(item: TalkItem?)
     }
 
     companion object {
