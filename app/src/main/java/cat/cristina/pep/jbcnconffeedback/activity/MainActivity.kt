@@ -233,22 +233,8 @@ class MainActivity :
         when (item.itemId) {
             /* This menu handles statistics */
             R.id.nav_camera -> {
-                // Handle statistics for  demo purposes only
-                val firestore = FirebaseFirestore.getInstance()
-                val scoring = firestore
-                        .collection("Scoring")
-                        //.whereEqualTo("score", 5)
-                        .get()
-                        .addOnCompleteListener {
-                            if (it.isSuccessful) {
-                                for (document in it.result) {
-                                    Log.d(TAG, "${document.id} -> ${document.data}")
-                                }
-                            } else {
-                                Log.d(TAG, "*** Error *** ${it.exception?.message}")
-                            }
-                        }
-                val querySnapshot =  scoring.result
+                val fragment = StatisticsFragment.newInstance()
+                switchFragment(fragment, true)
             }
             R.id.nav_gallery -> {
 

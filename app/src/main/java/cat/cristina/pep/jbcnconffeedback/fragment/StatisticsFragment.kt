@@ -3,16 +3,20 @@ package cat.cristina.pep.jbcnconffeedback.fragment
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
 import cat.cristina.pep.jbcnconffeedback.R
+import com.google.firebase.firestore.FirebaseFirestore
+import com.github.mikephil.charting.charts.BarChart
+import com.google.firebase.firestore.QueryDocumentSnapshot
 
-// TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
+private val TAG = StatisticsFragment::class.java.name
 
 /**
  * A simple [Fragment] subclass.
@@ -25,9 +29,12 @@ private const val ARG_PARAM2 = "param2"
  */
 class StatisticsFragment : Fragment() {
     // TODO: Rename and change types of parameters
+
     private var param1: String? = null
     private var param2: String? = null
     private var listenerStatistics: OnStatisticsFragmentListener? = null
+    private var barChart: BarChart? = null
+    private var data: Map<Long?, List<QueryDocumentSnapshot>>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +69,32 @@ class StatisticsFragment : Fragment() {
         listenerStatistics = null
     }
 
+    /*
+    * This method downloads the Scoring collection made up of documents(id_talk, score, date)
+    *
+    * */
+    private fun downloadScoring(): Unit {
+        val firestore = FirebaseFirestore.getInstance()
+        val scoring = firestore
+                .collection("Scoring")
+                //.whereEqualTo("score", 5)
+                .get()
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        data = it.result.groupBy {
+                            it.getLong("id_talk")
+                        }
+                        /*
+                        for (document in it.result) {
+                            Log.d(TAG, "${document.id} -> ${document.data}")
+                        }
+                        */
+                    } else {
+                        Log.d(TAG, "*** Error *** ${it.exception?.message}")
+                    }
+                }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -89,7 +122,7 @@ class StatisticsFragment : Fragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance(param1: String = "param1", param2: String = "param2") =
                 StatisticsFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_PARAM1, param1)
