@@ -19,6 +19,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.fragment.ChooseTalkFragment
+import cat.cristina.pep.jbcnconffeedback.fragment.StatisticsFragment
 import cat.cristina.pep.jbcnconffeedback.fragment.VoteFragment
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
 import cat.cristina.pep.jbcnconffeedback.model.*
@@ -39,8 +40,12 @@ private val TAG = MainActivity::class.java.name
 private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
 private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/talks.json"
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ChooseTalkFragment.OnChooseTalkListener, VoteFragment.OnVoteFragmentListener {
-
+class MainActivity :
+        AppCompatActivity(),
+        NavigationView.OnNavigationItemSelectedListener,
+        ChooseTalkFragment.OnChooseTalkListener,
+        VoteFragment.OnVoteFragmentListener,
+        StatisticsFragment.OnStatisticsFragmentListener {
 
     private lateinit var databaseHelper: DatabaseHelper
     private lateinit var speakerDao: Dao<Speaker, Int>
@@ -76,8 +81,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
-        val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
-        switchFragment(chooseTalkFragment, false)
+
     }
 
     private fun switchFragment(fragment: Fragment, addToStack: Boolean = true): Unit {
@@ -179,6 +183,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         }
 
+        /*
+        * Un cop que les dades estan assentades a la base de dades local desde el servidor
+        * posem el fragment.
+        *
+        * */
+        val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
+        switchFragment(chooseTalkFragment, false)
     }
 
 
@@ -220,10 +231,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
+            /* This menu handles statistics */
             R.id.nav_camera -> {
                 // Handle statistics for  demo purposes only
                 val firestore = FirebaseFirestore.getInstance()
-                firestore
+                val scoring = firestore
                         .collection("Scoring")
                         //.whereEqualTo("score", 5)
                         .get()
@@ -236,6 +248,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 Log.d(TAG, "*** Error *** ${it.exception?.message}")
                             }
                         }
+                val querySnapshot =  scoring.result
             }
             R.id.nav_gallery -> {
 
@@ -286,5 +299,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             //deprecated in API 26
             vibrator.vibrate(250)
         }
+    }
+
+    /*
+    *
+    * */
+    override fun onStatisticsFragment(msg: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
