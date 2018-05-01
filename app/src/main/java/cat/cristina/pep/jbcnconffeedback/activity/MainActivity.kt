@@ -221,7 +221,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_camera -> {
-                // Handle the camera action
+                // Handle statistics for  demo purposes only
+                val firestore = FirebaseFirestore.getInstance()
+                firestore
+                        .collection("Scoring")
+                        //.whereEqualTo("score", 5)
+                        .get()
+                        .addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                for (document in it.result) {
+                                    Log.d(TAG, "${document.id} -> ${document.data}")
+                                }
+                            } else {
+                                Log.d(TAG, "*** Error *** ${it.exception?.message}")
+                            }
+                        }
             }
             R.id.nav_gallery -> {
 
@@ -244,6 +258,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+    /*
+    *
+    * Note that documents in a collections can contain different sets of information, key-value pairs
+    *
+    * Documents within the same collection can all contain different fields or store different types
+    * of data in those fields. However, it's a good idea to use the same fields and data types across
+    * multiple documents, so that you can query the documents more easily
+    *
+    * */
     override fun onVoteFragment(id_talk: Int, score: Int) {
         val firestore = FirebaseFirestore.getInstance()
         val scoringDoc = mapOf("id_talk" to id_talk, "score" to score, "date" to java.util.Date())
@@ -256,7 +279,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .addOnFailureListener {
                     Log.d(TAG, it.message)
                 }
-        /* Some user feedback in the form of a light vibration */
+        /* Some user feedback in the form of a light vibration. Oreo. Android 8.0. APIS 26-27 */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
         } else {
