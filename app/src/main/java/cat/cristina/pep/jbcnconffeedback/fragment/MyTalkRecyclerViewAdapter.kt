@@ -12,8 +12,7 @@ import cat.cristina.pep.jbcnconffeedback.R
 
 
 import cat.cristina.pep.jbcnconffeedback.fragment.ChooseTalkFragment.OnChooseTalkListener
-import cat.cristina.pep.jbcnconffeedback.fragment.dummy.TalkContent.TalkItem
-import com.android.volley.RequestQueue
+import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent.TalkItem
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.RequestListener

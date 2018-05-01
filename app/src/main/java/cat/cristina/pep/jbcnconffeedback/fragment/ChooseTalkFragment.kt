@@ -11,9 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import cat.cristina.pep.jbcnconffeedback.R
 
-import cat.cristina.pep.jbcnconffeedback.fragment.dummy.TalkContent
-import cat.cristina.pep.jbcnconffeedback.fragment.dummy.TalkContent.TalkItem
-import cat.cristina.pep.jbcnconffeedback.model.Talk
+import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
+import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent.TalkItem
 
 /**
  * A fragment representing a list of Items.

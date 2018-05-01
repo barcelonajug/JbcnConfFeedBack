@@ -1,7 +1,6 @@
-package cat.cristina.pep.jbcnconffeedback.fragment.dummy
+package cat.cristina.pep.jbcnconffeedback.fragment.provider
 
 import android.content.Context
-import android.util.Log
 import cat.cristina.pep.jbcnconffeedback.model.*
 import com.j256.ormlite.android.apptools.OpenHelperManager
 import com.j256.ormlite.dao.Dao

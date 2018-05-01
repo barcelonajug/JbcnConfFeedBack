@@ -20,7 +20,7 @@ import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.fragment.ChooseTalkFragment
 import cat.cristina.pep.jbcnconffeedback.fragment.VoteFragment
-import cat.cristina.pep.jbcnconffeedback.fragment.dummy.TalkContent
+import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
 import cat.cristina.pep.jbcnconffeedback.model.*
 import com.android.volley.Request
 import com.android.volley.RequestQueue
