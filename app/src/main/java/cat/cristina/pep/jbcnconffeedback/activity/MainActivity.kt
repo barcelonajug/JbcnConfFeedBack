@@ -3,7 +3,10 @@ package cat.cristina.pep.jbcnconffeedback.activity
 import android.app.FragmentTransaction
 import android.content.Context
 import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
@@ -17,13 +20,14 @@ import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.fragment.ChooseTalkFragment
 import cat.cristina.pep.jbcnconffeedback.fragment.VoteFragment
-import cat.cristina.pep.jbcnconffeedback.fragment.dummy.DummyContent
+import cat.cristina.pep.jbcnconffeedback.fragment.dummy.TalkContent
 import cat.cristina.pep.jbcnconffeedback.model.*
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import com.j256.ormlite.android.apptools.OpenHelperManager
 import com.j256.ormlite.dao.Dao
@@ -43,6 +47,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var talkDao: Dao<Talk, Int>
     private lateinit var speakerTalkDao: Dao<SpeakerTalk, Int>
     private lateinit var requestQueue: RequestQueue
+    private lateinit var vibrator: Vibrator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,15 +74,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             Toast.makeText(applicationContext, "There is no network connection try later.", Toast.LENGTH_LONG).show()
         }
 
+        vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
         val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
-        switchFragment(chooseTalkFragment)
+        switchFragment(chooseTalkFragment, false)
     }
 
-    private fun switchFragment(fragment: Fragment): Unit {
+    private fun switchFragment(fragment: Fragment, addToStack: Boolean = true): Unit {
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.contentFragment, fragment)
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        transaction.addToBackStack(null)
+        if (addToStack)
+            transaction.addToBackStack(null)
         transaction.commit()
     }
 
@@ -204,8 +212,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    override fun onChooseTalk(item: DummyContent.DummyItem?) {
-        val voteFragment = VoteFragment.newInstance(item?.id, item?.content)
+    override fun onChooseTalk(item: TalkContent.TalkItem?) {
+        val voteFragment = VoteFragment.newInstance(item?.talk?.id.toString(), item?.talk?.title!!, item?.speaker?.name)
         switchFragment(voteFragment)
     }
 
@@ -213,7 +221,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_camera -> {
-                // Handle the camera action
+                // Handle statistics for  demo purposes only
+                val firestore = FirebaseFirestore.getInstance()
+                firestore
+                        .collection("Scoring")
+                        //.whereEqualTo("score", 5)
+                        .get()
+                        .addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                for (document in it.result) {
+                                    Log.d(TAG, "${document.id} -> ${document.data}")
+                                }
+                            } else {
+                                Log.d(TAG, "*** Error *** ${it.exception?.message}")
+                            }
+                        }
             }
             R.id.nav_gallery -> {
 
@@ -236,7 +258,33 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    override fun onVoteFragment(msg: String) {
-
+    /*
+    *
+    * Note that documents in a collections can contain different sets of information, key-value pairs
+    *
+    * Documents within the same collection can all contain different fields or store different types
+    * of data in those fields. However, it's a good idea to use the same fields and data types across
+    * multiple documents, so that you can query the documents more easily
+    *
+    * */
+    override fun onVoteFragment(id_talk: Int, score: Int) {
+        val firestore = FirebaseFirestore.getInstance()
+        val scoringDoc = mapOf("id_talk" to id_talk, "score" to score, "date" to java.util.Date())
+        firestore
+                .collection("Scoring")
+                .add(scoringDoc)
+                .addOnSuccessListener {
+                    Log.d(TAG, "$scoringDoc added")
+                }
+                .addOnFailureListener {
+                    Log.d(TAG, it.message)
+                }
+        /* Some user feedback in the form of a light vibration. Oreo. Android 8.0. APIS 26-27 */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            //deprecated in API 26
+            vibrator.vibrate(250)
+        }
     }
 }
