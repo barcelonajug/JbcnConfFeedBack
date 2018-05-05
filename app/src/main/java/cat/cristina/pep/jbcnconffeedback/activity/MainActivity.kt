@@ -59,11 +59,6 @@ class MainActivity :
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
-
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
@@ -231,24 +226,17 @@ class MainActivity :
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
-            /* This menu handles statistics */
-            R.id.nav_camera -> {
+            R.id.stadistics -> {
                 val fragment = StatisticsFragment.newInstance()
                 switchFragment(fragment, true)
             }
-            R.id.nav_gallery -> {
+            R.id.settings -> {
 
             }
-            R.id.nav_slideshow -> {
+            R.id.refresh -> {
 
             }
-            R.id.nav_manage -> {
-
-            }
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
+            R.id.about_us -> {
 
             }
         }

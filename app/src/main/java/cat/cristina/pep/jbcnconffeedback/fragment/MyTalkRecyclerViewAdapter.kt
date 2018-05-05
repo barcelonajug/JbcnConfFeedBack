@@ -62,7 +62,7 @@ class MyTalkRecyclerViewAdapter(
         Glide
                 .with(context)
                 .load(URL_SPEAKERS_IMAGES + item.speaker.image)
-                .override(65, 43)
+                //.override(65, 43)
                 .error(R.drawable.cry)
                 .listener(object: RequestListener<String, GlideDrawable> {
                     /**
@@ -136,9 +136,9 @@ class MyTalkRecyclerViewAdapter(
 
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
         val mIdView: TextView = mView.item_number
-        val mSpeakerImageView: ImageView = mView.speakerImage
-        val mTitleView: TextView = mView.title
-        val mSpeakerView: TextView = mView.speakerName
+        val mSpeakerImageView: ImageView = mView.cardviewSpeakerImage
+        val mTitleView: TextView = mView.cardviewTalkTitle
+        val mSpeakerView: TextView = mView.cardviewSpeakerName
 
         override fun toString(): String {
             return super.toString() + " '" + mTitleView.text + "'"

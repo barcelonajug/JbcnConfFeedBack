@@ -1,39 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/twenty"
+    android:layout_marginLeft="@dimen/twenty"
     android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/item_number"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="1"
-        android:layout_margin="@dimen/text_margin"
-        android:textAppearance="?attr/textAppearanceListItem" />
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="@dimen/cardview_width"
+        android:layout_height="@dimen/cardview_height"
+        android:layout_gravity="center_vertical"
+        android:elevation="@dimen/cardview_elevation"
+        card_view:cardElevation="@dimen/cardview_elevation"
+        card_view:cardUseCompatPadding="true"
+        card_view:cardBackgroundColor="@color/cardview_background"
+        card_view:cardCornerRadius="@dimen/cardview_corner_radius">
 
-    <ImageView
-        android:id="@+id/speakerImage"
-        android:layout_width="65dp"
-        android:layout_height="43dp"
-        android:layout_weight="1"
-        app:srcCompat="@drawable/love" />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/twenty">
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="title"
-        android:layout_margin="@dimen/text_margin"
-        android:textAppearance="?attr/textAppearanceListItem" />
+            <ImageView
+                android:id="@+id/cardviewSpeakerImage"
+                android:layout_width="@dimen/cardview_image_size"
+                android:layout_height="@dimen/cardview_image_size"
+                app:srcCompat="@drawable/love"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"/>
 
-    <TextView
-        android:id="@+id/speakerName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="speakerRef"
-        android:layout_margin="@dimen/text_margin"
-        android:textAppearance="?attr/textAppearanceListItem" />
+            <TextView
+                android:id="@+id/cardviewTalkTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/cardviewSpeakerImage"
+                android:layout_alignParentTop="true"
+                android:layout_margin="@dimen/text_margin"
+                android:gravity="center"
+                android:hint="@string/cardview_talk_title"
+                android:textSize="@dimen/cardview_talk_title"
+                android:textStyle="bold"
+                android:textAppearance="?attr/textAppearanceListItem" />
+
+            <TextView
+                android:id="@+id/cardviewSpeakerName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/cardviewSpeakerImage"
+                android:layout_below="@id/cardviewTalkTitle"
+                android:layout_margin="@dimen/text_margin"
+                android:gravity="center"
+                android:hint="@string/cardview_speaker_name"
+                android:textSize="@dimen/cardview_speaker_name"
+                android:textStyle="italic"
+                android:textAppearance="?attr/textAppearanceListItem" />
+
+            <TextView
+                android:id="@+id/item_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:hint="@string/cardview_item_number"
+                android:layout_margin="@dimen/text_margin"
+                android:textAppearance="?attr/textAppearanceListItem" />
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
 
 </LinearLayout>

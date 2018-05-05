@@ -11,7 +11,16 @@
     <string name="talk_title">Talk Title</string>
     <string name="speaker_name">Speaker Name</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- CardView -->
+    <string name="cardview_talk_title">title</string>
+    <string name="cardview_speaker_name">speaker name</string>
+    <string name="cardview_item_number">1</string>
+
+    <!-- Lateral Menu -->
+    <string name="menu_stadistics">Stadistics</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_refresh">Refresh</string>
+    <string name="menu_about_us">About us</string>
+
 
 </resources>
