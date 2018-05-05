@@ -84,11 +84,11 @@ class StatisticsFragment : Fragment() {
                         data = it.result.groupBy {
                             it.getLong("id_talk")
                         }
-                        /*
-                        for (document in it.result) {
-                            Log.d(TAG, "${document.id} -> ${document.data}")
-                        }
-                        */
+
+//                        for (document in it.result) {
+//                            Log.d(TAG, "${document.id} -> ${document.data}")
+//                        }
+
                     } else {
                         Log.d(TAG, "*** Error *** ${it.exception?.message}")
                     }
