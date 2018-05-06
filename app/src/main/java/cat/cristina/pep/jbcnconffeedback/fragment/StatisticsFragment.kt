@@ -8,11 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cat.cristina.pep.jbcnconffeedback.R
+import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.google.firebase.firestore.FirebaseFirestore
-import com.github.mikephil.charting.charts.BarChart
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import kotlinx.android.synthetic.main.fragment_statistics.view.*
 
@@ -31,6 +31,7 @@ class StatisticsFragment : Fragment() {
     private var param2: String? = null
     private var listenerStatistics: OnStatisticsFragmentListener? = null
     private var data: Map<Long?, List<QueryDocumentSnapshot>>? = null
+    private lateinit var chart: BarChart
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,9 +44,17 @@ class StatisticsFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_statistics, container, false)
+        chart = view.barchart
 
-        val chart: BarChart = view.barchart
+        return view
+    }
 
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        downloadScoring()
+    }
+
+    private fun setupGraph() {
         val entries = ArrayList<BarEntry>()
         entries.add(BarEntry(8f, 0f))
         entries.add(BarEntry(2f, 1f))
@@ -70,18 +79,6 @@ class StatisticsFragment : Fragment() {
         barDataSet.color = resources.getColor(R.color.colorAccent)
 
         chart.animateY(5000)
-
-
-        return view
-    }
-
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        downloadScoring()
-    }
-
-    private fun setupGraph() {
-
     }
 
     fun onButtonPressed(msg: String) {
