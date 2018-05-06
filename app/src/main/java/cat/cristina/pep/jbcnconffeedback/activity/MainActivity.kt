@@ -235,9 +235,6 @@ class MainActivity :
             R.id.settings -> {
 
             }
-            R.id.refresh -> {
-
-            }
             R.id.about_us -> {
 
             }

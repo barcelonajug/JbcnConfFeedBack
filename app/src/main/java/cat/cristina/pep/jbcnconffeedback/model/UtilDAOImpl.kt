@@ -42,8 +42,6 @@ data class UtilDAOImpl(val context: Context, private val databaseHelper: Databas
     *
     * */
     fun lookupSpeakerByRef(ref: String) : Speaker {
-        Log.d(TAG, ref)
-
         val qb: QueryBuilder<Speaker, Int> =  databaseHelper.getSpeakerDao().queryBuilder()
         val where: Where<Speaker, Int> = qb.where()
         val selectArg: SelectArg = SelectArg()
