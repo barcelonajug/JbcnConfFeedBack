@@ -11,6 +11,7 @@ import cat.cristina.pep.jbcnconffeedback.R
 
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent.TalkItem
+import kotlinx.android.synthetic.main.fragment_talk_list.*
 
 /**
  * A fragment representing a list of Items.
@@ -53,6 +54,7 @@ class ChooseTalkFragment : Fragment() {
         return view
     }
 
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnChooseTalkListener) {
@@ -70,13 +72,27 @@ class ChooseTalkFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         super.onCreateOptionsMenu(menu, inflater)
         // Inflate the menu; this adds items to the action bar if it is present.
-        inflater?.inflate(R.menu.main, menu)
+        inflater?.inflate(R.menu.choose_talk_fragment, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.action_reload -> return true
+            R.id.action_reload -> {
+                reload()
+                return true
+            }
             else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
+    /* TODO("Review reload data: should connect to firebase") */
+    private fun reload() {
+        with(list) {
+            layoutManager = when {
+                columnCount <= 1 -> LinearLayoutManager(context)
+                else -> GridLayoutManager(context, columnCount)
+            }
+            adapter = MyTalkRecyclerViewAdapter(talkContent.ITEMS, listener, context)
         }
     }
 

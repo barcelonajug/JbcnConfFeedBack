@@ -82,37 +82,43 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                 }
 
         val barDataSet: BarDataSet = BarDataSet(entries, "Score")
-        barDataSet.colors = ColorTemplate.COLORFUL_COLORS.asList()
-//        barDataSet.colors = ColorTemplate.JOYFUL_COLORS.asList()
-//        barDataSet.colors = ColorTemplate.LIBERTY_COLORS.asList()
-//        barDataSet.colors = ColorTemplate.MATERIAL_COLORS.asList()
-//        barDataSet.colors = ColorTemplate.PASTEL_COLORS.asList()
-//        barDataSet.colors = ColorTemplate.VORDIPLOM_COLORS.asList()
-        barDataSet.barBorderColor = Color.BLACK
+
+        with(barDataSet) {
+            colors = ColorTemplate.COLORFUL_COLORS.asList()
+//        colors = ColorTemplate.JOYFUL_COLORS.asList()
+//        colors = ColorTemplate.LIBERTY_COLORS.asList()
+//        colors = ColorTemplate.MATERIAL_COLORS.asList()
+//        colors = ColorTemplate.PASTEL_COLORS.asList()
+//        colors = ColorTemplate.VORDIPLOM_COLORS.asList()
+            barBorderColor = Color.BLACK
+        }
+
 
         val barData: BarData = BarData(barDataSet)
-        // barData.dataSetLabels = labels
 
-        barChart.data = barData
-        barChart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
-        barChart.xAxis.setDrawLabels(true)
-        barChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-        barChart.xAxis.labelCount = labels.size
-        barChart.fitScreen()
-        barChart.description.isEnabled = false
-        barChart.setDrawBarShadow(true)
-        barChart.setDrawValueAboveBar(true)
-        //barChart.setFitBars(true)
-        barChart.setBorderColor(Color.BLACK)
-        barChart.setTouchEnabled(true)
-        barChart.onChartGestureListener = this
-        barChart.animateY(3_000)
-        barChart.legend.isEnabled = true
-        barChart.legend.textColor = Color.GRAY
-        barChart.legend.textSize = 15F
+        with(barChart) {
+            data = barData
+            xAxis.valueFormatter = IndexAxisValueFormatter(labels)
+            xAxis.setDrawLabels(true)
+            xAxis.position = XAxis.XAxisPosition.BOTTOM
+            xAxis.labelCount = labels.size
+            fitScreen()
+            description.isEnabled = false
+            setDrawBarShadow(true)
+            setDrawValueAboveBar(true)
+            //setFitBars(true)
+            setBorderColor(Color.BLACK)
+            setTouchEnabled(true)
+            onChartGestureListener = this@StatisticsFragment
+            animateY(3_000)
+            legend.isEnabled = true
+            legend.textColor = Color.GRAY
+            legend.textSize = 15F
 
-        barChart.notifyDataSetChanged()
-        barChart.invalidate()
+            notifyDataSetChanged()
+            invalidate()
+        }
+
     }
 
     fun onButtonPressed(msg: String) {

@@ -79,13 +79,21 @@ class MainActivity :
 
     }
 
-    private fun switchFragment(fragment: Fragment, addToStack: Boolean = true): Unit {
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.contentFragment, fragment)
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        if (addToStack)
-            transaction.addToBackStack(null)
-        transaction.commit()
+    private fun switchFragment(fragment: Fragment, tag: String,  addToStack: Boolean = true): Unit {
+
+        val actualFragment = supportFragmentManager.findFragmentByTag(tag)
+
+        actualFragment?.tag.run {
+            if (this != tag) {
+                val transaction = supportFragmentManager.beginTransaction()
+                transaction.replace(R.id.contentFragment, fragment, tag)
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                if (addToStack)
+                    transaction.addToBackStack(tag)
+                transaction.commit()
+            }
+        }
+
     }
 
     private fun retrieveSpeakersFromWeb() {
@@ -184,7 +192,7 @@ class MainActivity :
         *
         * */
         val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
-        switchFragment(chooseTalkFragment, false)
+        switchFragment(chooseTalkFragment, "ChooseTalkFragment", false)
     }
 
 
@@ -222,7 +230,7 @@ class MainActivity :
 
     override fun onChooseTalk(item: TalkContent.TalkItem?) {
         val voteFragment = VoteFragment.newInstance(item?.talk?.id.toString(), item?.talk?.title!!, item?.speaker?.name)
-        switchFragment(voteFragment)
+        switchFragment(voteFragment, "VoteFragment")
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -230,7 +238,7 @@ class MainActivity :
         when (item.itemId) {
             R.id.stadistics -> {
                 val fragment = StatisticsFragment.newInstance()
-                switchFragment(fragment, true)
+                switchFragment(fragment,"SwitchFragment")
             }
             R.id.settings -> {
 
