@@ -31,7 +31,7 @@
 
     <!-- Choose Talk -->
     <dimen name="cardview_elevation">10dp</dimen>
-    <dimen name="cardview_width">1200dp</dimen>
+    <dimen name="cardview_width">0dp</dimen>
     <dimen name="cardview_height">250dp</dimen>
     <dimen name="cardview_corner_radius">4dp</dimen>
     <dimen name="cardview_image_size">200dp</dimen>

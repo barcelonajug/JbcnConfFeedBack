@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="recycler_view_background">#A2B8FF</color>
     <color name="cardview_background">#EDEDEE</color>
+    <color name="titulo">#303F9F</color>
 </resources>

@@ -4,14 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/twenty"
-    android:layout_marginLeft="@dimen/twenty"
     android:orientation="horizontal">
 
     <android.support.v7.widget.CardView
         android:id="@+id/card_view"
         android:layout_width="@dimen/cardview_width"
         android:layout_height="@dimen/cardview_height"
+        android:layout_weight=".90"
         android:layout_gravity="center_vertical"
         android:elevation="@dimen/cardview_elevation"
         card_view:cardElevation="@dimen/cardview_elevation"
@@ -39,7 +38,6 @@
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/cardviewSpeakerImage"
                 android:layout_alignParentTop="true"
-                android:layout_margin="@dimen/text_margin"
                 android:gravity="center"
                 android:hint="@string/cardview_talk_title"
                 android:textSize="@dimen/cardview_talk_title"
