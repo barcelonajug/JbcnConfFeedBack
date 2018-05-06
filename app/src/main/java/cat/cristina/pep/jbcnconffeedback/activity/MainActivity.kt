@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.support.design.widget.NavigationView
-import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -36,7 +35,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import org.json.JSONObject
 
-private val TAG = MainActivity::class.java.name
 private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
 private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/talks.json"
 
@@ -46,6 +44,8 @@ class MainActivity :
         ChooseTalkFragment.OnChooseTalkListener,
         VoteFragment.OnVoteFragmentListener,
         StatisticsFragment.OnStatisticsFragmentListener {
+
+    private val TAG = MainActivity::class.java.name
 
     private lateinit var databaseHelper: DatabaseHelper
     private lateinit var speakerDao: Dao<Speaker, Int>
