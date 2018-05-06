@@ -6,14 +6,12 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import cat.cristina.pep.jbcnconffeedback.R
 
-import cat.cristina.pep.jbcnconffeedback.fragment.dummy.TalkContent
-import cat.cristina.pep.jbcnconffeedback.fragment.dummy.TalkContent.TalkItem
-import cat.cristina.pep.jbcnconffeedback.model.Talk
+import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
+import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent.TalkItem
+import kotlinx.android.synthetic.main.fragment_talk_list.*
 
 /**
  * A fragment representing a list of Items.
@@ -36,6 +34,7 @@ class ChooseTalkFragment : Fragment() {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
         }
         talkContent = TalkContent(activity.applicationContext)
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -55,6 +54,7 @@ class ChooseTalkFragment : Fragment() {
         return view
     }
 
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnChooseTalkListener) {
@@ -67,6 +67,33 @@ class ChooseTalkFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         listener = null
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater?.inflate(R.menu.choose_talk_fragment, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.action_reload -> {
+                reload()
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
+    /* TODO("Review reload data: should connect to firebase") */
+    private fun reload() {
+        with(list) {
+            layoutManager = when {
+                columnCount <= 1 -> LinearLayoutManager(context)
+                else -> GridLayoutManager(context, columnCount)
+            }
+            adapter = MyTalkRecyclerViewAdapter(talkContent.ITEMS, listener, context)
+        }
     }
 
     /**

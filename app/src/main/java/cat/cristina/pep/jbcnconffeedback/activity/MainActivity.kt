@@ -18,8 +18,9 @@ import android.view.MenuItem
 import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.fragment.ChooseTalkFragment
+import cat.cristina.pep.jbcnconffeedback.fragment.StatisticsFragment
 import cat.cristina.pep.jbcnconffeedback.fragment.VoteFragment
-import cat.cristina.pep.jbcnconffeedback.fragment.dummy.TalkContent
+import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
 import cat.cristina.pep.jbcnconffeedback.model.*
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -34,11 +35,17 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import org.json.JSONObject
 
-private val TAG = MainActivity::class.java.name
 private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
 private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/talks.json"
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ChooseTalkFragment.OnChooseTalkListener, VoteFragment.OnVoteFragmentListener {
+class MainActivity :
+        AppCompatActivity(),
+        NavigationView.OnNavigationItemSelectedListener,
+        ChooseTalkFragment.OnChooseTalkListener,
+        VoteFragment.OnVoteFragmentListener,
+        StatisticsFragment.OnStatisticsFragmentListener {
+
+    private val TAG = MainActivity::class.java.name
 
     private lateinit var databaseHelper: DatabaseHelper
     private lateinit var speakerDao: Dao<Speaker, Int>
@@ -69,17 +76,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
-        val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
-        switchFragment(chooseTalkFragment, false)
+
     }
 
-    private fun switchFragment(fragment: Fragment, addToStack: Boolean = true): Unit {
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.contentFragment, fragment)
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        if (addToStack)
-            transaction.addToBackStack(null)
-        transaction.commit()
+    private fun switchFragment(fragment: Fragment, tag: String,  addToStack: Boolean = true): Unit {
+
+        val actualFragment = supportFragmentManager.findFragmentByTag(tag)
+
+        actualFragment?.tag.run {
+            if (this != tag) {
+                val transaction = supportFragmentManager.beginTransaction()
+                transaction.replace(R.id.contentFragment, fragment, tag)
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                if (addToStack)
+                    transaction.addToBackStack(tag)
+                transaction.commit()
+            }
+        }
+
     }
 
     private fun retrieveSpeakersFromWeb() {
@@ -172,13 +186,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         }
 
+        /*
+        * Un cop que les dades estan assentades a la base de dades local desde el servidor
+        * posem el fragment.
+        *
+        * */
+        val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
+        switchFragment(chooseTalkFragment, "ChooseTalkFragment", false)
     }
 
 
     private fun isDeviceConnectedToWifiOrData(): Boolean {
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val netInfo = cm.activeNetworkInfo
-        return netInfo != null && netInfo.isConnectedOrConnecting()
+        //return netInfo != null && netInfo.isConnectedOrConnecting()
+        return netInfo?.isConnectedOrConnecting ?: false
     }
 
     override fun onBackPressed() {
@@ -191,7 +213,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
+        // menuInflater.inflate(R.menu.main, menu)
         return true
     }
 
@@ -199,42 +221,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        when (item.itemId) {
-            R.id.action_settings -> return true
-            else -> return super.onOptionsItemSelected(item)
-        }
+//        when (item.itemId) {
+//            R.id.action_reload -> return true
+//            else -> return super.onOptionsItemSelected(item)
+//        }
+        return true
     }
 
     override fun onChooseTalk(item: TalkContent.TalkItem?) {
         val voteFragment = VoteFragment.newInstance(item?.talk?.id.toString(), item?.talk?.title!!, item?.speaker?.name)
-        switchFragment(voteFragment)
+        switchFragment(voteFragment, "VoteFragment")
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.stadistics -> {
-
+                val fragment = StatisticsFragment.newInstance()
+                switchFragment(fragment,"SwitchFragment")
             }
             R.id.settings -> {
 
-            }
-            R.id.refresh -> {
-                // Handle statistics for  demo purposes only
-                val firestore = FirebaseFirestore.getInstance()
-                firestore
-                        .collection("Scoring")
-                        //.whereEqualTo("score", 5)
-                        .get()
-                        .addOnCompleteListener {
-                            if (it.isSuccessful) {
-                                for (document in it.result) {
-                                    Log.d(TAG, "${document.id} -> ${document.data}")
-                                }
-                            } else {
-                                Log.d(TAG, "*** Error *** ${it.exception?.message}")
-                            }
-                        }
             }
             R.id.about_us -> {
 
@@ -273,5 +280,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             //deprecated in API 26
             vibrator.vibrate(250)
         }
+    }
+
+    /*
+    *
+    * */
+    override fun onStatisticsFragment(msg: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

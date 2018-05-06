@@ -12,7 +12,7 @@ import cat.cristina.pep.jbcnconffeedback.R
 
 
 import cat.cristina.pep.jbcnconffeedback.fragment.ChooseTalkFragment.OnChooseTalkListener
-import cat.cristina.pep.jbcnconffeedback.fragment.dummy.TalkContent.TalkItem
+import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent.TalkItem
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.RequestListener
@@ -62,32 +62,13 @@ class MyTalkRecyclerViewAdapter(
         Glide
                 .with(context)
                 .load(URL_SPEAKERS_IMAGES + item.speaker.image)
-               // .override(65, 43)
+                //.override(65, 43)
                 .error(R.drawable.cry)
                 .listener(object: RequestListener<String, GlideDrawable> {
                     /**
                      * Called when an exception occurs during a load. Will only be called if we currently want to display an image
                      * for the given model in the given target. It is recommended to create a single instance per activity/fragment
                      * rather than instantiate a new object for each call to `Glide.load()` to avoid object churn.
-                     *
-                     *
-                     *
-                     * It is safe to reload this or a different model or change what is displayed in the target at this point.
-                     * For example:
-                     * <pre>
-                     * `public void onException(Exception e, T model, Target target, boolean isFirstResource) {
-                     * target.setPlaceholder(R.drawable.a_specific_error_for_my_exception);
-                     * Glide.load(model).into(target);
-                     * }
-                    ` *
-                    </pre> *
-                     *
-                     *
-                     *
-                     *
-                     * Note - if you want to reload this or any other model after an exception, you will need to include all
-                     * relevant builder calls (like centerCrop, placeholder etc).
-                     *
                      *
                      * @param e The exception, or null.
                      * @param model The model we were trying to load when the exception occurred.
@@ -103,7 +84,6 @@ class MyTalkRecyclerViewAdapter(
 
                     /**
                      * Called when a load completes successfully, immediately after
-                     * [Target.onResourceReady].
                      *
                      * @param resource The resource that was loaded for the target.
                      * @param model The specific model that was used to load the image.
