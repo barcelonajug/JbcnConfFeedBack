@@ -37,6 +37,13 @@ import org.json.JSONObject
 
 private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
 private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/talks.json"
+private const val CHOOSE_TALK_FRAGMENT = "ChooseTalkFragment"
+private const val STATISTICS_FRAGMENT = "StatisticsFragment"
+private const val VOTE_FRAGMENT = "VoteFragment"
+private const val FIREBASE_COLLECTION = "Scoring"
+private const val FIREBASE_COLLECTION_FIELD_1 = "id_talk"
+private const val FIREBASE_COLLECTION_FIELD_2 = "score"
+private const val FIREBASE_COLLECTION_FIELD_3 = "date"
 
 class MainActivity :
         AppCompatActivity(),
@@ -79,7 +86,7 @@ class MainActivity :
 
     }
 
-    private fun switchFragment(fragment: Fragment, tag: String,  addToStack: Boolean = true): Unit {
+    private fun switchFragment(fragment: Fragment, tag: String, addToStack: Boolean = true): Unit {
 
         val actualFragment = supportFragmentManager.findFragmentByTag(tag)
 
@@ -192,7 +199,7 @@ class MainActivity :
         *
         * */
         val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
-        switchFragment(chooseTalkFragment, "ChooseTalkFragment", false)
+        switchFragment(chooseTalkFragment, CHOOSE_TALK_FRAGMENT, false)
     }
 
 
@@ -207,7 +214,13 @@ class MainActivity :
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
             drawer_layout.closeDrawer(GravityCompat.START)
         } else {
-            super.onBackPressed()
+            val actualFragment = supportFragmentManager.findFragmentById(R.id.contentFragment)
+
+            actualFragment?.tag.run {
+                if (this != VOTE_FRAGMENT) {
+                    super.onBackPressed()
+                }
+            }
         }
     }
 
@@ -225,12 +238,12 @@ class MainActivity :
 //            R.id.action_reload -> return true
 //            else -> return super.onOptionsItemSelected(item)
 //        }
-        return true
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onChooseTalk(item: TalkContent.TalkItem?) {
         val voteFragment = VoteFragment.newInstance(item?.talk?.id.toString(), item?.talk?.title!!, item?.speaker?.name)
-        switchFragment(voteFragment, "VoteFragment")
+        switchFragment(voteFragment, VOTE_FRAGMENT)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -238,7 +251,7 @@ class MainActivity :
         when (item.itemId) {
             R.id.stadistics -> {
                 val fragment = StatisticsFragment.newInstance()
-                switchFragment(fragment,"SwitchFragment")
+                switchFragment(fragment, STATISTICS_FRAGMENT)
             }
             R.id.settings -> {
 
@@ -263,9 +276,9 @@ class MainActivity :
     * */
     override fun onVoteFragment(id_talk: Int, score: Int) {
         val firestore = FirebaseFirestore.getInstance()
-        val scoringDoc = mapOf("id_talk" to id_talk, "score" to score, "date" to java.util.Date())
+        val scoringDoc = mapOf(FIREBASE_COLLECTION_FIELD_1 to id_talk, FIREBASE_COLLECTION_FIELD_2 to score, FIREBASE_COLLECTION_FIELD_3 to java.util.Date())
         firestore
-                .collection("Scoring")
+                .collection(FIREBASE_COLLECTION)
                 .add(scoringDoc)
                 .addOnSuccessListener {
                     Log.d(TAG, "$scoringDoc added")

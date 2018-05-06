@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.*
 import cat.cristina.pep.jbcnconffeedback.R
 
@@ -19,6 +20,8 @@ import kotlinx.android.synthetic.main.fragment_talk_list.*
  * [ChooseTalkFragment.OnChooseTalkListener] interface.
  */
 class ChooseTalkFragment : Fragment() {
+
+    private val TAG = ChooseTalkFragment::class.java.name
 
     private lateinit var talkContent: TalkContent
 
@@ -78,6 +81,7 @@ class ChooseTalkFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.action_reload -> {
+                Log.d(TAG, "reload")
                 reload()
                 return true
             }
