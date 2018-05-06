@@ -4,9 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import cat.cristina.pep.jbcnconffeedback.R
 import kotlinx.android.synthetic.main.fragment_vote.*
 
@@ -70,7 +68,23 @@ class VoteFragment : Fragment() {
         Log.d(TAG, "talkTitle -> " + talkTitle + ", speakerName -> " + speakerName)
     }
 
-    /* TODO("Record vote") */
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater?.inflate(R.menu.vote_fragment, menu)
+    }
+
+    /* TODO("retore ChooseTalkFragment")  */
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when(item?.itemId) {
+            R.id.action_exit -> {
+                Log.d(TAG, "exit")
+                fragmentManager.popBackStack()
+            }
+        }
+        return true
+    }
+
+    /*  */
     fun onButtonPressed(id_talk: Int, score: Int) {
         listener?.onVoteFragment(id_talk, score)
     }
