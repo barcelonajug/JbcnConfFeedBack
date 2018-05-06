@@ -11,7 +11,11 @@ import android.view.ViewGroup
 import cat.cristina.pep.jbcnconffeedback.R
 import com.google.firebase.firestore.FirebaseFirestore
 import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
 import com.google.firebase.firestore.QueryDocumentSnapshot
+import kotlinx.android.synthetic.main.fragment_statistics.view.*
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
@@ -46,8 +50,43 @@ class StatisticsFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_statistics, container, false)
+        val view = inflater.inflate(R.layout.fragment_statistics, container, false)
+
+        val chart: BarChart = view.barchart
+
+        val entries = ArrayList<BarEntry>()
+        entries.add(BarEntry(8f, 0f))
+        entries.add(BarEntry(2f, 1f))
+        entries.add(BarEntry(5f, 2f))
+        entries.add(BarEntry(20f, 3f))
+        entries.add(BarEntry(15f, 4f))
+        entries.add(BarEntry(19f, 5f))
+
+        val barDataSet = BarDataSet(entries, "Cells")
+
+        val labels = ArrayList<String>()
+        labels.add("18-Jan")
+        labels.add("19-Jan")
+        labels.add("20-Jan")
+        labels.add("21-Jan")
+        labels.add("22-Jan")
+        labels.add("23-Jan")
+        val data = BarData(barDataSet, barDataSet)
+        chart.data = data // set the data and list of lables into chart
+
+        //barDataSet.setColors(ColorTemplate.COLORFUL_COLORS)
+        barDataSet.color = resources.getColor(R.color.colorAccent)
+
+        chart.animateY(5000)
+
+
+        return view
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
