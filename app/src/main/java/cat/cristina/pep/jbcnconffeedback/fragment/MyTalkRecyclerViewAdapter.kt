@@ -70,25 +70,6 @@ class MyTalkRecyclerViewAdapter(
                      * for the given model in the given target. It is recommended to create a single instance per activity/fragment
                      * rather than instantiate a new object for each call to `Glide.load()` to avoid object churn.
                      *
-                     *
-                     *
-                     * It is safe to reload this or a different model or change what is displayed in the target at this point.
-                     * For example:
-                     * <pre>
-                     * `public void onException(Exception e, T model, Target target, boolean isFirstResource) {
-                     * target.setPlaceholder(R.drawable.a_specific_error_for_my_exception);
-                     * Glide.load(model).into(target);
-                     * }
-                    ` *
-                    </pre> *
-                     *
-                     *
-                     *
-                     *
-                     * Note - if you want to reload this or any other model after an exception, you will need to include all
-                     * relevant builder calls (like centerCrop, placeholder etc).
-                     *
-                     *
                      * @param e The exception, or null.
                      * @param model The model we were trying to load when the exception occurred.
                      * @param target The [Target] we were trying to load the image into.
@@ -103,7 +84,6 @@ class MyTalkRecyclerViewAdapter(
 
                     /**
                      * Called when a load completes successfully, immediately after
-                     * [Target.onResourceReady].
                      *
                      * @param resource The resource that was loaded for the target.
                      * @param model The specific model that was used to load the image.

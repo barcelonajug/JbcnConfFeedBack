@@ -191,7 +191,8 @@ class MainActivity :
     private fun isDeviceConnectedToWifiOrData(): Boolean {
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val netInfo = cm.activeNetworkInfo
-        return netInfo != null && netInfo.isConnectedOrConnecting()
+        //return netInfo != null && netInfo.isConnectedOrConnecting()
+        return netInfo?.isConnectedOrConnecting ?: false
     }
 
     override fun onBackPressed() {
@@ -204,7 +205,7 @@ class MainActivity :
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
+        // menuInflater.inflate(R.menu.main, menu)
         return true
     }
 
@@ -212,10 +213,11 @@ class MainActivity :
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        when (item.itemId) {
-            R.id.action_settings -> return true
-            else -> return super.onOptionsItemSelected(item)
-        }
+//        when (item.itemId) {
+//            R.id.action_reload -> return true
+//            else -> return super.onOptionsItemSelected(item)
+//        }
+        return true
     }
 
     override fun onChooseTalk(item: TalkContent.TalkItem?) {

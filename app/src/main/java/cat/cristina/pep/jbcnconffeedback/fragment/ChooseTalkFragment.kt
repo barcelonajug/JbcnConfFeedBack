@@ -6,9 +6,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import cat.cristina.pep.jbcnconffeedback.R
 
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
@@ -35,6 +33,7 @@ class ChooseTalkFragment : Fragment() {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
         }
         talkContent = TalkContent(activity.applicationContext)
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -66,6 +65,19 @@ class ChooseTalkFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         listener = null
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater?.inflate(R.menu.main, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.action_reload -> return true
+            else -> return super.onOptionsItemSelected(item)
+        }
     }
 
     /**

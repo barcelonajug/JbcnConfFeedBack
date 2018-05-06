@@ -39,6 +39,7 @@ class VoteFragment : Fragment() {
             talkTitle = it.getString(ARG_TALK_TITLE)
             speakerName = it.getString(ARG_SPEAKER_NAME)
         }
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

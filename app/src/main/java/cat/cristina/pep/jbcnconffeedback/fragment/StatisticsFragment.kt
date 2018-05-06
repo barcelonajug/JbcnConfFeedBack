@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import cat.cristina.pep.jbcnconffeedback.R
@@ -15,6 +16,8 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.listener.ChartTouchListener
+import com.github.mikephil.charting.listener.OnChartGestureListener
 //import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.firebase.firestore.FirebaseFirestore
@@ -28,7 +31,7 @@ private val TAG = StatisticsFragment::class.java.name
 
 /**
  */
-class StatisticsFragment : Fragment() {
+class StatisticsFragment : Fragment(), OnChartGestureListener {
 
     private val TAG = StatisticsFragment::class.java.name
 
@@ -43,6 +46,7 @@ class StatisticsFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -59,6 +63,7 @@ class StatisticsFragment : Fragment() {
     private fun setupGraph() {
         val labels = ArrayList<String>()
         val entries = ArrayList<BarEntry>()
+        var i: Float = 0.0F
 
         data
                 ?.asSequence()
@@ -66,18 +71,24 @@ class StatisticsFragment : Fragment() {
                     it.key
                 }
                 ?.forEach {
-                    labels.add("Talk ${it.key}")
+                    labels.add("Talk # ${it.key}")
                     val avg: Double? = data?.get(it.key)
                             ?.asSequence()
                             ?.map { doc ->
                                 doc.get("score") as Long
                             }?.average()
-                    entries.add(BarEntry(it.key!!.toFloat(), avg!!.toFloat()))
+                    //entries.add(BarEntry(it.key!!.toFloat(), avg!!.toFloat()))
+                    entries.add(BarEntry(i++, avg!!.toFloat()))
                 }
 
         val barDataSet: BarDataSet = BarDataSet(entries, "Score")
         barDataSet.colors = ColorTemplate.COLORFUL_COLORS.asList()
-        //barDataSet.barBorderColor = Color.BLACK
+//        barDataSet.colors = ColorTemplate.JOYFUL_COLORS.asList()
+//        barDataSet.colors = ColorTemplate.LIBERTY_COLORS.asList()
+//        barDataSet.colors = ColorTemplate.MATERIAL_COLORS.asList()
+//        barDataSet.colors = ColorTemplate.PASTEL_COLORS.asList()
+//        barDataSet.colors = ColorTemplate.VORDIPLOM_COLORS.asList()
+        barDataSet.barBorderColor = Color.BLACK
 
         val barData: BarData = BarData(barDataSet)
         // barData.dataSetLabels = labels
@@ -88,13 +99,18 @@ class StatisticsFragment : Fragment() {
         barChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
         barChart.xAxis.labelCount = labels.size
         barChart.fitScreen()
-        // barChart.description = Description()
+        barChart.description.isEnabled = false
         barChart.setDrawBarShadow(true)
         barChart.setDrawValueAboveBar(true)
         //barChart.setFitBars(true)
         barChart.setBorderColor(Color.BLACK)
         barChart.setTouchEnabled(true)
-        barChart.animateY(1_000)
+        barChart.onChartGestureListener = this
+        barChart.animateY(3_000)
+        barChart.legend.isEnabled = true
+        barChart.legend.textColor = Color.GRAY
+        barChart.legend.textSize = 15F
+
         barChart.notifyDataSetChanged()
         barChart.invalidate()
     }
@@ -158,5 +174,80 @@ class StatisticsFragment : Fragment() {
                         putString(ARG_PARAM2, param2)
                     }
                 }
+    }
+
+    /**
+     * Callbacks when a touch-gesture has ended on the chart (ACTION_UP, ACTION_CANCEL)
+     *
+     * @param me
+     * @param lastPerformedGesture
+     */
+    override fun onChartGestureEnd(me: MotionEvent?, lastPerformedGesture: ChartTouchListener.ChartGesture?) {
+    }
+
+    /**
+     * Callbacks then a fling gesture is made on the chart.
+     *
+     * @param me1
+     * @param me2
+     * @param velocityX
+     * @param velocityY
+     */
+    override fun onChartFling(me1: MotionEvent?, me2: MotionEvent?, velocityX: Float, velocityY: Float) {
+    }
+
+    /**
+     * Callbacks when the chart is single-tapped.
+     *
+     * @param me
+     */
+    override fun onChartSingleTapped(me: MotionEvent?) {
+        Log.d(TAG, "singledTap ${me.toString()}")
+
+    }
+
+    /**
+     * Callbacks when a touch-gesture has started on the chart (ACTION_DOWN)
+     *
+     * @param me
+     * @param lastPerformedGesture
+     */
+    override fun onChartGestureStart(me: MotionEvent?, lastPerformedGesture: ChartTouchListener.ChartGesture?) {
+    }
+
+    /**
+     * Callbacks when the chart is scaled / zoomed via pinch zoom gesture.
+     *
+     * @param me
+     * @param scaleX scalefactor on the x-axis
+     * @param scaleY scalefactor on the y-axis
+     */
+    override fun onChartScale(me: MotionEvent?, scaleX: Float, scaleY: Float) {
+    }
+
+    /**
+     * Callbacks when the chart is longpressed.
+     *
+     * @param me
+     */
+    override fun onChartLongPressed(me: MotionEvent?) {
+    }
+
+    /**
+     * Callbacks when the chart is double-tapped.
+     *
+     * @param me
+     */
+    override fun onChartDoubleTapped(me: MotionEvent?) {
+    }
+
+    /**
+     * Callbacks when the chart is moved / translated via drag gesture.
+     *
+     * @param me
+     * @param dX translation distance on the x-axis
+     * @param dY translation distance on the y-axis
+     */
+    override fun onChartTranslate(me: MotionEvent?, dX: Float, dY: Float) {
     }
 }
