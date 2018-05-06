@@ -7,7 +7,7 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="action_reload">Reload</string>
-    <string name="action_finish">Finish</string>
+    <string name="action_exit">Exit</string>
 
     <!-- Main Activity -->
     <string name="talk_title">Talk Title</string>
