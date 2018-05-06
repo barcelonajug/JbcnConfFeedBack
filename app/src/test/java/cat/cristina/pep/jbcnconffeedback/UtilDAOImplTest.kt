@@ -18,54 +18,54 @@ import org.junit.After
 @Config(constants = BuildConfig::class, sdk = intArrayOf(LOLLIPOP), packageName = "cat.cristina.pep.jbcnconffeedback")
 class UtilDAOImplTest {
 
-    private var dao: UtilDAOImpl? = null
-    private var speakers: List<Speaker>? = null
-    private var talks: List<Talk>? = null
-    private var databaseHelper: DatabaseHelper? = getDatabaseHelper()
-    private var speakerDao: Dao<Speaker, Int>? = null
-    private var talkDao: Dao<Talk, Int>? = null
-    private var speakerTalkDao: Dao<SpeakerTalk, Int>? = null
+    private lateinit var dao: UtilDAOImpl
+    private lateinit var speakers: List<Speaker>
+    private lateinit var talks: List<Talk>
+    private var databaseHelper: DatabaseHelper = getDatabaseHelper()
+    private lateinit var speakerDao: Dao<Speaker, Int>
+    private lateinit var talkDao: Dao<Talk, Int>
+    private lateinit var speakerTalkDao: Dao<SpeakerTalk, Int>
 
     @Before
     fun beforeEachTest(): Unit {
-        dao = UtilDAOImpl(RuntimeEnvironment.application)
+        dao = UtilDAOImpl(RuntimeEnvironment.application, databaseHelper)
         populate()
     }
 
     @After
     fun afterEachTest() {
-        dao!!.onDestroy()
+        dao.onDestroy()
     }
 
     @Test
     fun checkThatTereAreTalks() {
-        talks = dao!!.lookupTalks()
-        Assert.assertTrue(talks!!.size > 0)
+        talks = dao.lookupTalks()
+        Assert.assertTrue(talks.size > 0)
     }
 
     @Test
     fun checkThatTereAreSpeakers() {
-        speakers = dao!!.lookupSpeakers()
-        Assert.assertTrue(speakers!!.size > 0)
+        speakers = dao.lookupSpeakers()
+        Assert.assertTrue(speakers.size > 0)
     }
 
     @Test
     fun checkLookupSpeakersByRef() {
-        val michelSchudel = dao!!.lookupSpeakerByRef("TWljaGVsU2NodWRlbG1pY2hlbC5zY2h1ZGVsQGdtYWlsLmNvbQ==")
+        val michelSchudel = dao.lookupSpeakerByRef("TWljaGVsU2NodWRlbG1pY2hlbC5zY2h1ZGVsQGdtYWlsLmNvbQ==")
         Assert.assertEquals("Michel Schudel", michelSchudel.name)
     }
 
     @Test
     fun checkLookupSpeakersListForTalkIsNotEmpty() {
-        talks = dao!!.lookupTalks()
-        val speakers: List<Speaker> = dao!!.lookupSpeakersForTalk(talks!!.get(0))
+        talks = dao.lookupTalks()
+        val speakers: List<Speaker> = dao.lookupSpeakersForTalk(talks.get(0))
         Assert.assertTrue(speakers.isNotEmpty())
     }
 
     @Test
     fun checkLookupSpeakersListForTalkHasCorrectSpeaker() {
-        talks = dao!!.lookupTalks()
-        val speakers: List<Speaker> = dao!!.lookupSpeakersForTalk(talks!!.get(1))
+        talks = dao.lookupTalks()
+        val speakers: List<Speaker> = dao.lookupSpeakersForTalk(talks.get(1))
         Assert.assertEquals("Mercedes Wyss", speakers.get(0).name)
     }
 
@@ -73,14 +73,14 @@ class UtilDAOImplTest {
         if (databaseHelper == null) {
             databaseHelper = OpenHelperManager.getHelper(RuntimeEnvironment.application, DatabaseHelper::class.java)
         }
-        return databaseHelper!!
+        return databaseHelper
     }
 
     private fun populate() {
 
         // ****************************** Speakers **************************
-        speakerDao = databaseHelper!!.getSpeakerDao()
-        talkDao = databaseHelper!!.getTalkDao()
+        speakerDao = databaseHelper.getSpeakerDao()
+        talkDao = databaseHelper.getTalkDao()
 
         val speakersOfTalk1 = arrayOf("TWljaGVsU2NodWRlbG1pY2hlbC5zY2h1ZGVsQGdtYWlsLmNvbQ==")
         val talk1 = Talk(
@@ -93,11 +93,10 @@ class UtilDAOImplTest {
                 speakersOfTalk1
         )
 
-        talkDao!!.create(talk1)
+        talkDao.create(talk1)
 
         val speaker1 = Speaker(
                 0,
-                "1",
                 "Michel Schudel",
                 "Java developer Dutch Railways",
                 "Michel Schudel has been a passionate Java developer since 1998, building various Java solutions for banks, insurance companies and telecom providers. Since then he has seen the good, the bad and the ugly in Java land. He loves agile development and coding with micro and meso frameworks like SpringBoot and SparkJava to get up-and-running as fast as possible. Futhermore, he likes to coach junior developers in Core Java. Michel is currently working for Dutch Railways in the Netherlands.",
@@ -106,7 +105,7 @@ class UtilDAOImplTest {
                 "TWljaGVsU2NodWRlbG1pY2hlbC5zY2h1ZGVsQGdtYWlsLmNvbQ==",
                 "@michelschudel"
         )
-        speakerDao!!.create(speaker1)
+        speakerDao.create(speaker1)
 
         val speakersOfTalk2: Array<String> = arrayOf("TWVyY2VkZXNXeXNzbWVyY2VkZXMud3lzc0Bwb3dlcnd0ZWNobm9sb2d5LmNvbQ==")
         val talk2 = Talk(
@@ -118,11 +117,10 @@ class UtilDAOImplTest {
                 "middle",
                 speakersOfTalk2
         )
-        talkDao!!.create(talk2)
+        talkDao.create(talk2)
 
         val speaker2 = Speaker(
                 0,
-                "1",
                 "Mercedes Wyss",
                 "CTO at Produactivity",
                 "She is a software engineer with more than six years of experience in backend, frontend, and Android development using Java and Kotlin. Currently, Mercedes is the CTO at Produactivity, a startup based in Guatemala.\\\\n\\\\nOutside of work, she was previously organizing meetings in Guatemala Java Users Group. Now she is focused on increasing women's participation in STEAM by running a JDuchess chapter in Guatemala and helping new communities to make their first steps. \\\\n\\\\nShe is a Developer Champion and an Auth0 Ambassador, has a Duke's Choice Award in Educational Outreach, and is the leader of a Google community, Devs+502.",
@@ -131,9 +129,9 @@ class UtilDAOImplTest {
                 "TWVyY2VkZXNXeXNzbWVyY2VkZXMud3lzc0Bwb3dlcnd0ZWNobm9sb2d5LmNvbQ==",
                 "@itrjwyss"
         )
-        speakerDao!!.create(speaker2)
+        speakerDao.create(speaker2)
 
-        speakerTalkDao = databaseHelper!!.getSpeakerTalkDao()
+        speakerTalkDao = databaseHelper.getSpeakerTalkDao()
 
         val speakerTalk1 = SpeakerTalk(
                 0,
@@ -141,14 +139,14 @@ class UtilDAOImplTest {
                 talk1
         )
 
-        speakerTalkDao!!.create(speakerTalk1)
+        speakerTalkDao.create(speakerTalk1)
 
         val speakerTalk2 = SpeakerTalk(
                 0,
                 speaker2,
                 talk2
         )
-        speakerTalkDao!!.create(speakerTalk2)
+        speakerTalkDao.create(speakerTalk2)
     }
 
 }
