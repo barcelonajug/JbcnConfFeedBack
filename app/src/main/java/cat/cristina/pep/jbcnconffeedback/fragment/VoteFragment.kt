@@ -14,14 +14,14 @@ private const val ARG_TALK_TITLE = "talkTitle"
 private const val ARG_SPEAKER_NAME = "speakerName"
 
 /**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [VoteFragment.OnVoteFragmentListener] interface
- * to handle interaction events.
- * Use the [VoteFragment.newInstance] factory method to
- * create an instance of this fragment.
  *
  */
+
+const val VOTE_FIVE = 5
+const val VOTE_FOUR = 4
+const val VOTE_THREE = 3
+const val VOTE_TWO = 2
+const val VOTE_ONE = 1
 
 class VoteFragment : Fragment() {
 
@@ -54,25 +54,24 @@ class VoteFragment : Fragment() {
         val onTouchAnimation = AnimationUtils.loadAnimation(activity, R.anim.click_animation)
 
         ibLove.setOnClickListener {
-            // ibLove.setImageResource(R.drawable.love_selected)
             ibLove.startAnimation(onTouchAnimation)
-            onButtonPressed(talkId!!.toInt(), 5)
+            onButtonPressed(talkId!!.toInt(), VOTE_FIVE)
         }
         ibSmile.setOnClickListener {
             ibSmile.startAnimation(onTouchAnimation)
-            onButtonPressed(talkId!!.toInt(), 4)
+            onButtonPressed(talkId!!.toInt(), VOTE_FOUR)
         }
         ibNormal.setOnClickListener {
             ibNormal.startAnimation(onTouchAnimation)
-            onButtonPressed(talkId!!.toInt(), 3)
+            onButtonPressed(talkId!!.toInt(), VOTE_THREE)
         }
         ibSleepy.setOnClickListener {
             ibSleepy.startAnimation(onTouchAnimation)
-            onButtonPressed(talkId!!.toInt(), 2)
+            onButtonPressed(talkId!!.toInt(), VOTE_TWO)
         }
         ibCry.setOnClickListener {
             ibCry.startAnimation(onTouchAnimation)
-            onButtonPressed(talkId!!.toInt(), 1)
+            onButtonPressed(talkId!!.toInt(), VOTE_ONE)
         }
         Log.d(TAG, "talkTitle -> " + talkTitle + ", speakerName -> " + speakerName)
     }
@@ -113,18 +112,8 @@ class VoteFragment : Fragment() {
     }
 
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
      */
     interface OnVoteFragmentListener {
-        // TODO: Update argument type and name
         fun onVoteFragment(id_talk: Int, score: Int)
     }
 

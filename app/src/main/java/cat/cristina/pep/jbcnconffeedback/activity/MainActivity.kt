@@ -2,6 +2,7 @@ package cat.cristina.pep.jbcnconffeedback.activity
 
 import android.app.FragmentTransaction
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
@@ -254,7 +255,7 @@ class MainActivity :
                 switchFragment(fragment, STATISTICS_FRAGMENT)
             }
             R.id.settings -> {
-
+                startActivity(Intent(this, SettingsActivity::class.java))
             }
             R.id.about_us -> {
 
