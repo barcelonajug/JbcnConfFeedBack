@@ -18,6 +18,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
+import cat.cristina.pep.jbcnconffeedback.fragment.AppPreferenceFragment
 import cat.cristina.pep.jbcnconffeedback.fragment.ChooseTalkFragment
 import cat.cristina.pep.jbcnconffeedback.fragment.StatisticsFragment
 import cat.cristina.pep.jbcnconffeedback.fragment.VoteFragment
@@ -255,7 +256,9 @@ class MainActivity :
                 switchFragment(fragment, STATISTICS_FRAGMENT)
             }
             R.id.settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
+                //startActivity(Intent(this, SettingsActivity::class.java))
+                val fragment = AppPreferenceFragment()
+                switchFragment(fragment, STATISTICS_FRAGMENT)
             }
             R.id.about_us -> {
 
@@ -302,4 +305,5 @@ class MainActivity :
     override fun onStatisticsFragment(msg: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
 }
