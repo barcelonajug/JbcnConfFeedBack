@@ -27,9 +27,9 @@ class AppPreferenceFragment :
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.pref_general)
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        val summary = if (sharedPreferences!!.getBoolean(PreferenceKeys.ANIMATION_KEY, true))
+        val summary = if (sharedPreferences!!.getBoolean(PreferenceKeys.VIBRATOR_KEY, true))
             "Enabled" else "Disabled"
-        val preference = findPreference(PreferenceKeys.ANIMATION_KEY)
+        val preference = findPreference(PreferenceKeys.VIBRATOR_KEY)
         preference.summary = summary
     }
 
@@ -64,7 +64,7 @@ class AppPreferenceFragment :
         val preference = findPreference(key)
 
         when (key) {
-            PreferenceKeys.ANIMATION_KEY -> {
+            PreferenceKeys.VIBRATOR_KEY -> {
                 val summary = if (sharedPreferences!!.getBoolean(key, true)) "Enabled" else "Disabled"
                 preference.summary = summary
                 sharedPreferences.edit().putBoolean(key, sharedPreferences!!.getBoolean(key, true))

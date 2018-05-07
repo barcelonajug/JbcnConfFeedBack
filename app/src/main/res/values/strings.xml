@@ -30,20 +30,24 @@
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
-    <string name="animation_key">animation_key</string>
+    <string name="vibrator_key">vibrator_key</string>
+    <string name="room_key">room_key</string>
+    <string name="another_key">another_key</string>
 
-    <string name="pref_title_animations_enabled">Vibrator</string>
-    <string name="pref_description_animations_enabled">Get vibration feedback</string>
+    <string name="pref_title_vibrator">Vibrator</string>
+    <string name="pref_description_vibrator">Get vibration feedback</string>
 
-    <string name="pref_title_display_name">Room name</string>
-    <string name="pref_default_display_name">No room assigned</string>
+    <string name="pref_title_room_name">Room name</string>
+    <string name="pref_default_room_name">No room assigned</string>
 
     <string name="pref_title_add_friends_to_messages">Back up data</string>
+
     <string-array name="pref_example_list_titles">
         <item>Always</item>
         <item>When possible</item>
         <item>Never</item>
     </string-array>
+
     <string-array name="pref_example_list_values">
         <item>1</item>
         <item>0</item>

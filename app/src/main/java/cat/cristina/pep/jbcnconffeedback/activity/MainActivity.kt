@@ -2,7 +2,6 @@ package cat.cristina.pep.jbcnconffeedback.activity
 
 import android.app.FragmentTransaction
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.os.Build
@@ -297,7 +296,7 @@ class MainActivity :
                     Log.d(TAG, it.message)
                 }
         /* Some user feedback in the form of a light vibration. Oreo. Android 8.0. APIS 26-27 */
-        if(sharedPreferences.getBoolean(PreferenceKeys.ANIMATION_KEY, true)) {
+        if(sharedPreferences.getBoolean(PreferenceKeys.VIBRATOR_KEY, true)) {
             Log.d(TAG, "vibrando..........")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
