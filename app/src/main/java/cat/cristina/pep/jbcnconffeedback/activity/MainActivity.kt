@@ -3,6 +3,7 @@ package cat.cristina.pep.jbcnconffeedback.activity
 import android.app.FragmentTransaction
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
@@ -13,6 +14,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.preference.PreferenceManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -24,6 +26,7 @@ import cat.cristina.pep.jbcnconffeedback.fragment.StatisticsFragment
 import cat.cristina.pep.jbcnconffeedback.fragment.VoteFragment
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
 import cat.cristina.pep.jbcnconffeedback.model.*
+import cat.cristina.pep.jbcnconffeedback.utils.PreferenceKeys
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -63,7 +66,10 @@ class MainActivity :
     private lateinit var requestQueue: RequestQueue
     private lateinit var vibrator: Vibrator
 
+    lateinit var sharedPreferences: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
@@ -82,9 +88,9 @@ class MainActivity :
         } else {
             Toast.makeText(applicationContext, "There is no network connection try later.", Toast.LENGTH_LONG).show()
         }
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-
 
     }
 
@@ -291,11 +297,14 @@ class MainActivity :
                     Log.d(TAG, it.message)
                 }
         /* Some user feedback in the form of a light vibration. Oreo. Android 8.0. APIS 26-27 */
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
-        } else {
-            //deprecated in API 26
-            vibrator.vibrate(250)
+        if(sharedPreferences.getBoolean(PreferenceKeys.ANIMATION_KEY, true)) {
+            Log.d(TAG, "vibrando..........")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                //deprecated in API 26
+                vibrator.vibrate(250)
+            }
         }
     }
 

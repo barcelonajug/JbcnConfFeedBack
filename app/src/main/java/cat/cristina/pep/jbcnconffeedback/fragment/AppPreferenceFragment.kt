@@ -2,11 +2,9 @@ package cat.cristina.pep.jbcnconffeedback.fragment
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.preference.PreferenceFragment
 import android.support.v7.preference.PreferenceFragmentCompat
 import android.support.v7.preference.PreferenceManager
 import cat.cristina.pep.jbcnconffeedback.R
-import cat.cristina.pep.jbcnconffeedback.activity.SettingsActivity
 import cat.cristina.pep.jbcnconffeedback.utils.PreferenceKeys
 
 // TODO: Rename parameter arguments, choose names that match
@@ -29,6 +27,10 @@ class AppPreferenceFragment :
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.pref_general)
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        val summary = if (sharedPreferences!!.getBoolean(PreferenceKeys.ANIMATION_KEY, true))
+            "Enabled" else "Disabled"
+        val preference = findPreference(PreferenceKeys.ANIMATION_KEY)
+        preference.summary = summary
     }
 
     override fun onResume() {
