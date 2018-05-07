@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.*
+import android.view.animation.AnimationUtils
 import cat.cristina.pep.jbcnconffeedback.R
 import kotlinx.android.synthetic.main.fragment_vote.*
 
@@ -50,19 +51,27 @@ class VoteFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         tvTalkTitle.text = talkTitle
         tvSpeakerName.text = "By $speakerName"
+        val onTouchAnimation = AnimationUtils.loadAnimation(activity, R.anim.click_animation)
+
         ibLove.setOnClickListener {
+            // ibLove.setImageResource(R.drawable.love_selected)
+            ibLove.startAnimation(onTouchAnimation)
             onButtonPressed(talkId!!.toInt(), 5)
         }
         ibSmile.setOnClickListener {
+            ibSmile.startAnimation(onTouchAnimation)
             onButtonPressed(talkId!!.toInt(), 4)
         }
         ibNormal.setOnClickListener {
+            ibNormal.startAnimation(onTouchAnimation)
             onButtonPressed(talkId!!.toInt(), 3)
         }
         ibSleepy.setOnClickListener {
+            ibSleepy.startAnimation(onTouchAnimation)
             onButtonPressed(talkId!!.toInt(), 2)
         }
         ibCry.setOnClickListener {
+            ibCry.startAnimation(onTouchAnimation)
             onButtonPressed(talkId!!.toInt(), 1)
         }
         Log.d(TAG, "talkTitle -> " + talkTitle + ", speakerName -> " + speakerName)
