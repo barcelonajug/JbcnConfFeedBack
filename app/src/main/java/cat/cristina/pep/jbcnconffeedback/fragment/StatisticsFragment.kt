@@ -1,5 +1,6 @@
 package cat.cristina.pep.jbcnconffeedback.fragment
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
@@ -39,6 +40,8 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
     private var param2: String? = null
     private var listenerStatistics: OnStatisticsFragmentListener? = null
     private var data: Map<Long?, List<QueryDocumentSnapshot>>? = null
+    private lateinit var dialog: ProgressDialog
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +63,39 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
         downloadScoring()
     }
 
+    /* This method downloads the Scoring collection made up of documents(id_talk, score, date) */
+    private fun downloadScoring(): Unit {
+        dialog = ProgressDialog(activity, ProgressDialog.THEME_HOLO_LIGHT); // this = YourActivity
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.setMessage(resources.getString(R.string.loading));
+        dialog.setIndeterminate(true);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show()
+
+
+
+        val firestore = FirebaseFirestore.getInstance()
+        val task = firestore
+                .collection("Scoring")
+                //.whereEqualTo("score", 5)
+                .get()
+
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        data = it.result.groupBy {
+                            it.getLong("id_talk")
+                        }
+                        setupGraph()
+                    } else {
+                        dialog.dismiss()
+                        Log.d(TAG, "*** Error *** ${it.exception?.message}")
+                    }
+                }
+    }
+
+
     private fun setupGraph() {
+        dialog.setMessage(resources.getString(R.string.processing));
         val labels = ArrayList<String>()
         val entries = ArrayList<BarEntry>()
         var i: Float = 0.0F
@@ -91,6 +126,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
 //        colors = ColorTemplate.PASTEL_COLORS.asList()
 //        colors = ColorTemplate.VORDIPLOM_COLORS.asList()
             barBorderColor = Color.BLACK
+            dialog.dismiss()
         }
 
 
@@ -110,8 +146,8 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
             setBorderColor(Color.BLACK)
             setTouchEnabled(true)
             onChartGestureListener = this@StatisticsFragment
-            animateY(3_000)
-            legend.isEnabled = true
+            animateY(1_000)
+            legend.isEnabled = false
             legend.textColor = Color.GRAY
             legend.textSize = 15F
 
@@ -137,30 +173,6 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
     override fun onDetach() {
         super.onDetach()
         listenerStatistics = null
-    }
-
-    /* This method downloads the Scoring collection made up of documents(id_talk, score, date) */
-    private fun downloadScoring(): Unit {
-        val firestore = FirebaseFirestore.getInstance()
-        firestore
-                .collection("Scoring")
-                //.whereEqualTo("score", 5)
-                .get()
-                .addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        data = it.result.groupBy {
-                            it.getLong("id_talk")
-                        }
-                        /*
-                        for (document in it.result) {
-                            Log.d(TAG, "${document.id} -> ${document.data}")
-                        }
-                        */
-                        setupGraph()
-                    } else {
-                        Log.d(TAG, "*** Error *** ${it.exception?.message}")
-                    }
-                }
     }
 
     /**

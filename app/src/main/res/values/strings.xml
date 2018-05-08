@@ -25,6 +25,9 @@
     <string name="menu_about_us">About us</string>
     <string name="title_activity_settings">Settings</string>
 
+    <string name="loading">Loading. Please wait...</string>
+    <string name="processing">Processing. Please wait...</string>
+
     <!-- Strings related to Settings -->
 
     <!-- Example General settings -->
