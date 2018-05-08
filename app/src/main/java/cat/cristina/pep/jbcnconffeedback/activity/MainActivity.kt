@@ -305,7 +305,7 @@ class MainActivity :
                 switchFragment(fragment, STATISTICS_FRAGMENT)
             }
             R.id.about_us -> {
-
+                Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_LONG).show()
             }
         }
 

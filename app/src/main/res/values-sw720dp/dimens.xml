@@ -33,7 +33,8 @@
     <dimen name="cardview_elevation">10dp</dimen>
     <dimen name="cardview_width">0dp</dimen>
     <dimen name="cardview_height">250dp</dimen>
-    <dimen name="cardview_corner_radius">4dp</dimen>
+    <dimen name="cardview_corner_radius">8dp</dimen>
+    <dimen name="inner_cardview_radius">20dp</dimen>
     <dimen name="cardview_image_size">200dp</dimen>
     <dimen name="cardview_talk_title">30sp</dimen>
     <dimen name="cardview_speaker_name">20sp</dimen>

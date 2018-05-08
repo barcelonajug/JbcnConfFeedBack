@@ -17,7 +17,7 @@
         android:title="@string/pref_title_room_name" />
 
     <ListPreference
-        android:defaultValue="vbc"
+        android:defaultValue="Vertical Bar Chart"
         android:entries="@array/pref_chart_type_titles"
         android:entryValues="@array/pref_chart_type_values"
         android:key="@string/chart_type_key"
