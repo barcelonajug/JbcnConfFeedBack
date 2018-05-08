@@ -1,13 +1,16 @@
 package cat.cristina.pep.jbcnconffeedback.fragment
 
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.*
 import android.view.animation.AnimationUtils
 import cat.cristina.pep.jbcnconffeedback.R
 import kotlinx.android.synthetic.main.fragment_vote.*
+
 
 private const val ARG_TALK_ID = "talkId"
 private const val ARG_TALK_TITLE = "talkTitle"
@@ -83,10 +86,23 @@ class VoteFragment : Fragment() {
 
     /* TODO("retore ChooseTalkFragment")  */
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when(item?.itemId) {
+
+        when (item?.itemId) {
             R.id.action_exit -> {
-                Log.d(TAG, "exit")
-                fragmentManager?.popBackStack()
+
+                val alertDialogBuilder = AlertDialog.Builder(context!!, R.style.Base_V7_Theme_AppCompat_Dialog)
+                alertDialogBuilder.setTitle(R.string.alert_title)
+                alertDialogBuilder.setMessage(R.string.alert_message)
+                alertDialogBuilder.setPositiveButton(R.string.alert_positive_button) {
+                    dialog, which ->  fragmentManager?.popBackStack()
+                }
+                alertDialogBuilder.setNegativeButton(R.string.alert_negative_button) {
+                    dialog, which ->
+                }
+                alertDialogBuilder.create().show()
+
+                return true
+
             }
         }
         return true

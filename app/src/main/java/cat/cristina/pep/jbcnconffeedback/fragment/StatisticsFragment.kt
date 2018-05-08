@@ -21,8 +21,10 @@ import com.github.mikephil.charting.listener.ChartTouchListener
 import com.github.mikephil.charting.listener.OnChartGestureListener
 //import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.android.synthetic.main.fragment_statistics.*
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -72,25 +74,22 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
         dialog.setCanceledOnTouchOutside(false);
         dialog.show()
 
-
-
         val firestore = FirebaseFirestore.getInstance()
-        val task = firestore
+        val task: Task<QuerySnapshot> = firestore
                 .collection("Scoring")
-                //.whereEqualTo("score", 5)
                 .get()
 
-                .addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        data = it.result.groupBy {
-                            it.getLong("id_talk")
-                        }
-                        setupGraph()
-                    } else {
-                        dialog.dismiss()
-                        Log.d(TAG, "*** Error *** ${it.exception?.message}")
-                    }
+        task.addOnCompleteListener {
+            if (it.isSuccessful) {
+                data = it.result.groupBy {
+                    it.getLong("id_talk")
                 }
+                setupGraph()
+            } else {
+                dialog.dismiss()
+                Log.d(TAG, "*** Error *** ${it.exception?.message}")
+            }
+        }
     }
 
 

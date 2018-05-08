@@ -1,6 +1,7 @@
 package cat.cristina.pep.jbcnconffeedback.activity
 
 import android.app.FragmentTransaction
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
@@ -64,6 +65,7 @@ class MainActivity :
     private lateinit var speakerTalkDao: Dao<SpeakerTalk, Int>
     private lateinit var requestQueue: RequestQueue
     private lateinit var vibrator: Vibrator
+    private lateinit var dialog: ProgressDialog
 
     lateinit var sharedPreferences: SharedPreferences
 
@@ -80,12 +82,17 @@ class MainActivity :
 
         nav_view.setNavigationItemSelectedListener(this)
 
-        if (isDeviceConnectedToWifiOrData()) {
+        val (connected, reason) = isDeviceConnectedToWifiOrData()
+
+        if (connected) {
             requestQueue = Volley.newRequestQueue(this)
+            requestQueue
             databaseHelper = OpenHelperManager.getHelper(applicationContext, DatabaseHelper::class.java)
-            retrieveSpeakersFromWeb()
+            setup(true)
+            //downloadSpeakers()
         } else {
-            Toast.makeText(applicationContext, "There is no network connection try later.", Toast.LENGTH_LONG).show()
+            setup(false)
+            Toast.makeText(applicationContext, "Working off line: $reason", Toast.LENGTH_LONG).show()
         }
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
@@ -110,25 +117,66 @@ class MainActivity :
 
     }
 
-    private fun retrieveSpeakersFromWeb() {
+    private fun setup(isConnected: Boolean): Unit {
+
+        if (isConnected) {
+            dialog = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT); // this = YourActivity
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            dialog.setMessage(resources.getString(R.string.loading));
+            dialog.setIndeterminate(true);
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.show()
+            downloadSpeakers()
+        } else {
+            /*
+           * Un cop que les dades estan assentades a la base de dades local desde el servidor
+           * posem el fragment.
+           *
+           * */
+            val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
+            switchFragment(chooseTalkFragment, CHOOSE_TALK_FRAGMENT, false)
+        }
+    }
+
+    private fun downloadSpeakers() {
+
 
         val speakersRequest: JsonObjectRequest = JsonObjectRequest(Request.Method.GET, SPEAKERS_URL, null,
                 Response.Listener { response ->
                     Log.d(TAG, "Speakers Response: %s".format(response.toString()))
-                    parseSpeakers(response.toString())
+                    parseAndStoreSpeakers(response.toString())
                 },
                 Response.ErrorListener { error ->
                     Log.d(TAG, error.toString())
                 })
+        speakersRequest.tag = TAG
+        /*
+        * When you call add(), Volley runs one cache processing thread and a pool of network dispatch threads.
+        * When you add a request to the queue, it is picked up by the cache thread and triaged:
+        * if the request can be serviced from cache, the cached response is parsed on the cache
+        * thread and the parsed response is delivered on the main thread.
+        *
+        * If the request cannot be serviced from cache, it is placed on the network queue.
+        *
+        * The first available network thread takes the request from the queue,
+        * performs the HTTP transaction, parses the response on the worker thread,
+        * writes the response to cache, and posts the parsed response back to the main thread for delivery.
+        *
+        * Note that expensive operations like blocking I/O and parsing/decoding are done on worker threads.
+        * You can add a request from any thread, but responses are always delivered on the main thread.
+        *
+        * No bloque el main thread
+        *
+        * */
         requestQueue.add(speakersRequest)
 
     }
 
-    private fun parseSpeakers(speakers: String) {
+    private fun parseAndStoreSpeakers(speakersJson: String) {
 
-        retrieveTalksFromWeb()
+        downloadTalks()
 
-        val json = JSONObject(speakers)
+        val json = JSONObject(speakersJson)
         val items = json.getJSONArray("items")
         speakerDao = databaseHelper.getSpeakerDao()
         val gson = Gson()
@@ -142,25 +190,28 @@ class MainActivity :
             } catch (e: Exception) {
                 Log.e(TAG, "Could not insert speaker ${speaker.id} ${e.message}")
             }
-
         }
     }
 
-    private fun retrieveTalksFromWeb() {
+    private fun downloadTalks() {
 
         val talksRequest = JsonObjectRequest(Request.Method.GET, TALKS_URL, null,
                 Response.Listener { response ->
                     Log.d(TAG, "Talks Response: %s".format(response.toString()))
-                    parseTalks(response.toString())
+                    parseAndStoreTalks(response.toString())
                 },
                 Response.ErrorListener { error ->
                     Log.d(TAG, error.toString())
                 })
+        talksRequest.tag = TAG
         requestQueue.add(talksRequest)
     }
 
-    fun parseTalks(talks: String) {
-        val json = JSONObject(talks)
+    /*
+    * Note that to insert talks into the database speakers need to be present already
+    * */
+    fun parseAndStoreTalks(talksJson: String) {
+        val json = JSONObject(talksJson)
         val items = json.getJSONArray("items")
         talkDao = databaseHelper.getTalkDao()
         speakerTalkDao = databaseHelper.getSpeakerTalkDao()
@@ -184,11 +235,7 @@ class MainActivity :
                 val dao = UtilDAOImpl(applicationContext, databaseHelper)
                 Log.d(TAG, "Looking for ref $speakerRef")
                 val speaker: Speaker = dao.lookupSpeakerByRef(speakerRef)
-                val speakerTalk = SpeakerTalk(
-                        0,
-                        speaker,
-                        talk
-                )
+                val speakerTalk = SpeakerTalk(0, speaker, talk)
                 try {
                     speakerTalkDao.create(speakerTalk)
                     Log.e(TAG, "Speaker-Talk ${speakerTalk.id} created")
@@ -196,25 +243,17 @@ class MainActivity :
                     Log.e(TAG, "Could not insert Speaker-Talk ${speakerTalk.id}")
                 }
             }
-
-
         }
-
-        /*
-        * Un cop que les dades estan assentades a la base de dades local desde el servidor
-        * posem el fragment.
-        *
-        * */
-        val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
-        switchFragment(chooseTalkFragment, CHOOSE_TALK_FRAGMENT, false)
+        dialog.dismiss()
+        setup(false)
     }
 
 
-    private fun isDeviceConnectedToWifiOrData(): Boolean {
+    private fun isDeviceConnectedToWifiOrData(): Pair<Boolean, String> {
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val netInfo = cm.activeNetworkInfo
         //return netInfo != null && netInfo.isConnectedOrConnecting()
-        return netInfo?.isConnectedOrConnecting ?: false
+        return Pair(netInfo?.isConnected ?: false, netInfo.reason)
     }
 
     override fun onBackPressed() {
@@ -296,7 +335,7 @@ class MainActivity :
                     Log.d(TAG, it.message)
                 }
         /* Some user feedback in the form of a light vibration. Oreo. Android 8.0. APIS 26-27 */
-        if(sharedPreferences.getBoolean(PreferenceKeys.VIBRATOR_KEY, true)) {
+        if (sharedPreferences.getBoolean(PreferenceKeys.VIBRATOR_KEY, true)) {
             Log.d(TAG, "vibrando..........")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
@@ -304,6 +343,13 @@ class MainActivity :
                 //deprecated in API 26
                 vibrator.vibrate(250)
             }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (requestQueue != null) {
+            requestQueue?.cancelAll(TAG)
         }
     }
 

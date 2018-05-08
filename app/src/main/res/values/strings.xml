@@ -6,7 +6,7 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-    <string name="action_reload">Reload</string>
+    <string name="action_update">Update</string>
     <string name="action_exit">Exit</string>
 
     <!-- Main Activity -->
@@ -27,6 +27,13 @@
 
     <string name="loading">Loading. Please wait...</string>
     <string name="processing">Processing. Please wait...</string>
+
+    <string name="not_implemented">Not implemented.</string>
+
+    <string name="alert_title">Alert</string>
+    <string name="alert_message">Finish voting?</string>
+    <string name="alert_positive_button">Accept</string>
+    <string name="alert_negative_button">Cancel</string>
 
     <!-- Strings related to Settings -->
 

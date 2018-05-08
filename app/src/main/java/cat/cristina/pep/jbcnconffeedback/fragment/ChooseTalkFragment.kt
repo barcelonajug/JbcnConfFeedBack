@@ -6,13 +6,11 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.*
+import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
-
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent.TalkItem
-import kotlinx.android.synthetic.main.fragment_talk_list.*
 
 /**
  * A fragment representing a list of Items.
@@ -80,24 +78,17 @@ class ChooseTalkFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.action_reload -> {
-                Log.d(TAG, "reload")
-                reload()
+            R.id.action_update -> {
+                update()
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
         }
     }
 
-    /* TODO("Review reload data: should connect to firebase") */
-    private fun reload() {
-        with(list) {
-            layoutManager = when {
-                columnCount <= 1 -> LinearLayoutManager(context)
-                else -> GridLayoutManager(context, columnCount)
-            }
-            adapter = MyTalkRecyclerViewAdapter(talkContent.ITEMS, listener, context)
-        }
+    /* TODO("Cris. Should connect to firebase and upload scores locally stored") */
+    private fun update() {
+      Toast.makeText(context, R.string.not_implemented, Toast.LENGTH_LONG).show()
     }
 
     /**
