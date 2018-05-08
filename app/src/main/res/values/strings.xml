@@ -32,7 +32,7 @@
 
     <string name="vibrator_key">vibrator_key</string>
     <string name="room_key">room_key</string>
-    <string name="another_key">another_key</string>
+    <string name="chart_type_key">chart_type_key</string>
 
     <string name="pref_title_vibrator">Vibrator</string>
     <string name="pref_description_vibrator">Get vibration feedback</string>
@@ -40,18 +40,18 @@
     <string name="pref_title_room_name">Room name</string>
     <string name="pref_default_room_name">No room assigned</string>
 
-    <string name="pref_title_add_friends_to_messages">Back up data</string>
+    <string name="pref_title_chart_type">Chart Type</string>
 
-    <string-array name="pref_example_list_titles">
-        <item>Always</item>
-        <item>When possible</item>
-        <item>Never</item>
+    <string-array name="pref_chart_type_titles">
+        <item>Vertical Bar Chart</item>
+        <item>Horizontal Bar Chart</item>
+        <item>Line Bar Chart</item>
     </string-array>
 
-    <string-array name="pref_example_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
+    <string-array name="pref_chart_type_values">
+        <item>Vertical Bar Chart</item>
+        <item>Horizontal Bar Chart</item>
+        <item>Line Bar Chart</item>
     </string-array>
 
     <!-- Strings related to Settings ends -->

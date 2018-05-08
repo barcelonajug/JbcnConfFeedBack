@@ -47,7 +47,7 @@ class VoteFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_vote, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         tvTalkTitle.text = talkTitle
         tvSpeakerName.text = "By $speakerName"
@@ -55,23 +55,23 @@ class VoteFragment : Fragment() {
 
         ibLove.setOnClickListener {
             ibLove.startAnimation(onTouchAnimation)
-            onButtonPressed(talkId!!.toInt(), VOTE_FIVE)
+            onButtonPressed(talkId.toInt(), VOTE_FIVE)
         }
         ibSmile.setOnClickListener {
             ibSmile.startAnimation(onTouchAnimation)
-            onButtonPressed(talkId!!.toInt(), VOTE_FOUR)
+            onButtonPressed(talkId.toInt(), VOTE_FOUR)
         }
         ibNormal.setOnClickListener {
             ibNormal.startAnimation(onTouchAnimation)
-            onButtonPressed(talkId!!.toInt(), VOTE_THREE)
+            onButtonPressed(talkId.toInt(), VOTE_THREE)
         }
         ibSleepy.setOnClickListener {
             ibSleepy.startAnimation(onTouchAnimation)
-            onButtonPressed(talkId!!.toInt(), VOTE_TWO)
+            onButtonPressed(talkId.toInt(), VOTE_TWO)
         }
         ibCry.setOnClickListener {
             ibCry.startAnimation(onTouchAnimation)
-            onButtonPressed(talkId!!.toInt(), VOTE_ONE)
+            onButtonPressed(talkId.toInt(), VOTE_ONE)
         }
         Log.d(TAG, "talkTitle -> " + talkTitle + ", speakerName -> " + speakerName)
     }
@@ -86,7 +86,7 @@ class VoteFragment : Fragment() {
         when(item?.itemId) {
             R.id.action_exit -> {
                 Log.d(TAG, "exit")
-                fragmentManager.popBackStack()
+                fragmentManager?.popBackStack()
             }
         }
         return true

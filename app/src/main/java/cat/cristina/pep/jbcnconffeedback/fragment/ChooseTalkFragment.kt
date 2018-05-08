@@ -36,7 +36,7 @@ class ChooseTalkFragment : Fragment() {
         arguments?.let {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
         }
-        talkContent = TalkContent(activity.applicationContext)
+        talkContent = TalkContent(activity!!.applicationContext)
         setHasOptionsMenu(true)
     }
 

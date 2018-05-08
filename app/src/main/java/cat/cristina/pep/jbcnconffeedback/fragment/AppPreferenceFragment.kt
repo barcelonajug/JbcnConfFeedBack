@@ -26,10 +26,20 @@ class AppPreferenceFragment :
      */
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.pref_general)
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        val summary = if (sharedPreferences!!.getBoolean(PreferenceKeys.VIBRATOR_KEY, true))
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+
+        var summary = if (sharedPreferences.getBoolean(PreferenceKeys.VIBRATOR_KEY, true))
             "Enabled" else "Disabled"
-        val preference = findPreference(PreferenceKeys.VIBRATOR_KEY)
+        var preference = findPreference(PreferenceKeys.VIBRATOR_KEY)
+        preference.summary = summary
+
+        summary = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, "Undefined")
+        preference = findPreference(PreferenceKeys.ROOM_KEY)
+        preference.summary = summary
+
+        // vbc, hbc, lbc
+        summary = sharedPreferences.getString(PreferenceKeys.CHART_TYPE_KEY, "vbc")
+        preference = findPreference(PreferenceKeys.CHART_TYPE_KEY)
         preference.summary = summary
     }
 
@@ -67,7 +77,17 @@ class AppPreferenceFragment :
             PreferenceKeys.VIBRATOR_KEY -> {
                 val summary = if (sharedPreferences!!.getBoolean(key, true)) "Enabled" else "Disabled"
                 preference.summary = summary
-                sharedPreferences.edit().putBoolean(key, sharedPreferences!!.getBoolean(key, true))
+                sharedPreferences.edit().putBoolean(key, sharedPreferences.getBoolean(key, true))
+            }
+            PreferenceKeys.ROOM_KEY -> {
+                val summary = sharedPreferences!!.getString(key, "Undefined")
+                preference.summary = summary
+                sharedPreferences.edit().putString(key, sharedPreferences.getString(key, "Undefined"))
+            }
+            PreferenceKeys.CHART_TYPE_KEY -> {
+                val summary = sharedPreferences!!.getString(key, "Undefined")
+                preference.summary = summary
+                sharedPreferences.edit().putString(key, sharedPreferences.getString(key, "Undefined"))
             }
         }
     }

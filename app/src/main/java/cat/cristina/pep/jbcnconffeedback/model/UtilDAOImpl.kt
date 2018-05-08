@@ -43,7 +43,7 @@ data class UtilDAOImpl(val context: Context, private val databaseHelper: Databas
     * */
     fun lookupSpeakerByRef(ref: String) : Speaker {
         val qb: QueryBuilder<Speaker, Int> =  databaseHelper.getSpeakerDao().queryBuilder()
-        val where: Where<Speaker, Int> = qb.where()
+        // val where: Where<Speaker, Int> = qb.where()
         val selectArg: SelectArg = SelectArg()
 
         qb.where().eq(Speaker.REF_FIELD_NAME, selectArg)

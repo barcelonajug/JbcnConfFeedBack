@@ -10,19 +10,19 @@
         android:capitalize="words"
         android:defaultValue="@string/pref_default_room_name"
         android:inputType="textCapWords"
-        android:key="example_text"
+        android:key="@string/room_key"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="@string/pref_title_room_name" />
 
     <ListPreference
-        android:defaultValue="-1"
-        android:entries="@array/pref_example_list_titles"
-        android:entryValues="@array/pref_example_list_values"
-        android:key="example_list"
+        android:defaultValue="vbc"
+        android:entries="@array/pref_chart_type_titles"
+        android:entryValues="@array/pref_chart_type_values"
+        android:key="@string/chart_type_key"
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"
-        android:title="@string/pref_title_add_friends_to_messages" />
+        android:title="@string/pref_title_chart_type" />
 
 </PreferenceScreen>

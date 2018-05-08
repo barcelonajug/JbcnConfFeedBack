@@ -249,7 +249,7 @@ class MainActivity :
     }
 
     override fun onChooseTalk(item: TalkContent.TalkItem?) {
-        val voteFragment = VoteFragment.newInstance(item?.talk?.id.toString(), item?.talk?.title!!, item?.speaker?.name)
+        val voteFragment = VoteFragment.newInstance(item?.talk?.id.toString(), item?.talk?.title!!, item.speaker.name)
         switchFragment(voteFragment, VOTE_FRAGMENT)
     }
 

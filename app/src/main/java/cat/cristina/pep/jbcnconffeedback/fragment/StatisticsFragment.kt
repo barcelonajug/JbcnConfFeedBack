@@ -55,7 +55,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
         return inflater.inflate(R.layout.fragment_statistics, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         downloadScoring()
     }
@@ -71,7 +71,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                     it.key
                 }
                 ?.forEach {
-                    labels.add("Talk # ${it.key}")
+                    labels.add("Talk #${it.key}")
                     val avg: Double? = data?.get(it.key)
                             ?.asSequence()
                             ?.map { doc ->
@@ -142,7 +142,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
     /* This method downloads the Scoring collection made up of documents(id_talk, score, date) */
     private fun downloadScoring(): Unit {
         val firestore = FirebaseFirestore.getInstance()
-        val scoring = firestore
+        firestore
                 .collection("Scoring")
                 //.whereEqualTo("score", 5)
                 .get()
