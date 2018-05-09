@@ -13,6 +13,7 @@ import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.PreferenceManager
 import android.util.Log
@@ -295,7 +296,7 @@ class MainActivity :
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
-            R.id.stadistics -> {
+            R.id.statistics -> {
                 val fragment = StatisticsFragment.newInstance()
                 switchFragment(fragment, STATISTICS_FRAGMENT)
             }
@@ -305,7 +306,16 @@ class MainActivity :
                 switchFragment(fragment, STATISTICS_FRAGMENT)
             }
             R.id.about_us -> {
-                Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_LONG).show()
+                val alertDialogBuilder = AlertDialog.Builder(this, R.style.Base_V7_Theme_AppCompat_Dialog)
+                alertDialogBuilder.setTitle(R.string.about_us_title)
+                alertDialogBuilder.setMessage(R.string.about_us_authors)
+                alertDialogBuilder.setPositiveButton(R.string.about_us_positive_button) {
+                    dialog, which ->  dialog.dismiss()
+                }
+                alertDialogBuilder.create().show()
+
+                return true
+
             }
         }
 
