@@ -4,7 +4,7 @@ import com.j256.ormlite.field.DataType
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
 
-@DatabaseTable(tableName = "talks")
+@DatabaseTable(tableName = Talk.TABLE_NAME)
 data class Talk (
         @DatabaseField(generatedId = true, columnName = ID_FIELD_NAME, dataType = DataType.INTEGER)
         val id: Int = 0,
@@ -12,23 +12,23 @@ data class Talk (
         @DatabaseField(columnName = TITLE_FIELD_NAME, dataType = DataType.STRING, canBeNull = false, unique = true)
         var title: String = "",
 
-        @DatabaseField(columnName = ABSTRACT_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
+        @DatabaseField(columnName = ABSTRACT_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
         var description: String = "",
 
-        @DatabaseField(columnName = TYPE_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
+        @DatabaseField(columnName = TYPE_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
         var type: String = "",
 
 //        @DatabaseField(columnName = TAGS_FIELD_NAME, dataType = DataType.SERIALIZABLE, canBeNull = false)
 //        var tags: Array<String>? = null,
 
-        @DatabaseField(columnName = LEVEL_FIELD_NAME, dataType = DataType.STRING, canBeNull = false)
+        @DatabaseField(columnName = LEVEL_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
         var level: String = "",
 
         @DatabaseField(columnName = SPEAKERS_FIELD_NAME, dataType = DataType.SERIALIZABLE, canBeNull = false)
-        var speakers: Array<String>? = null
-) {
+        var speakers: Array<String>? = null) {
 
     companion object TalkData {
+        const val TABLE_NAME = "talks"
         const val ID_FIELD_NAME = "_id"
         const val TITLE_FIELD_NAME = "title"
         const val ABSTRACT_FIELD_NAME = "abstract"

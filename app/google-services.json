@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "121261267288",
+    "firebase_url": "https://jbcnconffeedback.firebaseio.com",
+    "project_id": "jbcnconffeedback",
+    "storage_bucket": "jbcnconffeedback.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:121261267288:android:bc161af65cbb73b3",
+        "android_client_info": {
+          "package_name": "cat.cristina.pep.jbcnconffeedback"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "121261267288-14lssgrul8lojvopfals7uae736sd2tj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDD6wt2Re5LXF3qo7VwZpvf4u_5nHfMn7M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

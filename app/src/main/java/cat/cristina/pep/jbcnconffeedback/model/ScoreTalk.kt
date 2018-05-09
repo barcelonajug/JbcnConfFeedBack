@@ -4,7 +4,9 @@ import com.j256.ormlite.field.DataType
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
 
-@DatabaseTable(tableName = "scoretalk")
+
+/* NOT USED */
+@DatabaseTable(tableName = ScoreTalk.TABLE_NAME)
 data class ScoreTalk (
         @DatabaseField(generatedId = true, columnName = ID_FIELD_NAME, dataType = DataType.INTEGER)
         val id: Int = 0,
@@ -18,6 +20,7 @@ data class ScoreTalk (
 ){
 
     companion object ScoreTalksData {
+        const val TABLE_NAME = "scoretalk"
         const val ID_FIELD_NAME = "_id"
         const val SCORE_ID_FIELD_NAME = "score_id"
         const val TALK_ID_FIELD_NAME = "talk_id"
