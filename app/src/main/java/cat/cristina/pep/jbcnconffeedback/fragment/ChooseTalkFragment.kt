@@ -7,7 +7,6 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
-import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent.TalkItem
@@ -79,17 +78,13 @@ class ChooseTalkFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.action_update -> {
-                update()
+                listener?.onUpdateTalks()
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
         }
     }
 
-    /* TODO("Cris. Should connect to firebase and upload scores locally stored") */
-    private fun update() {
-      Toast.makeText(context, R.string.not_implemented, Toast.LENGTH_LONG).show()
-    }
 
     /**
      * This interface must be implemented by activities that contain this
@@ -103,8 +98,8 @@ class ChooseTalkFragment : Fragment() {
      * for more information.
      */
     interface OnChooseTalkListener {
-        // TODO: Update argument type and name
         fun onChooseTalk(item: TalkItem?)
+        fun onUpdateTalks()
     }
 
     companion object {

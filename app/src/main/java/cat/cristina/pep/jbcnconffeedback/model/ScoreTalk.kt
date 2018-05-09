@@ -4,6 +4,8 @@ import com.j256.ormlite.field.DataType
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
 
+
+/* NOT USED */
 @DatabaseTable(tableName = ScoreTalk.TABLE_NAME)
 data class ScoreTalk (
         @DatabaseField(generatedId = true, columnName = ID_FIELD_NAME, dataType = DataType.INTEGER)

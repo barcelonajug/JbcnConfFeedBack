@@ -12,6 +12,14 @@
     <!-- Main Activity -->
     <string name="talk_title">Talk Title</string>
     <string name="speaker_name">Speaker Name</string>
+    <string name="not_implemented">Not implemented.</string>
+    <string name="sorry_not_connected">Sorry, device not connected.</string>
+    <string name="sorry_no_local_data">Sorry, no local data available.</string>
+    <string name="sorry_no_graphic_available">Sorry, no graphic available.</string>
+    <string name="success_data_updated">All data updated successfully.</string>
+
+
+    <string name="sorry_working_offline">Sorry, working offline.</string>
 
     <!-- CardView -->
     <string name="cardview_talk_title">title</string>
@@ -28,7 +36,7 @@
     <string name="loading">Loading. Please wait...</string>
     <string name="processing">Processing. Please wait...</string>
 
-    <string name="not_implemented">Not implemented.</string>
+
 
     <string name="about_us_title">About Us</string>
     <string name="about_us_authors">#cristiasensiom &amp; #pepmenval</string>

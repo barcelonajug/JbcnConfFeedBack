@@ -1,5 +1,7 @@
 package cat.cristina.pep.jbcnconffeedback.fragment
 
+//import com.github.mikephil.charting.components.Description
+//import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import android.app.ProgressDialog
 import android.content.Context
 import android.graphics.Color
@@ -10,8 +12,9 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
-//import com.github.mikephil.charting.components.Description
+import cat.cristina.pep.jbcnconffeedback.activity.MainActivity
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -19,12 +22,9 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.listener.ChartTouchListener
 import com.github.mikephil.charting.listener.OnChartGestureListener
-//import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
-import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
-import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.android.synthetic.main.fragment_statistics.*
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -41,7 +41,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
     private var param1: String? = null
     private var param2: String? = null
     private var listenerStatistics: OnStatisticsFragmentListener? = null
-    private var data: Map<Long?, List<QueryDocumentSnapshot>>? = null
+    private var dataFromFirestore: Map<Long?, List<QueryDocumentSnapshot>>? = null
     private lateinit var dialog: ProgressDialog
 
 
@@ -67,29 +67,34 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
 
     /* This method downloads the Scoring collection made up of documents(id_talk, score, date) */
     private fun downloadScoring(): Unit {
-        dialog = ProgressDialog(activity, ProgressDialog.THEME_HOLO_LIGHT); // this = YourActivity
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        dialog.setMessage(resources.getString(R.string.loading));
-        dialog.setIndeterminate(true);
-        dialog.setCanceledOnTouchOutside(false);
+
+        if(!(context as MainActivity).isDeviceConnectedToWifiOrData().first) {
+            Toast.makeText(context, R.string.sorry_no_graphic_available, Toast.LENGTH_LONG).show()
+            return
+        }
+
+        dialog = ProgressDialog(activity, ProgressDialog.THEME_HOLO_LIGHT)
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
+        dialog.setMessage(resources.getString(R.string.loading))
+        dialog.isIndeterminate = true
+        dialog.setCanceledOnTouchOutside(false)
         dialog.show()
 
-        val firestore = FirebaseFirestore.getInstance()
-        val task: Task<QuerySnapshot> = firestore
+        FirebaseFirestore.getInstance()
                 .collection("Scoring")
                 .get()
-
-        task.addOnCompleteListener {
-            if (it.isSuccessful) {
-                data = it.result.groupBy {
-                    it.getLong("id_talk")
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        dataFromFirestore = it.result.groupBy {
+                            it.getLong("id_talk")
+                        }
+                        setupGraph()
+                    } else {
+                        dialog.dismiss()
+                        Toast.makeText(context, R.string.sorry_no_graphic_available, Toast.LENGTH_LONG).show()
+                        //Log.d(TAG, "*** Error *** ${it.exception?.message}")
+                    }
                 }
-                setupGraph()
-            } else {
-                dialog.dismiss()
-                Log.d(TAG, "*** Error *** ${it.exception?.message}")
-            }
-        }
     }
 
 
@@ -97,21 +102,20 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
         dialog.setMessage(resources.getString(R.string.processing));
         val labels = ArrayList<String>()
         val entries = ArrayList<BarEntry>()
-        var i: Float = 0.0F
+        var i = 0.0F
 
-        data
+        dataFromFirestore
                 ?.asSequence()
                 ?.sortedBy {
                     it.key
                 }
                 ?.forEach {
                     labels.add("Talk #${it.key}")
-                    val avg: Double? = data?.get(it.key)
+                    val avg: Double? = dataFromFirestore?.get(it.key)
                             ?.asSequence()
                             ?.map { doc ->
                                 doc.get("score") as Long
                             }?.average()
-                    //entries.add(BarEntry(it.key!!.toFloat(), avg!!.toFloat()))
                     entries.add(BarEntry(i++, avg!!.toFloat()))
                 }
 
@@ -119,15 +123,8 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
 
         with(barDataSet) {
             colors = ColorTemplate.COLORFUL_COLORS.asList()
-//        colors = ColorTemplate.JOYFUL_COLORS.asList()
-//        colors = ColorTemplate.LIBERTY_COLORS.asList()
-//        colors = ColorTemplate.MATERIAL_COLORS.asList()
-//        colors = ColorTemplate.PASTEL_COLORS.asList()
-//        colors = ColorTemplate.VORDIPLOM_COLORS.asList()
             barBorderColor = Color.BLACK
-            dialog.dismiss()
         }
-
 
         val barData: BarData = BarData(barDataSet)
 
@@ -153,6 +150,8 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
             notifyDataSetChanged()
             invalidate()
         }
+
+        dialog.dismiss()
 
     }
 

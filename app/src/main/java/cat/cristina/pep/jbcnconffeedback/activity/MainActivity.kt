@@ -5,6 +5,7 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -40,6 +41,8 @@ import com.j256.ormlite.dao.Dao
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import org.json.JSONObject
+import java.util.*
+
 
 private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
 private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/talks.json"
@@ -51,6 +54,8 @@ private const val FIREBASE_COLLECTION_FIELD_1 = "id_talk"
 private const val FIREBASE_COLLECTION_FIELD_2 = "score"
 private const val FIREBASE_COLLECTION_FIELD_3 = "date"
 
+private val TAG = MainActivity::class.java.name
+
 class MainActivity :
         AppCompatActivity(),
         NavigationView.OnNavigationItemSelectedListener,
@@ -58,13 +63,8 @@ class MainActivity :
         VoteFragment.OnVoteFragmentListener,
         StatisticsFragment.OnStatisticsFragmentListener {
 
-    private val TAG = MainActivity::class.java.name
-
     private lateinit var databaseHelper: DatabaseHelper
-    private lateinit var speakerDao: Dao<Speaker, Int>
-    private lateinit var talkDao: Dao<Talk, Int>
-    private lateinit var speakerTalkDao: Dao<SpeakerTalk, Int>
-    private lateinit var requestQueue: RequestQueue
+    private var requestQueue: RequestQueue? = null
     private lateinit var vibrator: Vibrator
     private lateinit var dialog: ProgressDialog
 
@@ -87,17 +87,18 @@ class MainActivity :
 
         if (connected) {
             requestQueue = Volley.newRequestQueue(this)
-            requestQueue
-            databaseHelper = OpenHelperManager.getHelper(applicationContext, DatabaseHelper::class.java)
             setup(true)
             //downloadSpeakers()
+
         } else {
             setup(false)
-            Toast.makeText(applicationContext, "Working off line: $reason", Toast.LENGTH_LONG).show()
+            Toast.makeText(applicationContext, "${resources.getString(R.string.sorry_working_offline)}: $reason", Toast.LENGTH_LONG).show()
         }
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+        databaseHelper = OpenHelperManager.getHelper(applicationContext, DatabaseHelper::class.java)
 
     }
 
@@ -144,7 +145,7 @@ class MainActivity :
 
         val speakersRequest: JsonObjectRequest = JsonObjectRequest(Request.Method.GET, SPEAKERS_URL, null,
                 Response.Listener { response ->
-                    Log.d(TAG, "Speakers Response: %s".format(response.toString()))
+                    //Log.d(TAG, "Speakers Response: %s".format(response.toString()))
                     parseAndStoreSpeakers(response.toString())
                 },
                 Response.ErrorListener { error ->
@@ -169,7 +170,7 @@ class MainActivity :
         * No bloque el main thread
         *
         * */
-        requestQueue.add(speakersRequest)
+        requestQueue?.add(speakersRequest)
 
     }
 
@@ -179,7 +180,7 @@ class MainActivity :
 
         val json = JSONObject(speakersJson)
         val items = json.getJSONArray("items")
-        speakerDao = databaseHelper.getSpeakerDao()
+        val speakerDao: Dao<Speaker, Int> = databaseHelper.getSpeakerDao()
         val gson = Gson()
 
         for (i in 0 until (items.length())) {
@@ -187,7 +188,7 @@ class MainActivity :
             val speaker: Speaker = gson.fromJson(speakerObject.toString(), Speaker::class.java)
             try {
                 speakerDao.create(speaker)
-                Log.e(TAG, "Speaker ${speaker.id} inserted")
+                //Log.e(TAG, "Speaker ${speaker.id} inserted")
             } catch (e: Exception) {
                 Log.e(TAG, "Could not insert speaker ${speaker.id} ${e.message}")
             }
@@ -205,7 +206,7 @@ class MainActivity :
                     Log.d(TAG, error.toString())
                 })
         talksRequest.tag = TAG
-        requestQueue.add(talksRequest)
+        requestQueue?.add(talksRequest)
     }
 
     /*
@@ -214,8 +215,8 @@ class MainActivity :
     fun parseAndStoreTalks(talksJson: String) {
         val json = JSONObject(talksJson)
         val items = json.getJSONArray("items")
-        talkDao = databaseHelper.getTalkDao()
-        speakerTalkDao = databaseHelper.getSpeakerTalkDao()
+        val talkDao: Dao<Talk, Int> = databaseHelper.getTalkDao()
+        val speakerTalkDao: Dao<SpeakerTalk, Int> = databaseHelper.getSpeakerTalkDao()
         val gson = Gson()
 
         for (i in 0 until (items.length())) {
@@ -233,7 +234,7 @@ class MainActivity :
             /* relacionamos cada talk con su speaker/s  */
             for (j in 0 until (talk.speakers!!.size)) {
                 val speakerRef: String = talk.speakers!!.get(j)
-                val dao = UtilDAOImpl(applicationContext, databaseHelper)
+                val dao: UtilDAOImpl = UtilDAOImpl(applicationContext, databaseHelper)
                 Log.d(TAG, "Looking for ref $speakerRef")
                 val speaker: Speaker = dao.lookupSpeakerByRef(speakerRef)
                 val speakerTalk = SpeakerTalk(0, speaker, talk)
@@ -250,11 +251,11 @@ class MainActivity :
     }
 
 
-    private fun isDeviceConnectedToWifiOrData(): Pair<Boolean, String> {
+    public fun isDeviceConnectedToWifiOrData(): Pair<Boolean, String> {
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val netInfo = cm.activeNetworkInfo
+        val netInfo: NetworkInfo? = cm.activeNetworkInfo
         //return netInfo != null && netInfo.isConnectedOrConnecting()
-        return Pair(netInfo?.isConnected ?: false, netInfo.reason)
+        return Pair(netInfo?.isConnected ?: false, netInfo?.reason ?: "No connection available")
     }
 
     override fun onBackPressed() {
@@ -277,20 +278,60 @@ class MainActivity :
         return true
     }
 
+    /*
+    * This far, the main activity is not responding to any menu
+    * */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-//        when (item.itemId) {
-//            R.id.action_reload -> return true
-//            else -> return super.onOptionsItemSelected(item)
-//        }
         return super.onOptionsItemSelected(item)
     }
 
+    /* From onChooseTalk  */
     override fun onChooseTalk(item: TalkContent.TalkItem?) {
         val voteFragment = VoteFragment.newInstance(item?.talk?.id.toString(), item?.talk?.title!!, item.speaker.name)
         switchFragment(voteFragment, VOTE_FRAGMENT)
+    }
+
+    /* From onChooseTalk  */
+    override fun onUpdateTalks() {
+
+        val scoreDao: Dao<Score, Int> = databaseHelper.getScoreDao()
+
+        if(scoreDao.countOf() > 0) {
+
+            if (isDeviceConnectedToWifiOrData().first) {
+
+                Toast.makeText(this, R.string.success_data_updated, Toast.LENGTH_LONG).show()
+
+                val firestore = FirebaseFirestore.getInstance()
+
+                scoreDao.queryForAll().forEach {
+                    val id = it.id
+                    val scoringDoc = mapOf(FIREBASE_COLLECTION_FIELD_1 to it.id_talk,
+                            FIREBASE_COLLECTION_FIELD_2 to it.score,
+                            FIREBASE_COLLECTION_FIELD_3 to it.date)
+
+                    firestore
+                            .collection(FIREBASE_COLLECTION)
+                            .add(scoringDoc)
+                            .addOnSuccessListener {
+                                scoreDao.deleteById(id)
+                                Log.d(TAG, "$scoringDoc updated and removed")
+                            }
+                            .addOnFailureListener {
+                                Log.d(TAG, it.message)
+                            }
+
+                }
+
+            }
+            else { // no connection
+                Toast.makeText(this, R.string.sorry_not_connected, Toast.LENGTH_LONG).show()
+            }
+        }
+        else { // no records
+            Toast.makeText(this, R.string.sorry_no_local_data, Toast.LENGTH_LONG).show()
+        }
+
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -309,8 +350,8 @@ class MainActivity :
                 val alertDialogBuilder = AlertDialog.Builder(this, R.style.Base_V7_Theme_AppCompat_Dialog)
                 alertDialogBuilder.setTitle(R.string.about_us_title)
                 alertDialogBuilder.setMessage(R.string.about_us_authors)
-                alertDialogBuilder.setPositiveButton(R.string.about_us_positive_button) {
-                    dialog, which ->  dialog.dismiss()
+                alertDialogBuilder.setPositiveButton(R.string.about_us_positive_button) { dialog, which ->
+                    dialog.dismiss()
                 }
                 alertDialogBuilder.create().show()
 
@@ -331,22 +372,38 @@ class MainActivity :
     * of data in those fields. However, it's a good idea to use the same fields and data types across
     * multiple documents, so that you can query the documents more easily
     *
+    * Scoring: id_talk, score, date
+    *
     * */
     override fun onVoteFragment(id_talk: Int, score: Int) {
-        val firestore = FirebaseFirestore.getInstance()
-        val scoringDoc = mapOf(FIREBASE_COLLECTION_FIELD_1 to id_talk, FIREBASE_COLLECTION_FIELD_2 to score, FIREBASE_COLLECTION_FIELD_3 to java.util.Date())
-        firestore
-                .collection(FIREBASE_COLLECTION)
-                .add(scoringDoc)
-                .addOnSuccessListener {
-                    Log.d(TAG, "$scoringDoc added")
-                }
-                .addOnFailureListener {
-                    Log.d(TAG, it.message)
-                }
+
+        val scoreDao: Dao<Score, Int> = databaseHelper.getScoreDao()
+
+        if (isDeviceConnectedToWifiOrData().first) {
+            val firestore = FirebaseFirestore.getInstance()
+
+            val scoringDoc = mapOf(FIREBASE_COLLECTION_FIELD_1 to id_talk,
+                    FIREBASE_COLLECTION_FIELD_2 to score,
+                    FIREBASE_COLLECTION_FIELD_3 to java.util.Date())
+
+            firestore
+                    .collection(FIREBASE_COLLECTION)
+                    .add(scoringDoc)
+                    .addOnSuccessListener {
+                        // Log.d(TAG, "$scoringDoc added")
+                    }
+                    .addOnFailureListener {
+                        scoreDao.create(Score(0, id_talk, score, Date()))
+                        // Log.d(TAG, it.message)
+                    }
+        } else {
+            val score = Score(0, id_talk, score, Date())
+            scoreDao.create(score)
+            Log.d(TAG, score.toString())
+        }
+
         /* Some user feedback in the form of a light vibration. Oreo. Android 8.0. APIS 26-27 */
         if (sharedPreferences.getBoolean(PreferenceKeys.VIBRATOR_KEY, true)) {
-            Log.d(TAG, "vibrando..........")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
             } else {
@@ -358,9 +415,8 @@ class MainActivity :
 
     override fun onStop() {
         super.onStop()
-        if (requestQueue != null) {
-            requestQueue?.cancelAll(TAG)
-        }
+        requestQueue?.cancelAll(TAG)
+
     }
 
     /*

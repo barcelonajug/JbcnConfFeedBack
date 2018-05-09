@@ -128,6 +128,7 @@ class VoteFragment : Fragment() {
     }
 
     /**
+     * This method gets called every time a vote is casted
      */
     interface OnVoteFragmentListener {
         fun onVoteFragment(id_talk: Int, score: Int)
