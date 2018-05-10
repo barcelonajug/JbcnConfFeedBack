@@ -1,12 +1,10 @@
 package cat.cristina.pep.jbcnconffeedback.model
 
 import android.content.Context
-import android.util.Log
 import com.j256.ormlite.android.apptools.OpenHelperManager
 import com.j256.ormlite.stmt.PreparedQuery
 import com.j256.ormlite.stmt.QueryBuilder
 import com.j256.ormlite.stmt.SelectArg
-import com.j256.ormlite.stmt.Where
 
 
 private val TAG: String = UtilDAOImpl::class.java.name
@@ -18,7 +16,7 @@ data class UtilDAOImpl(val context: Context, private val databaseHelper: Databas
 
     fun lookupTalks(): List<Talk> = databaseHelper.getTalkDao().queryBuilder().query()
 
-    fun lookupSpeakersForTalk(talk: Talk) : List<Speaker> {
+    fun lookupSpeakersForTalk(talk: Talk): List<Speaker> {
 
         val joinQueryBuilder: QueryBuilder<SpeakerTalk, Int> = databaseHelper
                 .getSpeakerTalkDao().queryBuilder()
@@ -41,8 +39,8 @@ data class UtilDAOImpl(val context: Context, private val databaseHelper: Databas
     * Q2hyaXN0aWFuUG9zdGFjaHJpc3RpYW4ucG9zdGFAZ21haWwuY29t
     *
     * */
-    fun lookupSpeakerByRef(ref: String) : Speaker {
-        val qb: QueryBuilder<Speaker, Int> =  databaseHelper.getSpeakerDao().queryBuilder()
+    fun lookupSpeakerByRef(ref: String): Speaker {
+        val qb: QueryBuilder<Speaker, Int> = databaseHelper.getSpeakerDao().queryBuilder()
         // val where: Where<Speaker, Int> = qb.where()
         val selectArg: SelectArg = SelectArg()
 
@@ -54,10 +52,8 @@ data class UtilDAOImpl(val context: Context, private val databaseHelper: Databas
     }
 
     fun onDestroy() {
-        if (databaseHelper != null) {
-            OpenHelperManager.releaseHelper()
-            databaseHelper.close()
-        }
+        OpenHelperManager.releaseHelper()
+        databaseHelper.close()
     }
 
 }

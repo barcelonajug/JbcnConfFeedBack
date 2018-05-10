@@ -94,10 +94,10 @@ class VoteFragment : Fragment() {
                 alertDialogBuilder.setTitle(R.string.alert_title)
                 alertDialogBuilder.setMessage(R.string.alert_message)
                 alertDialogBuilder.setPositiveButton(R.string.alert_positive_button) {
-                    dialog, which ->  fragmentManager?.popBackStack()
+                    _, _ ->  fragmentManager?.popBackStack()
                 }
                 alertDialogBuilder.setNegativeButton(R.string.alert_negative_button) {
-                    dialog, which ->
+                    _, _ ->
                 }
                 alertDialogBuilder.create().show()
 

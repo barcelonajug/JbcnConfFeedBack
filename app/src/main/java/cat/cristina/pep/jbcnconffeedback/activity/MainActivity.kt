@@ -350,7 +350,7 @@ class MainActivity :
                 val alertDialogBuilder = AlertDialog.Builder(this, R.style.Base_V7_Theme_AppCompat_Dialog)
                 alertDialogBuilder.setTitle(R.string.about_us_title)
                 alertDialogBuilder.setMessage(R.string.about_us_authors)
-                alertDialogBuilder.setPositiveButton(R.string.about_us_positive_button) { dialog, which ->
+                alertDialogBuilder.setPositiveButton(R.string.about_us_positive_button) { dialog, _ ->
                     dialog.dismiss()
                 }
                 alertDialogBuilder.create().show()
@@ -397,9 +397,9 @@ class MainActivity :
                         // Log.d(TAG, it.message)
                     }
         } else {
-            val score = Score(0, id_talk, score, Date())
-            scoreDao.create(score)
-            Log.d(TAG, score.toString())
+            val scoreObj = Score(0, id_talk, score, Date())
+            scoreDao.create(scoreObj)
+            Log.d(TAG, scoreObj.toString())
         }
 
         /* Some user feedback in the form of a light vibration. Oreo. Android 8.0. APIS 26-27 */
