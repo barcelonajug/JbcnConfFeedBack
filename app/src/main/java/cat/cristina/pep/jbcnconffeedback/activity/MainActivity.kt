@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.support.annotation.CallSuper
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
@@ -61,12 +62,14 @@ class MainActivity :
         NavigationView.OnNavigationItemSelectedListener,
         ChooseTalkFragment.OnChooseTalkListener,
         VoteFragment.OnVoteFragmentListener,
+        AppPreferenceFragment.OnAppPreferenceFragmentListener,
         StatisticsFragment.OnStatisticsFragmentListener {
 
     private lateinit var databaseHelper: DatabaseHelper
     private var requestQueue: RequestQueue? = null
     private lateinit var vibrator: Vibrator
     private lateinit var dialog: ProgressDialog
+    private var timer: Timer? = null
 
     lateinit var sharedPreferences: SharedPreferences
 
@@ -413,9 +416,32 @@ class MainActivity :
         }
     }
 
+    @CallSuper
     override fun onStop() {
         super.onStop()
         requestQueue?.cancelAll(TAG)
+        timer?.cancel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+    }
+
+    private fun setupTimer(autoMode: Boolean) {
+        if (autoMode) {
+            timer = Timer("autoMode")
+            timer?.scheduleAtFixedRate(object: TimerTask() {
+                /* The action to be performed by this timer task */
+                override fun run() {
+                    Log.d(TAG, "in timer")
+                }
+
+            }, Date(), 1_000)
+        }
+        else {
+            timer?.cancel()
+            timer = null
+        }
 
     }
 
@@ -425,5 +451,13 @@ class MainActivity :
     override fun onStatisticsFragment(msg: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
+    /*
+    *
+    * */
+    override fun onAppPreferenceFragment(autoMode: Boolean) {
+        setupTimer(autoMode)
+    }
+
 
 }

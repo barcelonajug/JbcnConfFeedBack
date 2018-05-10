@@ -52,15 +52,19 @@
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
-    <string name="vibrator_key">vibrator_key</string>
-    <string name="room_key">room_key</string>
-    <string name="chart_type_key">chart_type_key</string>
+    <string name="pref_vibrator_key">vibrator_key</string>
+    <string name="pref_room_key">room_key</string>
+    <string name="pref_auto_mode_key">auto_mode_key</string>
+    <string name="pref_chart_type_key">chart_type_key</string>
 
     <string name="pref_title_vibrator">Vibrator</string>
     <string name="pref_description_vibrator">Get vibration feedback</string>
 
     <string name="pref_title_room_name">Room name</string>
     <string name="pref_default_room_name">No room assigned</string>
+
+    <string name="pref_title_auto_mode">Auto Mode</string>
+    <string name="pref_description_auto_mode">Voting is triggered automatically</string>
 
     <string name="pref_title_chart_type">Chart Type</string>
     <string name="pref_default_chart_type">Vertical Bar Chart</string>

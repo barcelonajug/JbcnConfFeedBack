@@ -1,8 +1,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <SwitchPreferenceCompat
-        android:defaultValue="true"
-        android:key="@string/vibrator_key"
+        android:defaultValue="false"
+        android:key="@string/pref_vibrator_key"
         android:summary="@string/pref_description_vibrator"
         android:title="@string/pref_title_vibrator" />
 
@@ -10,17 +10,23 @@
         android:capitalize="words"
         android:defaultValue="@string/pref_default_room_name"
         android:inputType="textCapWords"
-        android:key="@string/room_key"
+        android:key="@string/pref_room_key"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="@string/pref_title_room_name" />
 
+    <SwitchPreferenceCompat
+        android:defaultValue="true"
+        android:key="@string/pref_auto_mode_key"
+        android:summary="@string/pref_description_auto_mode"
+        android:title="@string/pref_title_auto_mode" />
+
     <ListPreference
         android:defaultValue="Vertical Bar Chart"
         android:entries="@array/pref_chart_type_titles"
         android:entryValues="@array/pref_chart_type_values"
-        android:key="@string/chart_type_key"
+        android:key="@string/pref_chart_type_key"
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"
         android:title="@string/pref_title_chart_type" />
