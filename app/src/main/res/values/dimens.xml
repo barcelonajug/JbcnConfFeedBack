@@ -39,4 +39,7 @@
     <dimen name="cardview_talk_title">20sp</dimen>
     <dimen name="cardview_speaker_name">15sp</dimen>
 
+    <!-- Welcome Fragment -->
+    <dimen name="welcome_padding">80dp</dimen>
+
 </resources>
