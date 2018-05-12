@@ -57,6 +57,26 @@ private const val FIREBASE_COLLECTION_FIELD_3 = "date"
 
 private val TAG = MainActivity::class.java.name
 
+/*
+* The first time you run or debug your project in Android Studio,
+* the IDE automatically creates the debug keystore and certificate in
+* $HOME/.android/debug.keystore, and sets the keystore and key passwords.
+*
+* At some point I will have to sign the APK with my own certificate
+* because the debug certificate is created by the build tools and is insecure by design,
+* most app stores (including the Google Play Store) will not accept an APK signed with a
+* debug certificate for publishing..
+*
+* keytool -genkey -v -keystore android.keystore \
+-keyalg RSA -keysize 2048 -validity 10000 -alias mendez
+*
+* mendez/valverde
+*
+* keytool -exportcert -list -v \
+-alias androiddebugkey -keystore ~/.android/debug.keystore
+*
+* androiddebugkey/android
+* */
 class MainActivity :
         AppCompatActivity(),
         NavigationView.OnNavigationItemSelectedListener,
