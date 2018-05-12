@@ -6,11 +6,11 @@
         android:fromXScale="1.0"
         android:toXScale="0.90"
         android:fromYScale="1.0"
-        android:toYScale="0.90"
+        android:toYScale="0.75"
         android:pivotX="50%"
         android:pivotY="50%"
         android:repeatCount="1"
         android:repeatMode="reverse"
         android:fillAfter="false"
-        android:duration="500" />
+        android:duration="250" />
 </set>

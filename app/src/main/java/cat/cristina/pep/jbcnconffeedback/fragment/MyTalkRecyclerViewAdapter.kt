@@ -174,11 +174,18 @@ class MyTalkRecyclerViewAdapter(
                 })
                 .fitCenter()
                 .into(holder.mSpeakerImageView)
-        if (context.resources.configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK  < Configuration.SCREENLAYOUT_SIZE_LARGE) {
-            holder.mTitleView.text = if (item.talk.title.length > 35) item.talk.title.substring(0, 35).let {
 
-                "$it..."
-            } else item.talk.title
+        // Small screens
+        if (context.resources.configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK < Configuration.SCREENLAYOUT_SIZE_LARGE) {
+            holder.mTitleView.text =
+                    if (item.talk.title.length > 35) item.talk.title.substring(0, 35).let {
+                        "$it..."
+                    } else item.talk.title
+        } else { // Big screens
+            holder.mTitleView.text =
+                    if (item.talk.title.length > 60) item.talk.title.substring(0, 60).let {
+                        "$it..."
+                    } else item.talk.title
         }
         holder.mSpeakerView.text = item.speaker.name
         with(holder.mView) {
