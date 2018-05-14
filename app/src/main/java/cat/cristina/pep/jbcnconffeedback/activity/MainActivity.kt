@@ -39,9 +39,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import com.j256.ormlite.android.apptools.OpenHelperManager
 import com.j256.ormlite.dao.Dao
+import com.opencsv.CSVWriter
+import com.opencsv.bean.ColumnPositionMappingStrategy
+import com.opencsv.bean.StatefulBeanToCsvBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import org.json.JSONObject
+import java.io.FileWriter
 import java.util.*
 
 
@@ -319,7 +323,7 @@ class MainActivity :
 
         val scoreDao: Dao<Score, Int> = databaseHelper.getScoreDao()
 
-        if(scoreDao.countOf() > 0) {
+        if (scoreDao.countOf() > 0) {
 
             if (isDeviceConnectedToWifiOrData().first) {
 
@@ -346,12 +350,10 @@ class MainActivity :
 
                 }
 
-            }
-            else { // no connection
+            } else { // no connection
                 Toast.makeText(this, R.string.sorry_not_connected, Toast.LENGTH_LONG).show()
             }
-        }
-        else { // no records
+        } else { // no records
             Toast.makeText(this, R.string.sorry_no_local_data, Toast.LENGTH_LONG).show()
         }
 
@@ -443,22 +445,41 @@ class MainActivity :
         timer?.cancel()
     }
 
-    override fun onResume() {
-        super.onResume()
+
+    /*
+    * CSV From list of objects
+    *
+    * */
+    private fun createCVSFromStatistics(): Unit {
+        data class Statistic(val id: Long, val score: Int)
+
+        val customers = Arrays.asList(Statistic(1, 3), Statistic(1, 2))
+        val fileWriter = FileWriter("statistics.csv")
+
+        val mappingStrategy = ColumnPositionMappingStrategy<Statistic>().apply {
+            type = Statistic::class.java
+            setColumnMapping("id", "score")
+        }
+
+        var beanToCsv = StatefulBeanToCsvBuilder<Statistic>(fileWriter)
+                .withMappingStrategy(mappingStrategy)
+                .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
+                .build()
+
+        beanToCsv.write(customers)
     }
 
     private fun setupTimer(autoMode: Boolean) {
         if (autoMode) {
             timer = Timer("autoMode")
-            timer?.scheduleAtFixedRate(object: TimerTask() {
+            timer?.scheduleAtFixedRate(object : TimerTask() {
                 /* The action to be performed by this timer task */
                 override fun run() {
                     Log.d(TAG, "in timer")
                 }
 
             }, Date(), 1_000)
-        }
-        else {
+        } else {
             timer?.cancel()
             timer = null
         }
