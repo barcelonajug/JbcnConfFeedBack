@@ -18,15 +18,14 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.PreferenceManager
+import android.support.v7.preference.PreferenceRecyclerViewAccessibilityDelegate
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Switch
 import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
-import cat.cristina.pep.jbcnconffeedback.fragment.AppPreferenceFragment
-import cat.cristina.pep.jbcnconffeedback.fragment.ChooseTalkFragment
-import cat.cristina.pep.jbcnconffeedback.fragment.StatisticsFragment
-import cat.cristina.pep.jbcnconffeedback.fragment.VoteFragment
+import cat.cristina.pep.jbcnconffeedback.fragment.*
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
 import cat.cristina.pep.jbcnconffeedback.model.*
 import cat.cristina.pep.jbcnconffeedback.utils.PreferenceKeys
@@ -87,7 +86,8 @@ class MainActivity :
         ChooseTalkFragment.OnChooseTalkListener,
         VoteFragment.OnVoteFragmentListener,
         AppPreferenceFragment.OnAppPreferenceFragmentListener,
-        StatisticsFragment.OnStatisticsFragmentListener {
+        StatisticsFragment.OnStatisticsFragmentListener,
+        WelcomeFragment.OnWelcomeFragmentListener {
 
     private lateinit var databaseHelper: DatabaseHelper
     private var requestQueue: RequestQueue? = null
@@ -162,8 +162,15 @@ class MainActivity :
            * posem el fragment.
            *
            * */
-            val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
-            switchFragment(chooseTalkFragment, CHOOSE_TALK_FRAGMENT, false)
+            val autoMode: Boolean = sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, true)
+            if (autoMode) {
+                val chooseTalkFragment = WelcomeFragment.newInstance("","")
+                switchFragment(chooseTalkFragment, CHOOSE_TALK_FRAGMENT, false)
+                setupTimer(true)
+            } else {
+                val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
+                switchFragment(chooseTalkFragment, CHOOSE_TALK_FRAGMENT, false)
+            }
         }
     }
 
@@ -476,9 +483,12 @@ class MainActivity :
                 /* The action to be performed by this timer task */
                 override fun run() {
                     Log.d(TAG, "in timer")
+                    switchFragment(VoteFragment.newInstance("1", "Whatever title", "Whatever speaker"), "Tag", false)
+                    Thread.sleep(10_000)
+                    switchFragment(WelcomeFragment.newInstance("",""), "tag", false)
                 }
 
-            }, Date(), 1_000)
+            }, Date(), 5_000)
         } else {
             timer?.cancel()
             timer = null
@@ -500,5 +510,7 @@ class MainActivity :
         setupTimer(autoMode)
     }
 
+    override fun onWelcomeFragment(msg: String) {
+    }
 
 }
