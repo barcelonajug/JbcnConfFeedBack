@@ -1,14 +1,16 @@
 package cat.cristina.pep.jbcnconffeedback.fragment
 
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.*
 import android.view.animation.AnimationUtils
 import cat.cristina.pep.jbcnconffeedback.R
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.fragment_vote.*
 
 
@@ -42,6 +44,10 @@ class VoteFragment : Fragment() {
             speakerName = it.getString(ARG_SPEAKER_NAME)
         }
         setHasOptionsMenu(true)
+
+        activity?.toolbar?.setNavigationIcon(null)
+        activity?.drawer_layout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -125,6 +131,8 @@ class VoteFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         listener = null
+        activity?.toolbar?.setNavigationIcon(R.drawable.hamburger_icon_white)
+        activity?.drawer_layout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
     }
 
     /**
