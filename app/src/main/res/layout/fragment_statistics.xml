@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".fragment.StatisticsFragment">
 
-    <com.github.mikephil.charting.charts.BarChart
+    <com.github.mikephil.charting.charts.HorizontalBarChart
         android:id="@+id/barChart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
