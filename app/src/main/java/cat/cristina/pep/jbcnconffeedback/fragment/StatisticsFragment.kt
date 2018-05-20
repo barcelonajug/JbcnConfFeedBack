@@ -26,6 +26,7 @@ import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import kotlinx.android.synthetic.main.fragment_statistics.*
+import java.util.stream.Collectors
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
@@ -88,7 +89,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                         dataFromFirestore = it.result.groupBy {
                             it.getLong("id_talk")
                         }
-                        setupGraph()
+                        setupGraphTop10Talks()
                     } else {
                         dialog.dismiss()
                         Toast.makeText(context, R.string.sorry_no_graphic_available, Toast.LENGTH_LONG).show()
@@ -96,7 +97,6 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                     }
                 }
     }
-
 
     private fun setupGraph() {
         dialog.setMessage(resources.getString(R.string.processing));
@@ -153,6 +153,86 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
 
         dialog.dismiss()
 
+    }
+
+    private fun setupGraphTop10Talks() {
+        dialog.setMessage(resources.getString(R.string.processing));
+        val labels = ArrayList<String>()
+        val entries = ArrayList<BarEntry>()
+        var i = 0.0F
+
+        dataFromFirestore
+                ?.asSequence()
+                ?.sortedBy {
+                    it.key
+                }
+                ?.forEach {
+                    labels.add("Talk jhgkg kgkhg hkghg #${it.key}")
+                    //labels.add("#${i}")
+                    val avg: Double? = dataFromFirestore?.get(it.key)
+                            ?.asSequence()
+                            ?.map { doc ->
+                                doc.get("score") as Long
+                            }?.average()
+                    entries.add(BarEntry(i++, avg!!.toFloat()))
+                }
+
+        val bestTalks = getBestTenTalks(entries)
+
+        val barDataSet: BarDataSet = BarDataSet(bestTalks, "Score")
+
+        with(barDataSet) {
+            colors = ColorTemplate.COLORFUL_COLORS.asList()
+            barBorderColor = Color.BLACK
+        }
+
+        val barData: BarData = BarData(barDataSet)
+
+        with(barChart) {
+            data = barData
+            //xAxis.valueFormatter = IndexAxisValueFormatter(labels) as IAxisValueFormatter?
+            xAxis.textSize = 24.0F
+            xAxis.setDrawLabels(true)
+            xAxis.position = XAxis.XAxisPosition.BOTTOM_INSIDE
+            xAxis.xOffset = 300.0F
+            xAxis.yOffset = 100.0F
+
+            //xAxis.labelCount = labels.size
+            fitScreen()
+            description.isEnabled = true
+            //setDrawBarShadow(true)
+            //setDrawValueAboveBar(true)
+            //setFitBars(true)
+            setBorderColor(Color.BLACK)
+            setTouchEnabled(true)
+            // onChartGestureListener = this@StatisticsFragment
+            animateY(1_000)
+            legend.isEnabled = false
+            legend.textColor = Color.GRAY
+            legend.textSize = 15F
+
+            notifyDataSetChanged()
+            invalidate()
+        }
+
+        dialog.dismiss()
+
+    }
+
+    private fun getBestTenTalks(entries: ArrayList<BarEntry>): MutableList<BarEntry>? {
+        val ordered: MutableList<BarEntry> = entries
+                .stream()
+                .sorted { o1, o2 -> if(o1.y < o2.y) 1 else if (o1.y == o2.y) 0 else -1 }
+                .collect(Collectors.toList())
+        val limit: MutableList<BarEntry>? = ordered.stream().limit(10).collect(Collectors.toList())
+        var i = 0.0F
+        for (entry in limit!!.iterator()) {
+            val id = entry.x
+            // buscar titol
+            entry.x = i++
+
+        }
+        return limit
     }
 
     fun onButtonPressed(msg: String) {
