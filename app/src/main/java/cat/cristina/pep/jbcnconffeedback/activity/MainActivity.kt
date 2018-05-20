@@ -313,7 +313,8 @@ class MainActivity :
     }
 
     /*
-    * This far, the main activity is not responding to any menu
+    * This far, the main activity is not responding to any menu this method is so redundant.
+    * Keep it for future use
     * */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return super.onOptionsItemSelected(item)
