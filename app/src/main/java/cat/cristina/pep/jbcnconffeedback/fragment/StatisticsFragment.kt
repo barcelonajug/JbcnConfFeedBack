@@ -15,17 +15,23 @@ import android.view.ViewGroup
 import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.activity.MainActivity
+import cat.cristina.pep.jbcnconffeedback.model.DatabaseHelper
+import cat.cristina.pep.jbcnconffeedback.model.Talk
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.listener.ChartTouchListener
 import com.github.mikephil.charting.listener.OnChartGestureListener
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.j256.ormlite.android.apptools.OpenHelperManager
+import com.j256.ormlite.dao.Dao
 import kotlinx.android.synthetic.main.fragment_statistics.*
+import java.util.stream.Collectors
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
@@ -43,6 +49,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
     private var listenerStatistics: OnStatisticsFragmentListener? = null
     private var dataFromFirestore: Map<Long?, List<QueryDocumentSnapshot>>? = null
     private lateinit var dialog: ProgressDialog
+    private lateinit var databaseHelper: DatabaseHelper
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +59,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
             param2 = it.getString(ARG_PARAM2)
         }
         setHasOptionsMenu(true)
+        databaseHelper = OpenHelperManager.getHelper(activity, DatabaseHelper::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -68,7 +76,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
     /* This method downloads the Scoring collection made up of documents(id_talk, score, date) */
     private fun downloadScoring(): Unit {
 
-        if(!(context as MainActivity).isDeviceConnectedToWifiOrData().first) {
+        if (!(context as MainActivity).isDeviceConnectedToWifiOrData().first) {
             Toast.makeText(context, R.string.sorry_no_graphic_available, Toast.LENGTH_LONG).show()
             return
         }
@@ -88,7 +96,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                         dataFromFirestore = it.result.groupBy {
                             it.getLong("id_talk")
                         }
-                        setupGraph()
+                        setupGraphTopNTalks(10L)
                     } else {
                         dialog.dismiss()
                         Toast.makeText(context, R.string.sorry_no_graphic_available, Toast.LENGTH_LONG).show()
@@ -96,7 +104,6 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                     }
                 }
     }
-
 
     private fun setupGraph() {
         dialog.setMessage(resources.getString(R.string.processing));
@@ -110,7 +117,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                     it.key
                 }
                 ?.forEach {
-                    labels.add("Talk #${it.key}")
+                    labels.add("Talk jhgkg kgkhg hkghg #${it.key}")
                     val avg: Double? = dataFromFirestore?.get(it.key)
                             ?.asSequence()
                             ?.map { doc ->
@@ -146,6 +153,93 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
             legend.isEnabled = false
             legend.textColor = Color.GRAY
             legend.textSize = 15F
+
+            notifyDataSetChanged()
+            invalidate()
+        }
+
+        dialog.dismiss()
+
+    }
+
+    private fun setupGraphTopNTalks(limit: Long) {
+        dialog.setMessage(resources.getString(R.string.processing))
+        // Pair<title, avg>
+        val titleAndAvg = ArrayList<Pair<String, Double>>()
+        val labels = ArrayList<String>()
+        val entries = ArrayList<BarEntry>()
+        var index = 0.0F
+        val talkDao: Dao<Talk, Int> = databaseHelper.getTalkDao()
+
+        dataFromFirestore
+                ?.asSequence()
+                ?.sortedBy {
+                    it.key
+                }
+                ?.forEach {
+                    val avg: Double? = dataFromFirestore?.get(it.key)
+                            ?.asSequence()
+                            ?.map { doc ->
+                                doc.get("score") as Long
+                            }?.average()
+                    var title: String = talkDao.queryForId(it.key?.toInt()).title
+                    titleAndAvg.add(Pair(title, avg!!))
+                    // Log.d(TAG, "************************************ $title $avg")
+                }
+
+        val firstTen = titleAndAvg
+                .stream()
+                .sorted { pair1, pair2 -> if (pair1.second < pair2.second) 1 else if (pair1.second == pair2.second) 0 else -1 }
+                .limit(limit)
+                .collect(Collectors.toList())
+
+        for (pair: Pair<String, Double> in firstTen) {
+            entries.add(BarEntry(index++, pair.second.toFloat()))
+            var title: String = pair.first.let {
+                if (it.length > 60) StringBuilder(it.substring(0, 60))
+                        .append(" ...")
+                        .toString()
+                else it
+            }
+            //title = StringBuilder(title).append(" (${String.format("%.2f", pair.second)})").toString()
+            labels.add(title)
+        }
+
+        val barDataSet: BarDataSet = BarDataSet(entries, "Score")
+
+        with(barDataSet) {
+            colors = ColorTemplate.COLORFUL_COLORS.asList()
+            barBorderColor = Color.BLACK
+        }
+
+        val barData = BarData(barDataSet)
+        barData.setDrawValues(true)
+        barData.setValueTextColor(Color.BLACK)
+        barData.setValueTextSize(24.0F)
+
+        with(barChart) {
+            data = barData
+            xAxis.valueFormatter = IndexAxisValueFormatter(labels) as IAxisValueFormatter?
+            xAxis.textSize = 32.0F
+            xAxis.setDrawLabels(true)
+            xAxis.position = XAxis.XAxisPosition.BOTTOM_INSIDE
+            xAxis.xOffset = 850.0F
+            xAxis.yOffset = 100.0F
+            xAxis.setLabelCount(firstTen!!.size, false)
+            axisLeft.axisMinimum = 0.0F
+            axisLeft.axisMaximum = 5.0F
+            fitScreen()
+            description.isEnabled = true
+            setDrawBarShadow(true)
+            //setDrawValueAboveBar(true)
+            //setFitBars(true)
+            setBorderColor(Color.BLACK)
+            setTouchEnabled(true)
+            // onChartGestureListener = this@StatisticsFragment
+            animateXY(2_500, 5_000)
+            legend.isEnabled = false
+//            legend.textColor = Color.GRAY
+//            legend.textSize = 15F
 
             notifyDataSetChanged()
             invalidate()
