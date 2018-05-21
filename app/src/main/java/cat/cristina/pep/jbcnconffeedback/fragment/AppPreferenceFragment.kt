@@ -23,7 +23,7 @@ class AppPreferenceFragment :
      */
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.pref_general)
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
 
         var summary = if (sharedPreferences.getBoolean(PreferenceKeys.VIBRATOR_KEY, true))
             "On" else "Off"
@@ -42,6 +42,10 @@ class AppPreferenceFragment :
         // Vertical/Horizontal/Lineal Bar Chart
         summary = sharedPreferences.getString(PreferenceKeys.CHART_TYPE_KEY, "Vertical Bar Chart")
         preference = findPreference(PreferenceKeys.CHART_TYPE_KEY)
+        preference.summary = summary
+
+        summary = sharedPreferences.getString(PreferenceKeys.EMAIL, resources.getString(R.string.pref_default_email_address))
+        preference = findPreference(PreferenceKeys.EMAIL)
         preference.summary = summary
     }
 
@@ -114,6 +118,11 @@ class AppPreferenceFragment :
             }
             PreferenceKeys.CHART_TYPE_KEY -> {
                 val summary = sharedPreferences!!.getString(key, "Vertical Bar Chart")
+                preference.summary = summary
+                sharedPreferences.edit().putString(key, summary).commit()
+            }
+            PreferenceKeys.EMAIL -> {
+                val summary = sharedPreferences!!.getString(key, resources.getString(R.string.pref_default_email_address))
                 preference.summary = summary
                 sharedPreferences.edit().putString(key, summary).commit()
             }

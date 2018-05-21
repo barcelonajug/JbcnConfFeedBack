@@ -56,6 +56,7 @@
     <string name="pref_room_key">room_key</string>
     <string name="pref_auto_mode_key">auto_mode_key</string>
     <string name="pref_chart_type_key">chart_type_key</string>
+    <string name="pref_email_key">email_key</string>
 
     <string name="pref_title_vibrator">Vibrator</string>
     <string name="pref_description_vibrator">Get vibration feedback</string>
@@ -68,6 +69,9 @@
 
     <string name="pref_title_chart_type">Chart Type</string>
     <string name="pref_default_chart_type">Vertical Bar Chart</string>
+
+    <string name="pref_email_address">Email</string>
+    <string name="pref_default_email_address">cristina.asensio.munoz@gmail.com</string>
 
     <string-array name="pref_chart_type_titles">
         <item>Vertical Bar Chart</item>
