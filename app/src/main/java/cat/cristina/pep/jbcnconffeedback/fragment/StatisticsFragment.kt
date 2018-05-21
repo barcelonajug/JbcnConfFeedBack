@@ -164,6 +164,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
 
     private fun setupGraphTopNTalks(limit: Long) {
         dialog.setMessage(resources.getString(R.string.processing))
+        // Pair<title, avg>
         val titleAndAvg = ArrayList<Pair<String, Double>>()
         val labels = ArrayList<String>()
         val entries = ArrayList<BarEntry>()
@@ -183,8 +184,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                             }?.average()
                     var title: String = talkDao.queryForId(it.key?.toInt()).title
                     titleAndAvg.add(Pair(title, avg!!))
-                    Log.d(TAG, "************************************ $title $avg")
-                    //entries.add(BarEntry(index++, avg!!.toFloat()))
+                    // Log.d(TAG, "************************************ $title $avg")
                 }
 
         val firstTen = titleAndAvg
