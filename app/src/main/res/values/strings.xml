@@ -17,6 +17,8 @@
     <string name="sorry_no_local_data">Sorry, no local data available.</string>
     <string name="sorry_no_graphic_available">Sorry, no graphic available.</string>
     <string name="success_data_updated">All data updated successfully.</string>
+    <string name="email_subject">Jbcn Conf Stadistics CSV</string>
+    <string name="email_message">This is the CSV with all the data related to stadistics</string>
 
 
     <string name="sorry_working_offline">Sorry, working offline.</string>
@@ -29,7 +31,7 @@
     <!-- Lateral Menu -->
     <string name="menu_statistics">Statistics</string>
     <string name="menu_settings">Settings</string>
-    <string name="menu_email">Send csv</string>
+    <string name="menu_email">Send CSV</string>
     <string name="menu_refresh">Refresh</string>
     <string name="menu_about_us">About us</string>
     <string name="title_activity_settings">Settings</string>

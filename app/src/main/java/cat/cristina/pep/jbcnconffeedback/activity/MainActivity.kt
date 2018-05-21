@@ -3,6 +3,7 @@ package cat.cristina.pep.jbcnconffeedback.activity
 import android.app.FragmentTransaction
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
@@ -379,7 +380,16 @@ class MainActivity :
                 alertDialogBuilder.create().show()
 
                 return true
+            }
+            R.id.email -> {
+                var to = arrayOf(sharedPreferences.getString(PreferenceKeys.EMAIL,""))
 
+                val emailIntent = Intent(Intent.ACTION_SEND)
+                emailIntent.type = "text/html"
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, to)
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.email_subject))
+                emailIntent.putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.email_message))
+                startActivity(emailIntent)
             }
         }
 
