@@ -61,7 +61,7 @@
     <string name="pref_description_vibrator">Get vibration feedback</string>
 
     <string name="pref_title_room_name">Room name</string>
-    <string name="pref_default_room_name">No room assigned</string>
+    <string name="pref_default_room_name">Room Not Assigned</string>
 
     <string name="pref_title_auto_mode">Auto Mode</string>
     <string name="pref_description_auto_mode">Voting is triggered automatically</string>

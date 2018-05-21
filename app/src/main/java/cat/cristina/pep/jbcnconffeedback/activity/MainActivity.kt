@@ -18,11 +18,9 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.PreferenceManager
-import android.support.v7.preference.PreferenceRecyclerViewAccessibilityDelegate
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Switch
 import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.fragment.*
@@ -94,6 +92,8 @@ class MainActivity :
     private lateinit var vibrator: Vibrator
     private lateinit var dialog: ProgressDialog
     private var timer: Timer? = null
+    private lateinit var roomName: String
+    private var autoMode: Boolean = false
 
     lateinit var sharedPreferences: SharedPreferences
 
@@ -162,15 +162,16 @@ class MainActivity :
            * posem el fragment.
            *
            * */
-            val autoMode: Boolean = sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, true)
+            autoMode = sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
             if (autoMode) {
-                val chooseTalkFragment = WelcomeFragment.newInstance("","")
+                val chooseTalkFragment = WelcomeFragment.newInstance("", "")
                 switchFragment(chooseTalkFragment, CHOOSE_TALK_FRAGMENT, false)
                 setupTimer(true)
             } else {
                 val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
                 switchFragment(chooseTalkFragment, CHOOSE_TALK_FRAGMENT, false)
             }
+            roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
         }
     }
 
@@ -258,9 +259,11 @@ class MainActivity :
             val talk: Talk = gson.fromJson(talkObject.toString(), Talk::class.java)
 
             try {
+                /* TODO("Delete this line") */
+                talk.scheduleId = generateScheduleId()
                 /* Guardamos cada talk */
                 talkDao.create(talk)
-                Log.e(TAG, "Talk ${talk.id} created")
+                Log.e(TAG, "Talk ${talk.toString()} created")
             } catch (e: Exception) {
                 Log.e(TAG, "Could not insert talk ${talk.id}")
             }
@@ -282,6 +285,19 @@ class MainActivity :
         }
         dialog.dismiss()
         setup(false)
+    }
+
+    /* Format: #MON-TC1-SE1  */
+    private fun generateScheduleId(): String {
+        val days = listOf<String>("MON", "TUE", "WED")
+        val randomDay = Random().nextInt(3)
+        val randomRoom = Random().nextInt(6) + 1
+        val randomSession =
+                if (randomDay == 0) Random().nextInt(7) + 1
+                else if (randomDay == 1) Random().nextInt(8) + 1
+                else Random().nextInt(2) + 1
+
+        return "#${days[randomDay]}-TC$randomRoom-SE$randomSession"
     }
 
 
@@ -479,6 +495,12 @@ class MainActivity :
 
     private fun setupTimer(autoMode: Boolean) {
         if (autoMode) {
+            if (roomName == resources.getString(R.string.pref_default_room_name)) {
+                Toast.makeText(this, "Room not set.", Toast.LENGTH_LONG).show()
+                sharedPreferences.edit().putBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
+                return
+            }
+            // TODO("Read talks from today and this room  then setup timer")
             timer = Timer("autoMode")
             timer?.scheduleAtFixedRate(object : TimerTask() {
                 /* The action to be performed by this timer task */
@@ -486,7 +508,7 @@ class MainActivity :
                     Log.d(TAG, "in timer")
                     switchFragment(VoteFragment.newInstance("1", "Whatever title", "Whatever speaker"), "Tag", false)
                     Thread.sleep(10_000)
-                    switchFragment(WelcomeFragment.newInstance("",""), "tag", false)
+                    switchFragment(WelcomeFragment.newInstance("", ""), "tag", false)
                 }
 
             }, Date(), 5_000)
