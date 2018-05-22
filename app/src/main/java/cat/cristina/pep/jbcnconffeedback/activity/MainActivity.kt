@@ -94,6 +94,8 @@ class MainActivity :
     private var timer: Timer? = null
     private lateinit var roomName: String
     private var autoMode: Boolean = false
+    // TODO("Delete in production")
+    private val setOfScheduleIds: MutableSet<String> = mutableSetOf()
 
     lateinit var sharedPreferences: SharedPreferences
 
@@ -126,6 +128,7 @@ class MainActivity :
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         databaseHelper = OpenHelperManager.getHelper(applicationContext, DatabaseHelper::class.java)
+        generateScheduleId()
 
     }
 
@@ -260,7 +263,7 @@ class MainActivity :
 
             try {
                 /* TODO("Delete this line") */
-                talk.scheduleId = generateScheduleId()
+                talk.scheduleId = getRandomScheduleId()
                 /* Guardamos cada talk */
                 talkDao.create(talk)
                 Log.e(TAG, "Talk ${talk.toString()} created")
@@ -287,17 +290,38 @@ class MainActivity :
         setup(false)
     }
 
-    /* Format: #MON-TC1-SE1  */
-    private fun generateScheduleId(): String {
-        val days = listOf<String>("MON", "TUE", "WED")
-        val randomDay = Random().nextInt(3)
-        val randomRoom = Random().nextInt(6) + 1
-        val randomSession =
-                if (randomDay == 0) Random().nextInt(7) + 1
-                else if (randomDay == 1) Random().nextInt(8) + 1
-                else Random().nextInt(2) + 1
+    /*
+    * TODO("Delete in production")
+    *
+    * Format: #MON-TC1-SE1
+    *
+    * */
+    private fun generateScheduleId(): Unit {
 
-        return "#${days[randomDay]}-TC$randomRoom-SE$randomSession"
+        for (room in 1..6) {
+            for (session in 1..7) {
+                setOfScheduleIds.add("#MON-TC$room-SE$session")
+            }
+        }
+        for (room in 1..6) {
+            for (session in 1..8) {
+                setOfScheduleIds.add("#TUE-TC$room-SE$session")
+            }
+        }
+        for (room in 1..2) {
+            for (session in 1..2) {
+                setOfScheduleIds.add("#WED-TC$room-SE$session")
+            }
+        }
+
+    }
+
+    /* TODO("Delete in production")  */
+    private fun getRandomScheduleId(): String {
+        val random = Random().nextInt(setOfScheduleIds.size)
+        val scheduleId = setOfScheduleIds.elementAt(random)
+        setOfScheduleIds.remove(scheduleId)
+        return scheduleId
     }
 
 
@@ -500,7 +524,7 @@ class MainActivity :
                 sharedPreferences.edit().putBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
                 return
             }
-            // TODO("Read talks from today and this room  then setup timer")
+            // TODO("Read talks from today and this room then setup timer")
             timer = Timer("autoMode")
             timer?.scheduleAtFixedRate(object : TimerTask() {
                 /* The action to be performed by this timer task */
