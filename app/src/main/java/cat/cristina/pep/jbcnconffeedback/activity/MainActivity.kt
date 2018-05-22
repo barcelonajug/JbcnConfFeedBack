@@ -27,7 +27,7 @@ import cat.cristina.pep.jbcnconffeedback.fragment.*
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
 import cat.cristina.pep.jbcnconffeedback.model.*
 import cat.cristina.pep.jbcnconffeedback.utils.PreferenceKeys
-import cat.cristina.pep.jbcnconffeedback.utils.SeasonsTimes
+import cat.cristina.pep.jbcnconffeedback.utils.SessionsTimes
 import cat.cristina.pep.jbcnconffeedback.utils.TalksLocations
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -43,10 +43,14 @@ import com.opencsv.bean.ColumnPositionMappingStrategy
 import com.opencsv.bean.StatefulBeanToCsvBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import org.apache.commons.lang3.mutable.Mutable
 import org.json.JSONObject
 import java.io.FileWriter
-import java.time.LocalDateTime
 import java.util.*
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 
 private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
@@ -94,9 +98,13 @@ class MainActivity :
     private var requestQueue: RequestQueue? = null
     private lateinit var vibrator: Vibrator
     private lateinit var dialog: ProgressDialog
-    private var timer: Timer? = null
+    // private val scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
+    private val scheduledExecutorService = Executors.newScheduledThreadPool(2)
+    private val scheduledFutures = mutableListOf<ScheduledFuture<*>>()
+    //private var timer: Timer? = null
     private lateinit var roomName: String
     private var autoMode: Boolean = false
+    private val talkSchedules = HashMap<Talk, Pair<SessionsTimes, TalksLocations>>()
     // TODO("Delete in production")
     private val setOfScheduleIds: MutableSet<String> = mutableSetOf()
 
@@ -152,33 +160,39 @@ class MainActivity :
 
     }
 
-    private fun setup(isConnected: Boolean): Unit {
-
-        if (isConnected) {
-            dialog = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT); // this = YourActivity
-            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            dialog.setMessage(resources.getString(R.string.loading));
-            dialog.setIndeterminate(true);
-            dialog.setCanceledOnTouchOutside(false);
-            dialog.show()
-            downloadSpeakers()
-        } else {
-            /*
-           * Un cop que les dades estan assentades a la base de dades local desde el servidor
-           * posem el fragment.
-           *
-           * */
-            autoMode = sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
-            if (autoMode) {
-                val chooseTalkFragment = WelcomeFragment.newInstance("", "")
-                switchFragment(chooseTalkFragment, CHOOSE_TALK_FRAGMENT, false)
-                setupTimer(true)
-            } else {
-                val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
-                switchFragment(chooseTalkFragment, CHOOSE_TALK_FRAGMENT, false)
-            }
+    private fun setup(isConnected: Boolean): Unit = if (isConnected) {
+        dialog = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT); // this = YourActivity
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.setMessage(resources.getString(R.string.loading));
+        dialog.setIndeterminate(true);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show()
+        downloadSpeakers()
+    } else {
+        /*
+       * Un cop que les dades estan assentades a la base de dades local desde el servidor
+       * posem el fragment segons dels mode de treball auto/manual.
+       *
+       * */
+        autoMode = sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
+        if (autoMode) {
+            val chooseTalkFragment = WelcomeFragment.newInstance("", "")
+            switchFragment(chooseTalkFragment, CHOOSE_TALK_FRAGMENT, false)
             roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
+            val talkDao: Dao<Talk, Int> = databaseHelper.getTalkDao()
+            talkDao.queryForAll().forEach {
+                val scheduleId = it.scheduleId
+                val session = SessionsTimes.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}")
+                val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")
+                Log.d(TAG, "$it $scheduleId $session $location")
+                talkSchedules.put(it, session to location)
+            }
+            setupTimer(true)
+        } else {
+            val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
+            switchFragment(chooseTalkFragment, CHOOSE_TALK_FRAGMENT, false)
         }
+
     }
 
     private fun downloadSpeakers() {
@@ -489,11 +503,17 @@ class MainActivity :
         }
     }
 
+    private fun cancelTasks() {
+        for (scheduledFuture in scheduledFutures) {
+            scheduledFuture?.cancel(true)
+        }
+    }
+
     @CallSuper
     override fun onStop() {
         super.onStop()
         requestQueue?.cancelAll(TAG)
-        timer?.cancel()
+        cancelTasks()
     }
 
 
@@ -537,24 +557,17 @@ class MainActivity :
                 return
             }
             val today = GregorianCalendar.getInstance()
-            val seasons = SeasonsTimes.values()
-            for (season in seasons) {
+            talkSchedules.forEach { talk: Talk, pair: Pair<SessionsTimes, TalksLocations> ->
+                // compare today amb les dates de cada talk pero nomes dia, mes i any
+                val talkId = talk.id
+                val talkTitle = talk.title
+                val talkAuthor = talk.speakers?.get(0) ?: "Unknown"
+                val startTime = pair.first.getStartTimeMinusOffset()
+                val timerTask = Runnable { switchFragment(VoteFragment.newInstance("$talkId", talkTitle, talkAuthor), "TAG", false) }
+                scheduledFutures.add(scheduledExecutorService.schedule(timerTask, startTime.time - System.currentTimeMillis(), TimeUnit.MILLISECONDS))
             }
-            // TODO("Read talks from today and this room then setup timer")
-            timer = Timer("autoMode")
-            timer?.scheduleAtFixedRate(object : TimerTask() {
-                /* The action to be performed by this timer task */
-                override fun run() {
-                    Log.d(TAG, "in timer")
-                    switchFragment(VoteFragment.newInstance("1", "Whatever title", "Whatever speaker"), "Tag", false)
-                    Thread.sleep(10_000)
-                    switchFragment(WelcomeFragment.newInstance("", ""), "tag", false)
-                }
-
-            }, Date(), 5_000)
         } else {
-            timer?.cancel()
-            timer = null
+            cancelTasks()
         }
 
     }

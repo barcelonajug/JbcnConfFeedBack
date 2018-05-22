@@ -13,7 +13,7 @@ import java.util.*
 /* Offset in minutes  */
 private const val OFFSET = 15
 
-enum class SeasonsTimes {
+enum class SessionsTimes {
 
     MON_SE1 {
         override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 9, 40)
@@ -278,6 +278,6 @@ enum class SeasonsTimes {
 }
 
 fun main(args: Array<String>) {
-    val s: SeasonsTimes = SeasonsTimes.MON_SE1
+    val s: SessionsTimes = SessionsTimes.MON_SE1
 
 }
