@@ -27,6 +27,8 @@ import cat.cristina.pep.jbcnconffeedback.fragment.*
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
 import cat.cristina.pep.jbcnconffeedback.model.*
 import cat.cristina.pep.jbcnconffeedback.utils.PreferenceKeys
+import cat.cristina.pep.jbcnconffeedback.utils.SeasonsTimes
+import cat.cristina.pep.jbcnconffeedback.utils.TalksLocations
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -43,6 +45,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import org.json.JSONObject
 import java.io.FileWriter
+import java.time.LocalDateTime
 import java.util.*
 
 
@@ -517,12 +520,25 @@ class MainActivity :
         beanToCsv.write(customers)
     }
 
+    /*
+    * Set timers according to date/time and room name, one task per pending talk.
+    *
+    * Each task will show voting fragment with talk id, talk title, and author 15 minutes
+    * before conclusion and will show welcome fragment back 15 times after conclusion.
+    *
+    * So we need to find the list of talks matching today and this room
+    *
+    * */
     private fun setupTimer(autoMode: Boolean) {
         if (autoMode) {
             if (roomName == resources.getString(R.string.pref_default_room_name)) {
                 Toast.makeText(this, "Room not set.", Toast.LENGTH_LONG).show()
                 sharedPreferences.edit().putBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
                 return
+            }
+            val today = GregorianCalendar.getInstance()
+            val seasons = SeasonsTimes.values()
+            for (season in seasons) {
             }
             // TODO("Read talks from today and this room then setup timer")
             timer = Timer("autoMode")
