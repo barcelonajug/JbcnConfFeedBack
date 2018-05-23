@@ -43,14 +43,12 @@ import com.opencsv.bean.ColumnPositionMappingStrategy
 import com.opencsv.bean.StatefulBeanToCsvBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import org.apache.commons.lang3.mutable.Mutable
 import org.json.JSONObject
 import java.io.FileWriter
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
 
 
 private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
@@ -558,13 +556,21 @@ class MainActivity :
             }
             val today = GregorianCalendar.getInstance()
             talkSchedules.forEach { talk: Talk, pair: Pair<SessionsTimes, TalksLocations> ->
-                // compare today amb les dates de cada talk pero nomes dia, mes i any
-                val talkId = talk.id
-                val talkTitle = talk.title
-                val talkAuthor = talk.speakers?.get(0) ?: "Unknown"
-                val startTime = pair.first.getStartTimeMinusOffset()
-                val timerTask = Runnable { switchFragment(VoteFragment.newInstance("$talkId", talkTitle, talkAuthor), "TAG", false) }
-                scheduledFutures.add(scheduledExecutorService.schedule(timerTask, startTime.time - System.currentTimeMillis(), TimeUnit.MILLISECONDS))
+                if (today.get(Calendar.YEAR) == pair.first.getStartTime().get(Calendar.YEAR)
+                        && today.get(Calendar.MONTH) == pair.first.getStartTime().get(Calendar.MONTH)
+                && today.get(Calendar.DATE) == pair.first.getStartTime().get(Calendar.DATE)) {
+                    // compare today amb les dates de cada talk pero nomes dia, mes i any
+                    val talkId = talk.id
+                    val talkTitle = talk.title
+                    val talkAuthor = talk.speakers?.get(0) ?: "Unknown"
+                    val startTime = pair.first.getStartTimeMinusOffset().time - System.currentTimeMillis()
+                    val endTime = pair.first.getEndTimePlusOffset().time - System.currentTimeMillis()
+                    val timerTaskIn = Runnable { switchFragment(VoteFragment.newInstance("$talkId", talkTitle, talkAuthor), "TAG", false) }
+                    // TODO("Pass something to Wellcome Fragment")
+                    val timerTaskOff = Runnable { switchFragment(WelcomeFragment.newInstance("not", "used"), "TAG", false) }
+                    scheduledFutures.add(scheduledExecutorService.schedule(timerTaskIn, startTime, TimeUnit.MILLISECONDS))
+                    scheduledFutures.add(scheduledExecutorService.schedule(timerTaskOff, endTime, TimeUnit.MILLISECONDS))
+                }
             }
         } else {
             cancelTasks()
