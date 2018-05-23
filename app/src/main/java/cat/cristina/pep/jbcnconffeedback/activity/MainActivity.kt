@@ -93,11 +93,12 @@ class MainActivity :
         WelcomeFragment.OnWelcomeFragmentListener {
 
     private lateinit var databaseHelper: DatabaseHelper
+    private lateinit var utilDAOImpl: UtilDAOImpl
     private var requestQueue: RequestQueue? = null
     private lateinit var vibrator: Vibrator
     private lateinit var dialog: ProgressDialog
     // private val scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
-    private val scheduledExecutorService = Executors.newScheduledThreadPool(2)
+    private val scheduledExecutorService = Executors.newScheduledThreadPool(1)
     private val scheduledFutures = mutableListOf<ScheduledFuture<*>>()
     //private var timer: Timer? = null
     private lateinit var roomName: String
@@ -139,6 +140,8 @@ class MainActivity :
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         databaseHelper = OpenHelperManager.getHelper(applicationContext, DatabaseHelper::class.java)
+
+        utilDAOImpl = UtilDAOImpl(this, databaseHelper)
 
         /* TODO("Remove in production")  */
         generateScheduleId()
@@ -572,7 +575,9 @@ class MainActivity :
                         // compare today amb les dates de cada talk pero nomes dia, mes i any
                         val talkId = talk.id
                         val talkTitle = talk.title
-                        val talkAuthor = talk.speakers?.get(0) ?: "Unknown"
+                        val talkAuthorRef = talk.speakers?.get(0) ?: "Unknown"
+                        val talkAuthor = utilDAOImpl.lookupSpeakerByRef(talkAuthorRef)
+                        val talkAuthorName = talkAuthor.name
 //                        val startTime = pair.first.getStartTimeMinusOffset().time - System.currentTimeMillis()
 //                        val endTime = pair.first.getEndTimePlusOffset().time - System.currentTimeMillis()
                         /* TODO("Remove in production")  */
@@ -587,7 +592,7 @@ class MainActivity :
                                 TimeUnit.MILLISECONDS.toMinutes(endTime) % TimeUnit.HOURS.toMinutes(1),
                                 TimeUnit.MILLISECONDS.toSeconds(endTime) % TimeUnit.MINUTES.toSeconds(1))
 
-                        val timerTaskIn = Runnable { switchFragment(VoteFragment.newInstance("$talkId", talkTitle, talkAuthor), "TAG", false) }
+                        val timerTaskIn = Runnable { switchFragment(VoteFragment.newInstance("$talkId", talkTitle, talkAuthorName), "TAG", false) }
                         // TODO("Pass arguments to Wellcome Fragment?")
                         val timerTaskOff = Runnable { switchFragment(WelcomeFragment.newInstance("not", "used"), "TAG", false) }
                         Log.d(TAG, "Setting schedule for talk  $talkId $talkTitle starts in $remainingStartTime ends in $remainingStopTime")

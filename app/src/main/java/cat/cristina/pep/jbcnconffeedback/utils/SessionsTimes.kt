@@ -11,13 +11,13 @@ import java.util.*
 * */
 
 /* Offset in minutes  */
-private const val OFFSET = 15
+private const val OFFSET = 1
 
 enum class SessionsTimes {
 
     MON_SE1 {
-        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 9, 40)
-        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 10, 30)
+        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 9, 0)
+        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 9, 3)
         override fun getStartTimeMinusOffset(): Date {
             val calendar = getEndTime()
             calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) - OFFSET)
@@ -31,8 +31,8 @@ enum class SessionsTimes {
     },
 
     MON_SE2 {
-        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 11, 10)
-        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 12,0)
+        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 9, 5)
+        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 9, 8)
         override fun getStartTimeMinusOffset(): Date {
             val calendar = getEndTime()
             calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) - OFFSET)
@@ -46,8 +46,8 @@ enum class SessionsTimes {
     },
 
     MON_SE3 {
-        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 12, 10)
-        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 13, 0)
+        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 9, 10)
+        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 9, 13)
         override fun getStartTimeMinusOffset(): Date {
             val calendar = getEndTime()
             calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) - OFFSET)
@@ -61,8 +61,8 @@ enum class SessionsTimes {
     },
 
     MON_SE4 {
-        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 14, 15)
-        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 15, 5)
+        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 9, 15)
+        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 9, 18)
         override fun getStartTimeMinusOffset(): Date {
             val calendar = getEndTime()
             calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) - OFFSET)
@@ -76,8 +76,8 @@ enum class SessionsTimes {
     },
 
     MON_SE5 {
-        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 15, 15)
-        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 16, 5)
+        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 9, 20)
+        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 9, 23)
         override fun getStartTimeMinusOffset(): Date {
             val calendar = getEndTime()
             calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) - OFFSET)
@@ -91,8 +91,8 @@ enum class SessionsTimes {
     },
 
     MON_SE6 {
-        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 16, 45)
-        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 17, 35)
+        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 9, 25)
+        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 9, 28)
         override fun getStartTimeMinusOffset(): Date {
             val calendar = getEndTime()
             calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) - OFFSET)
@@ -106,8 +106,8 @@ enum class SessionsTimes {
     },
 
     MON_SE7 {
-        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 17, 40)
-        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 18, 35)
+        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 9, 30)
+        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 9, 33)
         override fun getStartTimeMinusOffset(): Date {
             val calendar = getEndTime()
             calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) - OFFSET)
