@@ -101,9 +101,11 @@ class AppPreferenceFragment :
                 sharedPreferences.edit().putBoolean(key, vibrator).commit()
             }
             PreferenceKeys.ROOM_KEY -> {
-                val summary = sharedPreferences!!.getString(key, "Undefined")
+                val summary = sharedPreferences!!.getString(key, resources.getString(R.string.pref_default_room_name))
+                val mode = sharedPreferences!!.getBoolean(key, true)
                 preference.summary = summary
                 sharedPreferences.edit().putString(key, summary).commit()
+                listener?.onAppPreferenceFragment(mode)
             }
             PreferenceKeys.AUTO_MODE_KEY -> {
                 val mode = sharedPreferences!!.getBoolean(key, true)
@@ -113,7 +115,7 @@ class AppPreferenceFragment :
                 listener?.onAppPreferenceFragment(mode)
             }
             PreferenceKeys.CHART_TYPE_KEY -> {
-                val summary = sharedPreferences!!.getString(key, "Vertical Bar Chart")
+                val summary = sharedPreferences!!.getString(key, resources.getString(R.string.pref_default_chart_type))
                 preference.summary = summary
                 sharedPreferences.edit().putString(key, summary).commit()
             }

@@ -101,7 +101,7 @@ class MainActivity :
     private val scheduledFutures = mutableListOf<ScheduledFuture<*>>()
     //private var timer: Timer? = null
     private lateinit var roomName: String
-    private var autoMode: Boolean = false
+    private var autoMode: Boolean = true
     private val talkSchedules = HashMap<Talk, Pair<SessionsTimes, TalksLocations>>()
     // TODO("Delete in production")
     private val setOfScheduleIds: MutableSet<String> = mutableSetOf()
@@ -120,25 +120,28 @@ class MainActivity :
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+    }
 
+    override fun onStart() {
+        super.onStart()
         val (connected, reason) = isDeviceConnectedToWifiOrData()
 
         if (connected) {
             requestQueue = Volley.newRequestQueue(this)
-            setup(true)
-            //downloadSpeakers()
-
         } else {
-            setup(false)
             Toast.makeText(applicationContext, "${resources.getString(R.string.sorry_working_offline)}: $reason", Toast.LENGTH_LONG).show()
         }
+
+        setup(connected)
+
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         databaseHelper = OpenHelperManager.getHelper(applicationContext, DatabaseHelper::class.java)
-        generateScheduleId()
 
+        /* TODO("Remove in production")  */
+        generateScheduleId()
     }
 
     private fun switchFragment(fragment: Fragment, tag: String, addToStack: Boolean = true): Unit {
@@ -159,11 +162,11 @@ class MainActivity :
     }
 
     private fun setup(isConnected: Boolean): Unit = if (isConnected) {
-        dialog = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT); // this = YourActivity
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        dialog.setMessage(resources.getString(R.string.loading));
-        dialog.setIndeterminate(true);
-        dialog.setCanceledOnTouchOutside(false);
+        dialog = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT) // this = YourActivity
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
+        dialog.setMessage(resources.getString(R.string.loading))
+        dialog.isIndeterminate = true
+        dialog.setCanceledOnTouchOutside(false)
         dialog.show()
         downloadSpeakers()
     } else {
@@ -172,7 +175,8 @@ class MainActivity :
        * posem el fragment segons dels mode de treball auto/manual.
        *
        * */
-        autoMode = sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
+        autoMode = sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, true)
+
         if (autoMode) {
             val chooseTalkFragment = WelcomeFragment.newInstance("", "")
             switchFragment(chooseTalkFragment, CHOOSE_TALK_FRAGMENT, false)
@@ -185,7 +189,7 @@ class MainActivity :
                 Log.d(TAG, "$it $scheduleId $session $location")
                 talkSchedules.put(it, session to location)
             }
-            setupTimer(true)
+            setupTimer()
         } else {
             val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
             switchFragment(chooseTalkFragment, CHOOSE_TALK_FRAGMENT, false)
@@ -501,7 +505,7 @@ class MainActivity :
         }
     }
 
-    private fun cancelTasks() {
+    private fun cancelTimer() {
         for (scheduledFuture in scheduledFutures) {
             scheduledFuture?.cancel(true)
         }
@@ -511,7 +515,7 @@ class MainActivity :
     override fun onStop() {
         super.onStop()
         requestQueue?.cancelAll(TAG)
-        cancelTasks()
+        cancelTimer()
     }
 
 
@@ -547,38 +551,33 @@ class MainActivity :
     * So we need to find the list of talks matching today and this room
     *
     * */
-    private fun setupTimer(autoMode: Boolean) {
-        if (autoMode) {
-            if (roomName == resources.getString(R.string.pref_default_room_name)) {
-                Toast.makeText(this, "Room not set.", Toast.LENGTH_LONG).show()
-                sharedPreferences.edit().putBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
-                return
-            }
-            val today = GregorianCalendar.getInstance()
-            talkSchedules.forEach { talk: Talk, pair: Pair<SessionsTimes, TalksLocations> ->
-                /* Aixo evita schedules amb initialDelays negatius que faria iniciar els thread inmediatament  */
-                if (today.before(pair.first.getStartTime())) {
-                    if (today.get(Calendar.YEAR) == pair.first.getStartTime().get(Calendar.YEAR)
-                            && today.get(Calendar.MONTH) == pair.first.getStartTime().get(Calendar.MONTH)
-                            && today.get(Calendar.DATE) == pair.first.getStartTime().get(Calendar.DATE)) {
-                        // compare today amb les dates de cada talk pero nomes dia, mes i any
-                        val talkId = talk.id
-                        val talkTitle = talk.title
-                        val talkAuthor = talk.speakers?.get(0) ?: "Unknown"
-                        val startTime = pair.first.getStartTimeMinusOffset().time - System.currentTimeMillis()
-                        val endTime = pair.first.getEndTimePlusOffset().time - System.currentTimeMillis()
-                        val timerTaskIn = Runnable { switchFragment(VoteFragment.newInstance("$talkId", talkTitle, talkAuthor), "TAG", false) }
-                        // TODO("Pass something to Wellcome Fragment")
-                        val timerTaskOff = Runnable { switchFragment(WelcomeFragment.newInstance("not", "used"), "TAG", false) }
-                        scheduledFutures.add(scheduledExecutorService.schedule(timerTaskIn, startTime, TimeUnit.MILLISECONDS))
-                        scheduledFutures.add(scheduledExecutorService.schedule(timerTaskOff, endTime, TimeUnit.MILLISECONDS))
-                    }
+    private fun setupTimer() {
+        if (roomName == resources.getString(R.string.pref_default_room_name)) {
+            Toast.makeText(this, resources.getString(R.string.pref_default_room_name), Toast.LENGTH_LONG).show()
+            // sharedPreferences.edit().putBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
+            return
+        }
+        val today = GregorianCalendar.getInstance()
+        talkSchedules.forEach { talk: Talk, pair: Pair<SessionsTimes, TalksLocations> ->
+            /* Aixo evita schedules amb initialDelays negatius que faria iniciar els thread inmediatament  */
+            if (today.before(pair.first.getStartTime())) {
+                if (today.get(Calendar.YEAR) == pair.first.getStartTime().get(Calendar.YEAR)
+                        && today.get(Calendar.MONTH) == pair.first.getStartTime().get(Calendar.MONTH)
+                        && today.get(Calendar.DATE) == pair.first.getStartTime().get(Calendar.DATE)) {
+                    // compare today amb les dates de cada talk pero nomes dia, mes i any
+                    val talkId = talk.id
+                    val talkTitle = talk.title
+                    val talkAuthor = talk.speakers?.get(0) ?: "Unknown"
+                    val startTime = pair.first.getStartTimeMinusOffset().time - System.currentTimeMillis()
+                    val endTime = pair.first.getEndTimePlusOffset().time - System.currentTimeMillis()
+                    val timerTaskIn = Runnable { switchFragment(VoteFragment.newInstance("$talkId", talkTitle, talkAuthor), "TAG", false) }
+                    // TODO("Pass something to Wellcome Fragment")
+                    val timerTaskOff = Runnable { switchFragment(WelcomeFragment.newInstance("not", "used"), "TAG", false) }
+                    scheduledFutures.add(scheduledExecutorService.schedule(timerTaskIn, startTime, TimeUnit.MILLISECONDS))
+                    scheduledFutures.add(scheduledExecutorService.schedule(timerTaskOff, endTime, TimeUnit.MILLISECONDS))
                 }
             }
-        } else {
-            cancelTasks()
         }
-
     }
 
     /*
@@ -592,7 +591,10 @@ class MainActivity :
     *
     * */
     override fun onAppPreferenceFragment(autoMode: Boolean) {
-        setupTimer(autoMode)
+        if (autoMode)
+            setupTimer()
+        else
+            cancelTimer()
     }
 
     override fun onWelcomeFragment(msg: String) {

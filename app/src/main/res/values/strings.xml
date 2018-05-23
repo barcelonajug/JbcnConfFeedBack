@@ -61,7 +61,7 @@
     <string name="pref_description_vibrator">Get vibration feedback</string>
 
     <string name="pref_title_room_name">Room name</string>
-    <string name="pref_default_room_name">Room #1</string>
+    <string name="pref_default_room_name">Room Not Defined</string>
     <string-array name="pref_room_names_titles">
         <item>First Room</item>
         <item>Second Room</item>
