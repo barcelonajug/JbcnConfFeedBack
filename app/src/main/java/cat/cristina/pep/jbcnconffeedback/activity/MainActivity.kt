@@ -180,7 +180,7 @@ class MainActivity :
         if (autoMode) {
             val chooseTalkFragment = WelcomeFragment.newInstance("", "")
             switchFragment(chooseTalkFragment, CHOOSE_TALK_FRAGMENT, false)
-            roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
+
             val talkDao: Dao<Talk, Int> = databaseHelper.getTalkDao()
             talkDao.queryForAll().forEach {
                 val scheduleId = it.scheduleId
@@ -552,29 +552,48 @@ class MainActivity :
     *
     * */
     private fun setupTimer() {
+        roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
         if (roomName == resources.getString(R.string.pref_default_room_name)) {
             Toast.makeText(this, resources.getString(R.string.pref_default_room_name), Toast.LENGTH_LONG).show()
             // sharedPreferences.edit().putBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
             return
         }
-        val today = GregorianCalendar.getInstance()
+        // val today = GregorianCalendar.getInstance()
+        /* Testing...  */
+        val today = GregorianCalendar(2018, 6, 11, 9, 0)
         talkSchedules.forEach { talk: Talk, pair: Pair<SessionsTimes, TalksLocations> ->
-            /* Aixo evita schedules amb initialDelays negatius que faria iniciar els thread inmediatament  */
-            if (today.before(pair.first.getStartTime())) {
-                if (today.get(Calendar.YEAR) == pair.first.getStartTime().get(Calendar.YEAR)
-                        && today.get(Calendar.MONTH) == pair.first.getStartTime().get(Calendar.MONTH)
-                        && today.get(Calendar.DATE) == pair.first.getStartTime().get(Calendar.DATE)) {
-                    // compare today amb les dates de cada talk pero nomes dia, mes i any
-                    val talkId = talk.id
-                    val talkTitle = talk.title
-                    val talkAuthor = talk.speakers?.get(0) ?: "Unknown"
-                    val startTime = pair.first.getStartTimeMinusOffset().time - System.currentTimeMillis()
-                    val endTime = pair.first.getEndTimePlusOffset().time - System.currentTimeMillis()
-                    val timerTaskIn = Runnable { switchFragment(VoteFragment.newInstance("$talkId", talkTitle, talkAuthor), "TAG", false) }
-                    // TODO("Pass something to Wellcome Fragment")
-                    val timerTaskOff = Runnable { switchFragment(WelcomeFragment.newInstance("not", "used"), "TAG", false) }
-                    scheduledFutures.add(scheduledExecutorService.schedule(timerTaskIn, startTime, TimeUnit.MILLISECONDS))
-                    scheduledFutures.add(scheduledExecutorService.schedule(timerTaskOff, endTime, TimeUnit.MILLISECONDS))
+            /* roomName es el nom de la room que gestionas aquesta tablet */
+            if (roomName == pair.second.getRoomName()) {
+                /* Aixo evita schedules amb initialDelays negatius que faria iniciar els thread inmediatament  */
+                if (today.before(pair.first.getStartTime())) {
+                    if (today.get(Calendar.YEAR) == pair.first.getStartTime().get(Calendar.YEAR)
+                            && today.get(Calendar.MONTH) == pair.first.getStartTime().get(Calendar.MONTH)
+                            && today.get(Calendar.DATE) == pair.first.getStartTime().get(Calendar.DATE)) {
+                        // compare today amb les dates de cada talk pero nomes dia, mes i any
+                        val talkId = talk.id
+                        val talkTitle = talk.title
+                        val talkAuthor = talk.speakers?.get(0) ?: "Unknown"
+//                        val startTime = pair.first.getStartTimeMinusOffset().time - System.currentTimeMillis()
+//                        val endTime = pair.first.getEndTimePlusOffset().time - System.currentTimeMillis()
+                        /* TODO("Remove in production")  */
+                        val startTime = pair.first.getStartTimeMinusOffset().time - today.time.time
+                        val endTime = pair.first.getEndTimePlusOffset().time - today.time.time
+
+                        val remainingStartTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(startTime),
+                                TimeUnit.MILLISECONDS.toMinutes(startTime) % TimeUnit.HOURS.toMinutes(1),
+                                TimeUnit.MILLISECONDS.toSeconds(startTime) % TimeUnit.MINUTES.toSeconds(1))
+
+                        val remainingStopTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(endTime),
+                                TimeUnit.MILLISECONDS.toMinutes(endTime) % TimeUnit.HOURS.toMinutes(1),
+                                TimeUnit.MILLISECONDS.toSeconds(endTime) % TimeUnit.MINUTES.toSeconds(1))
+
+                        val timerTaskIn = Runnable { switchFragment(VoteFragment.newInstance("$talkId", talkTitle, talkAuthor), "TAG", false) }
+                        // TODO("Pass arguments to Wellcome Fragment?")
+                        val timerTaskOff = Runnable { switchFragment(WelcomeFragment.newInstance("not", "used"), "TAG", false) }
+                        Log.d(TAG, "Setting schedule for talk  $talkId $talkTitle starts in $remainingStartTime ends in $remainingStopTime")
+                        scheduledFutures.add(scheduledExecutorService.schedule(timerTaskIn, startTime, TimeUnit.MILLISECONDS))
+                        scheduledFutures.add(scheduledExecutorService.schedule(timerTaskOff, endTime, TimeUnit.MILLISECONDS))
+                    }
                 }
             }
         }

@@ -102,7 +102,7 @@ class AppPreferenceFragment :
             }
             PreferenceKeys.ROOM_KEY -> {
                 val summary = sharedPreferences!!.getString(key, resources.getString(R.string.pref_default_room_name))
-                val mode = sharedPreferences!!.getBoolean(key, true)
+                val mode = sharedPreferences!!.getBoolean(PreferenceKeys.AUTO_MODE_KEY, true)
                 preference.summary = summary
                 sharedPreferences.edit().putString(key, summary).commit()
                 listener?.onAppPreferenceFragment(mode)
