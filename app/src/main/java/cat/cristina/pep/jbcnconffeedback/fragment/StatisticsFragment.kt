@@ -6,12 +6,10 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Environment
 import android.support.v4.app.Fragment
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.activity.MainActivity
@@ -30,7 +28,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.j256.ormlite.android.apptools.OpenHelperManager
 import com.j256.ormlite.dao.Dao
+import com.opencsv.CSVWriter
+import com.opencsv.bean.ColumnPositionMappingStrategy
+import com.opencsv.bean.StatefulBeanToCsvBuilder
 import kotlinx.android.synthetic.main.fragment_statistics.*
+import java.io.File
+import java.io.FileWriter
+import java.util.*
 import java.util.stream.Collectors
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -43,6 +47,8 @@ private val TAG = StatisticsFragment::class.java.name
 class StatisticsFragment : Fragment(), OnChartGestureListener {
 
     private val TAG = StatisticsFragment::class.java.name
+
+    private val DEFAULT_STATISTICS_FILE_NAME = "statistics.csv"
 
     private var param1: String? = null
     private var param2: String? = null
@@ -71,6 +77,19 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         downloadScoring()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater?.inflate(R.menu.statistics_fragment, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.action_send_statistics -> createCVSFromStatistics(DEFAULT_STATISTICS_FILE_NAME)
+        }
+        return true
     }
 
     /* This method downloads the Scoring collection made up of documents(id_talk, score, date) */
@@ -105,6 +124,10 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                 }
     }
 
+    /*
+    * Not used
+    *
+    * */
     private fun setupGraph() {
         dialog.setMessage(resources.getString(R.string.processing));
         val labels = ArrayList<String>()
@@ -246,7 +269,88 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
         }
 
         dialog.dismiss()
+    }
 
+    /*
+ * CSV From list of objects
+ * No va, tiene una depedencia externa y da error
+ * */
+    private fun createCVSFromStatisticsByObject(fileName: String): Unit {
+        data class Statistic(val id: Long, val title: String, val score: Int, val date: Date)
+
+        val file = File(context?.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
+        val fileWriter = FileWriter(file)
+        val statistics = arrayListOf<Statistic>()
+
+        dataFromFirestore
+                ?.asSequence()
+                ?.forEach {
+                    dataFromFirestore?.get(it.key)
+                            ?.asSequence()
+                            ?.map { doc ->
+                                val id = doc.getLong("id_talk")
+                                val title = databaseHelper.getTalkDao().queryForId(id?.toInt()).title
+                                val score = doc.get("score") as Int
+                                val date = doc.getDate("date") as Date
+                                statistics.add(Statistic(id!!, title, score, date))
+                            }
+                }
+
+        val mappingStrategy =
+                ColumnPositionMappingStrategy<Statistic>()
+                        .apply {
+                            type = Statistic::class.java
+                            setColumnMapping("id_talk", "title", "score", "date")
+                        }
+
+        var beanToCsv = StatefulBeanToCsvBuilder<Statistic>(fileWriter)
+                .withMappingStrategy(mappingStrategy)
+                .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
+                .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
+                .withEscapechar(CSVWriter.DEFAULT_ESCAPE_CHARACTER)
+                .withLineEnd(CSVWriter.DEFAULT_LINE_END)
+                .build()
+
+        beanToCsv.write(statistics)
+        Log.d(TAG, fileWriter.toString())
+    }
+
+
+    /*
+    * /storage/emulated/0/Android/data/cat.cristina.pep.jbcnconffeedback/files/Documents/statistics.csv
+    *
+    *
+    * */
+    private fun createCVSFromStatistics(fileName: String): Unit {
+        data class Statistic(val id: Long, val title: String, val score: Int, val date: Date)
+
+        val file = File(context?.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
+        val fileWriter = FileWriter(file)
+
+        val csvWriter = CSVWriter(fileWriter,
+                CSVWriter.DEFAULT_SEPARATOR,
+                CSVWriter.NO_QUOTE_CHARACTER,
+                CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+                CSVWriter.DEFAULT_LINE_END)
+
+        csvWriter.writeNext(arrayOf("id_talk", "title", "score", "date"))
+
+        dataFromFirestore
+                ?.asSequence()
+                ?.forEach {
+                    dataFromFirestore?.get(it.key)
+                            ?.asSequence()
+                            ?.map { doc ->
+                                val id_talk = doc.getLong("id_talk")
+                                val title = databaseHelper.getTalkDao().queryForId(id?.toInt()).title
+                                val score = doc.get("score") as Int
+                                val date = doc.getDate("date") as Date
+                                csvWriter.writeNext(arrayOf(id_talk.toString(), title, score.toString(), date.toString()))
+                            }
+                }
+
+
+        Log.d(TAG, file.absolutePath)
     }
 
     fun onButtonPressed(msg: String) {

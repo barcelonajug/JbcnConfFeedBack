@@ -6,10 +6,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
-import android.os.Build
-import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
+import android.os.*
 import android.support.annotation.CallSuper
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
@@ -44,6 +41,7 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import org.json.JSONObject
+import java.io.File
 import java.io.FileWriter
 import java.util.*
 import java.util.concurrent.Executors
@@ -618,30 +616,6 @@ class MainActivity :
         super.onStop()
         requestQueue?.cancelAll(TAG)
         cancelTimer()
-    }
-
-
-    /*
-    * CSV From list of objects
-    *
-    * */
-    private fun createCVSFromStatistics(): Unit {
-        data class Statistic(val id: Long, val score: Int)
-
-        val customers = Arrays.asList(Statistic(1, 3), Statistic(1, 2))
-        val fileWriter = FileWriter("statistics.csv")
-
-        val mappingStrategy = ColumnPositionMappingStrategy<Statistic>().apply {
-            type = Statistic::class.java
-            setColumnMapping("id", "score")
-        }
-
-        var beanToCsv = StatefulBeanToCsvBuilder<Statistic>(fileWriter)
-                .withMappingStrategy(mappingStrategy)
-                .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
-                .build()
-
-        beanToCsv.write(customers)
     }
 
     /*

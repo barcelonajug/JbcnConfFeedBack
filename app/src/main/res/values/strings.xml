@@ -28,6 +28,7 @@
 
     <!-- Lateral Menu -->
     <string name="menu_statistics">Statistics</string>
+
     <string name="menu_settings">Settings</string>
     <string name="menu_refresh">Refresh</string>
     <string name="menu_about_us">About us</string>
@@ -49,7 +50,6 @@
 
     <!-- Strings related to Settings -->
 
-    <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
     <string name="pref_vibrator_key">vibrator_key</string>
@@ -98,5 +98,9 @@
     </string-array>
 
     <!-- Strings related to Settings ends -->
+
+    <!-- Statistics menu   -->
+
+    <string name="action_send_statistics">Send</string>
 
 </resources>
