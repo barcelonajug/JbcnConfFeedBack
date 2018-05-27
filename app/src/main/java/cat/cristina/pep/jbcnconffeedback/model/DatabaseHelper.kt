@@ -16,6 +16,11 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
 //    private lateinit var speakerTalkDao: Dao<SpeakerTalk, Int>
 //    private lateinit var scoreDao: Dao<Score, Int>
 
+    /*
+    * Called when the database is created for the first time.
+    * This is where the creation of tables and the initial population of the tables should happen.
+    *
+    * */
     override fun onCreate(database: SQLiteDatabase?, connectionSource: ConnectionSource?) {
         Log.i(TAG, "in onCreate")
         setUp(connectionSource)
@@ -23,10 +28,11 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
 
     private fun setUp(connectionSource: ConnectionSource?) {
         try {
-            TableUtils.createTable(connectionSource, Speaker::class.java)
-            TableUtils.createTable(connectionSource, Talk::class.java)
-            TableUtils.createTable(connectionSource, SpeakerTalk::class.java)
-            TableUtils.createTable(connectionSource, Score::class.java)
+
+            TableUtils.createTableIfNotExists(connectionSource, Speaker::class.java)
+            TableUtils.createTableIfNotExists(connectionSource, Talk::class.java)
+            TableUtils.createTableIfNotExists(connectionSource, SpeakerTalk::class.java)
+            TableUtils.createTableIfNotExists(connectionSource, Score::class.java)
         } catch (e: Exception) {
             Log.e(TAG, e.message)
         }
@@ -112,15 +118,22 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
             Log.i(TAG, "onUpgrade")
 
             // Drop older db if existed
-            database?.execSQL("DROP DATABASE IF EXISTS $DATABASE_NAME")
+            // context.deleteDatabase(DATABASE_NAME)
+            TableUtils.dropTable<Speaker, Int>(connectionSource, Speaker::class.java, true)
+            TableUtils.dropTable<Talk, Int>(connectionSource, Talk::class.java, true)
+            TableUtils.dropTable<SpeakerTalk, Int>(connectionSource, SpeakerTalk::class.java, true)
+            TableUtils.dropTable<Score, Int>(connectionSource, Score::class.java, true)
 
-            // Create tables again
             setUp(connectionSource)
 
         } catch (e: Exception) {
             Log.i(TAG, e.message)
             throw RuntimeException(e)
         }
+    }
+
+    override fun onOpen(db: SQLiteDatabase?) {
+        super.onOpen(db)
     }
 
     internal fun getSpeakerDao(): Dao<Speaker, Int> = getDao(Speaker::class.java)
@@ -133,7 +146,7 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
 
     companion object DatabaseHelperData {
         private val DATABASE_NAME = "db_feedback.sql"
-        private val DATABASE_VERSION = 1
+        private val DATABASE_VERSION = 10
     }
 
 }

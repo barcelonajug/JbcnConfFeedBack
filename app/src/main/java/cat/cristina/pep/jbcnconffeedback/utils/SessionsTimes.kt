@@ -61,8 +61,8 @@ enum class SessionsTimes {
     },
 
     MON_SE4 {
-        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 9, 15)
-        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 9, 18)
+        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 9, 1)
+        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 9, 3)
         override fun getStartTimeMinusOffset(): Date {
             val calendar = getEndTime()
             calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) - OFFSET)
@@ -76,8 +76,8 @@ enum class SessionsTimes {
     },
 
     MON_SE5 {
-        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 9, 20)
-        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 9, 23)
+        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 9, 5)
+        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 9, 8)
         override fun getStartTimeMinusOffset(): Date {
             val calendar = getEndTime()
             calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) - OFFSET)
@@ -91,8 +91,8 @@ enum class SessionsTimes {
     },
 
     MON_SE6 {
-        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 9, 25)
-        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 9, 28)
+        override fun getStartTime(): Calendar = GregorianCalendar(2018, 6, 11, 9, 10)
+        override fun getEndTime(): Calendar  = GregorianCalendar(2018, 6, 11, 9, 13)
         override fun getStartTimeMinusOffset(): Date {
             val calendar = getEndTime()
             calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) - OFFSET)
@@ -274,10 +274,5 @@ enum class SessionsTimes {
     abstract fun getEndTime(): Calendar
     abstract fun getStartTimeMinusOffset(): Date
     abstract fun getEndTimePlusOffset(): Date
-
-}
-
-fun main(args: Array<String>) {
-    val s: SessionsTimes = SessionsTimes.MON_SE1
 
 }

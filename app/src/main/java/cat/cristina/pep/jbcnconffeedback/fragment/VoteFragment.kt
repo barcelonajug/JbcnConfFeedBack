@@ -99,6 +99,7 @@ class VoteFragment : Fragment() {
                 val alertDialogBuilder = AlertDialog.Builder(context!!, R.style.Base_V7_Theme_AppCompat_Dialog)
                 alertDialogBuilder.setTitle(R.string.alert_title)
                 alertDialogBuilder.setMessage(R.string.alert_message)
+                // TODO ("What of backstack empty as in automode")
                 alertDialogBuilder.setPositiveButton(R.string.alert_positive_button) {
                     _, _ ->  fragmentManager?.popBackStack()
                 }

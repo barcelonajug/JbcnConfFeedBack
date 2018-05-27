@@ -47,6 +47,7 @@ import org.json.JSONObject
 import java.io.FileWriter
 import java.util.*
 import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
@@ -56,6 +57,7 @@ private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jb
 private const val CHOOSE_TALK_FRAGMENT = "ChooseTalkFragment"
 private const val STATISTICS_FRAGMENT = "StatisticsFragment"
 private const val VOTE_FRAGMENT = "VoteFragment"
+private const val WELLCOME_FRAGMENT = "WellcomeFragment"
 private const val FIREBASE_COLLECTION = "Scoring"
 private const val FIREBASE_COLLECTION_FIELD_1 = "id_talk"
 private const val FIREBASE_COLLECTION_FIELD_2 = "score"
@@ -92,14 +94,16 @@ class MainActivity :
         StatisticsFragment.OnStatisticsFragmentListener,
         WelcomeFragment.OnWelcomeFragmentListener {
 
+    private val random = Random()
+
     private lateinit var databaseHelper: DatabaseHelper
     private lateinit var utilDAOImpl: UtilDAOImpl
     private var requestQueue: RequestQueue? = null
     private lateinit var vibrator: Vibrator
     private lateinit var dialog: ProgressDialog
     // private val scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
-    private val scheduledExecutorService = Executors.newScheduledThreadPool(1)
-    private val scheduledFutures = mutableListOf<ScheduledFuture<*>>()
+    private var scheduledExecutorService: ScheduledExecutorService? = null
+    private var scheduledFutures: MutableList<ScheduledFuture<*>?>? = null
     //private var timer: Timer? = null
     private lateinit var roomName: String
     private var autoMode: Boolean = true
@@ -125,6 +129,15 @@ class MainActivity :
 
     override fun onStart() {
         super.onStart()
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+
+        vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+        databaseHelper = OpenHelperManager.getHelper(applicationContext, DatabaseHelper::class.java)
+
+        utilDAOImpl = UtilDAOImpl(this, databaseHelper)
+
         val (connected, reason) = isDeviceConnectedToWifiOrData()
 
         if (connected) {
@@ -135,16 +148,165 @@ class MainActivity :
 
         setup(connected)
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-
-        vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-
-        databaseHelper = OpenHelperManager.getHelper(applicationContext, DatabaseHelper::class.java)
-
-        utilDAOImpl = UtilDAOImpl(this, databaseHelper)
-
         /* TODO("Remove in production")  */
         generateScheduleId()
+    }
+
+    /*
+    * Note that to insert talks into the database speakers need to be present already
+    * */
+    fun parseAndStoreTalks(talksJson: String) {
+        val json = JSONObject(talksJson)
+        val items = json.getJSONArray("items")
+        val talkDao: Dao<Talk, Int> = databaseHelper.getTalkDao()
+        val speakerTalkDao: Dao<SpeakerTalk, Int> = databaseHelper.getSpeakerTalkDao()
+        val gson = Gson()
+
+        for (i in 0 until (items.length())) {
+            val talkObject = items.getJSONObject(i)
+            val talk: Talk = gson.fromJson(talkObject.toString(), Talk::class.java)
+
+            try {
+                /* TODO("Delete this line") */
+                talk.scheduleId = getRandomScheduleId()
+                /* Guardamos cada talk */
+                talkDao.create(talk)
+                Log.d(TAG, "Talk ${talk} created")
+            } catch (e: Exception) {
+                Log.e(TAG, "Could not insert talk ${talk.id} ${e.message}")
+            }
+
+            /* relacionamos cada talk con su speaker/s  */
+            for (j in 0 until (talk.speakers!!.size)) {
+                val speakerRef: String = talk.speakers!!.get(j)
+                val dao: UtilDAOImpl = UtilDAOImpl(applicationContext, databaseHelper)
+                Log.d(TAG, "Looking for ref $speakerRef")
+                val speaker: Speaker = dao.lookupSpeakerByRef(speakerRef)
+                val speakerTalk = SpeakerTalk(0, speaker, talk)
+                try {
+                    speakerTalkDao.create(speakerTalk)
+                    Log.d(TAG, "Speaker-Talk ${speakerTalk}  from ${speaker} and  ${talk} created")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Could not insert Speaker-Talk ${speakerTalk.id} ${e.message}")
+                }
+            }
+        }
+        dialog.dismiss()
+        setup(false)
+    }
+
+    private fun setup(isConnected: Boolean): Unit =
+
+            if (isConnected) {
+                dialog = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT) // this = YourActivity
+                dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
+                dialog.setMessage(resources.getString(R.string.loading))
+                dialog.isIndeterminate = true
+                dialog.setCanceledOnTouchOutside(false)
+                dialog.show()
+                downloadSpeakers()
+            } else {
+                /*
+               * Un cop que les dades estan assentades a la base de dades local desde el servidor
+               * posem el fragment segons dels mode de treball auto/manual.
+               *
+               * */
+
+                autoMode = sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, true)
+
+                if (autoMode) {
+                    //val fragment = WelcomeFragment.newInstance("", "")
+                    //switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
+
+                    val talkDao: Dao<Talk, Int> = databaseHelper.getTalkDao()
+                    talkDao.queryForAll().forEach {
+                        val scheduleId = it.scheduleId
+                        val session = SessionsTimes.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}")
+                        val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")
+                        Log.d(TAG, "$it $scheduleId $session $location")
+                        // crea una mapa de Talk y Pair<SessionsTimes, TalksLocation>
+                        talkSchedules.put(it, session to location)
+                    }
+                    setupTimer()
+                } else {
+                    val fragment = ChooseTalkFragment.newInstance(1)
+                    switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
+                }
+            }
+
+    /*
+       * Set timers according to date/time and room name, one task per pending talk.
+       *
+       * Each task will show voting fragment with talk id, talk title, and author 15 minutes
+       * before conclusion and will show welcome fragment back 15 times after conclusion.
+       *
+       * So we need to find the list of talks matching today and this room
+       *
+       * */
+    private fun setupTimer() {
+        val fragment = WelcomeFragment.newInstance("", "")
+        switchFragment(fragment, WELLCOME_FRAGMENT, false)
+        roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
+        if (roomName == resources.getString(R.string.pref_default_room_name)) {
+
+            Toast.makeText(this, resources.getString(R.string.pref_default_room_name), Toast.LENGTH_LONG).show()
+            // sharedPreferences.edit().putBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
+            return
+        }
+        Toast.makeText(this, "Setting timers...", Toast.LENGTH_LONG).show()
+        scheduledExecutorService = Executors.newScheduledThreadPool(5)
+        scheduledFutures = mutableListOf()
+        // val today = GregorianCalendar.getInstance()
+        /* Testing...  */
+        val today = GregorianCalendar(2018, 6, 11, 9, 0)
+
+        talkSchedules.forEach { talk: Talk, pair: Pair<SessionsTimes, TalksLocations> ->
+            /* roomName es el nom de la room que gestionas aquesta tablet */
+            if (roomName == pair.second.getRoomName()) {
+                /* Aixo evita schedules amb initialDelays negatius que faria iniciar els thread inmediatament  */
+                if (today.before(pair.first.getStartTime())) {
+                    if (today.get(Calendar.YEAR) == pair.first.getStartTime().get(Calendar.YEAR)
+                            && today.get(Calendar.MONTH) == pair.first.getStartTime().get(Calendar.MONTH)
+                            && today.get(Calendar.DATE) == pair.first.getStartTime().get(Calendar.DATE)) {
+                        // compare today amb les dates de cada talk pero nomes dia, mes i any
+                        val talkId = talk.id
+                        val talkTitle = talk.title
+                        val talkAuthorRef = talk.speakers?.get(0) ?: "Unknown"
+                        val talkAuthor = utilDAOImpl.lookupSpeakerByRef(talkAuthorRef)
+                        val talkAuthorName = talkAuthor.name
+//                        val startTime = pair.first.getStartTimeMinusOffset().time - System.currentTimeMillis()
+//                        val endTime = pair.first.getEndTimePlusOffset().time - System.currentTimeMillis()
+                        /* TODO("Remove in production")  */
+                        val startTime = pair.first.getStartTimeMinusOffset().time - today.time.time
+                        val endTime = pair.first.getEndTimePlusOffset().time - today.time.time
+
+                        val remainingStartTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(startTime),
+                                TimeUnit.MILLISECONDS.toMinutes(startTime) % TimeUnit.HOURS.toMinutes(1),
+                                TimeUnit.MILLISECONDS.toSeconds(startTime) % TimeUnit.MINUTES.toSeconds(1))
+
+                        val remainingStopTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(endTime),
+                                TimeUnit.MILLISECONDS.toMinutes(endTime) % TimeUnit.HOURS.toMinutes(1),
+                                TimeUnit.MILLISECONDS.toSeconds(endTime) % TimeUnit.MINUTES.toSeconds(1))
+
+                        val timerTaskIn = Runnable {
+                            Log.d(TAG, "VoteFragment........")
+                            switchFragment(VoteFragment.newInstance("$talkId", talkTitle, talkAuthorName), "VoteFragment", false)
+                        }
+                        // TODO("Pass arguments to Wellcome Fragment?")
+                        val timerTaskOff = Runnable {
+                            Log.d(TAG, "WelcomeFragment.........")
+                            switchFragment(WelcomeFragment.newInstance("not", "used"), "WelcomeFragment", false)
+                        }
+                        Log.d(TAG, "Setting schedule for talk  $talkId $talkTitle starts in $remainingStartTime ends in $remainingStopTime")
+                        scheduledFutures?.add(scheduledExecutorService?.schedule(timerTaskIn, startTime, TimeUnit.MILLISECONDS))
+                        scheduledFutures?.add(scheduledExecutorService?.schedule(timerTaskOff, endTime, TimeUnit.MILLISECONDS))
+
+                    }
+                }
+            }
+        }
+
+        scheduledExecutorService?.shutdown()
     }
 
     private fun switchFragment(fragment: Fragment, tag: String, addToStack: Boolean = true): Unit {
@@ -164,52 +326,16 @@ class MainActivity :
 
     }
 
-    private fun setup(isConnected: Boolean): Unit = if (isConnected) {
-        dialog = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT) // this = YourActivity
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
-        dialog.setMessage(resources.getString(R.string.loading))
-        dialog.isIndeterminate = true
-        dialog.setCanceledOnTouchOutside(false)
-        dialog.show()
-        downloadSpeakers()
-    } else {
-        /*
-       * Un cop que les dades estan assentades a la base de dades local desde el servidor
-       * posem el fragment segons dels mode de treball auto/manual.
-       *
-       * */
-        autoMode = sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, true)
-
-        if (autoMode) {
-            val chooseTalkFragment = WelcomeFragment.newInstance("", "")
-            switchFragment(chooseTalkFragment, CHOOSE_TALK_FRAGMENT, false)
-
-            val talkDao: Dao<Talk, Int> = databaseHelper.getTalkDao()
-            talkDao.queryForAll().forEach {
-                val scheduleId = it.scheduleId
-                val session = SessionsTimes.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}")
-                val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")
-                Log.d(TAG, "$it $scheduleId $session $location")
-                talkSchedules.put(it, session to location)
-            }
-            setupTimer()
-        } else {
-            val chooseTalkFragment = ChooseTalkFragment.newInstance(1)
-            switchFragment(chooseTalkFragment, CHOOSE_TALK_FRAGMENT, false)
-        }
-
-    }
-
     private fun downloadSpeakers() {
 
 
         val speakersRequest: JsonObjectRequest = JsonObjectRequest(Request.Method.GET, SPEAKERS_URL, null,
                 Response.Listener { response ->
-                    //Log.d(TAG, "Speakers Response: %s".format(response.toString()))
+                    Log.d(TAG, "Speakers Response: %s".format(response.toString()))
                     parseAndStoreSpeakers(response.toString())
                 },
                 Response.ErrorListener { error ->
-                    Log.d(TAG, error.toString())
+                    Log.e(TAG, error.message)
                 })
         speakersRequest.tag = TAG
         /*
@@ -242,15 +368,14 @@ class MainActivity :
         val items = json.getJSONArray("items")
         val speakerDao: Dao<Speaker, Int> = databaseHelper.getSpeakerDao()
         val gson = Gson()
-
         for (i in 0 until (items.length())) {
             val speakerObject = items.getJSONObject(i)
             val speaker: Speaker = gson.fromJson(speakerObject.toString(), Speaker::class.java)
             try {
                 speakerDao.create(speaker)
-                //Log.e(TAG, "Speaker ${speaker.id} inserted")
+                Log.d(TAG, "Speaker ${speaker} inserted")
             } catch (e: Exception) {
-                Log.e(TAG, "Could not insert speaker ${speaker.id} ${e.message}")
+                Log.e(TAG, "Could not insert speaker ${speaker} ${e.message}")
             }
         }
     }
@@ -263,53 +388,10 @@ class MainActivity :
                     parseAndStoreTalks(response.toString())
                 },
                 Response.ErrorListener { error ->
-                    Log.d(TAG, error.toString())
+                    Log.e(TAG, error.message)
                 })
         talksRequest.tag = TAG
         requestQueue?.add(talksRequest)
-    }
-
-    /*
-    * Note that to insert talks into the database speakers need to be present already
-    * */
-    fun parseAndStoreTalks(talksJson: String) {
-        val json = JSONObject(talksJson)
-        val items = json.getJSONArray("items")
-        val talkDao: Dao<Talk, Int> = databaseHelper.getTalkDao()
-        val speakerTalkDao: Dao<SpeakerTalk, Int> = databaseHelper.getSpeakerTalkDao()
-        val gson = Gson()
-
-        for (i in 0 until (items.length())) {
-            val talkObject = items.getJSONObject(i)
-            val talk: Talk = gson.fromJson(talkObject.toString(), Talk::class.java)
-
-            try {
-                /* TODO("Delete this line") */
-                talk.scheduleId = getRandomScheduleId()
-                /* Guardamos cada talk */
-                talkDao.create(talk)
-                Log.e(TAG, "Talk ${talk.toString()} created")
-            } catch (e: Exception) {
-                Log.e(TAG, "Could not insert talk ${talk.id}")
-            }
-
-            /* relacionamos cada talk con su speaker/s  */
-            for (j in 0 until (talk.speakers!!.size)) {
-                val speakerRef: String = talk.speakers!!.get(j)
-                val dao: UtilDAOImpl = UtilDAOImpl(applicationContext, databaseHelper)
-                Log.d(TAG, "Looking for ref $speakerRef")
-                val speaker: Speaker = dao.lookupSpeakerByRef(speakerRef)
-                val speakerTalk = SpeakerTalk(0, speaker, talk)
-                try {
-                    speakerTalkDao.create(speakerTalk)
-                    Log.e(TAG, "Speaker-Talk ${speakerTalk.id} created")
-                } catch (e: Exception) {
-                    Log.e(TAG, "Could not insert Speaker-Talk ${speakerTalk.id}")
-                }
-            }
-        }
-        dialog.dismiss()
-        setup(false)
     }
 
     /*
@@ -340,8 +422,8 @@ class MainActivity :
 
     /* TODO("Delete in production")  */
     private fun getRandomScheduleId(): String {
-        val random = Random().nextInt(setOfScheduleIds.size)
-        val scheduleId = setOfScheduleIds.elementAt(random)
+        val rnd = random.nextInt(setOfScheduleIds.size)
+        val scheduleId = setOfScheduleIds.elementAt(rnd)
         setOfScheduleIds.remove(scheduleId)
         return scheduleId
     }
@@ -509,8 +591,10 @@ class MainActivity :
     }
 
     private fun cancelTimer() {
-        for (scheduledFuture in scheduledFutures) {
-            scheduledFuture?.cancel(true)
+        if (scheduledFutures != null) {
+            for (scheduledFuture in scheduledFutures!!) {
+                scheduledFuture?.cancel(true)
+            }
         }
     }
 
@@ -546,65 +630,6 @@ class MainActivity :
     }
 
     /*
-    * Set timers according to date/time and room name, one task per pending talk.
-    *
-    * Each task will show voting fragment with talk id, talk title, and author 15 minutes
-    * before conclusion and will show welcome fragment back 15 times after conclusion.
-    *
-    * So we need to find the list of talks matching today and this room
-    *
-    * */
-    private fun setupTimer() {
-        roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
-        if (roomName == resources.getString(R.string.pref_default_room_name)) {
-            Toast.makeText(this, resources.getString(R.string.pref_default_room_name), Toast.LENGTH_LONG).show()
-            // sharedPreferences.edit().putBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
-            return
-        }
-        // val today = GregorianCalendar.getInstance()
-        /* Testing...  */
-        val today = GregorianCalendar(2018, 6, 11, 9, 0)
-        talkSchedules.forEach { talk: Talk, pair: Pair<SessionsTimes, TalksLocations> ->
-            /* roomName es el nom de la room que gestionas aquesta tablet */
-            if (roomName == pair.second.getRoomName()) {
-                /* Aixo evita schedules amb initialDelays negatius que faria iniciar els thread inmediatament  */
-                if (today.before(pair.first.getStartTime())) {
-                    if (today.get(Calendar.YEAR) == pair.first.getStartTime().get(Calendar.YEAR)
-                            && today.get(Calendar.MONTH) == pair.first.getStartTime().get(Calendar.MONTH)
-                            && today.get(Calendar.DATE) == pair.first.getStartTime().get(Calendar.DATE)) {
-                        // compare today amb les dates de cada talk pero nomes dia, mes i any
-                        val talkId = talk.id
-                        val talkTitle = talk.title
-                        val talkAuthorRef = talk.speakers?.get(0) ?: "Unknown"
-                        val talkAuthor = utilDAOImpl.lookupSpeakerByRef(talkAuthorRef)
-                        val talkAuthorName = talkAuthor.name
-//                        val startTime = pair.first.getStartTimeMinusOffset().time - System.currentTimeMillis()
-//                        val endTime = pair.first.getEndTimePlusOffset().time - System.currentTimeMillis()
-                        /* TODO("Remove in production")  */
-                        val startTime = pair.first.getStartTimeMinusOffset().time - today.time.time
-                        val endTime = pair.first.getEndTimePlusOffset().time - today.time.time
-
-                        val remainingStartTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(startTime),
-                                TimeUnit.MILLISECONDS.toMinutes(startTime) % TimeUnit.HOURS.toMinutes(1),
-                                TimeUnit.MILLISECONDS.toSeconds(startTime) % TimeUnit.MINUTES.toSeconds(1))
-
-                        val remainingStopTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(endTime),
-                                TimeUnit.MILLISECONDS.toMinutes(endTime) % TimeUnit.HOURS.toMinutes(1),
-                                TimeUnit.MILLISECONDS.toSeconds(endTime) % TimeUnit.MINUTES.toSeconds(1))
-
-                        val timerTaskIn = Runnable { switchFragment(VoteFragment.newInstance("$talkId", talkTitle, talkAuthorName), "TAG", false) }
-                        // TODO("Pass arguments to Wellcome Fragment?")
-                        val timerTaskOff = Runnable { switchFragment(WelcomeFragment.newInstance("not", "used"), "TAG", false) }
-                        Log.d(TAG, "Setting schedule for talk  $talkId $talkTitle starts in $remainingStartTime ends in $remainingStopTime")
-                        scheduledFutures.add(scheduledExecutorService.schedule(timerTaskIn, startTime, TimeUnit.MILLISECONDS))
-                        scheduledFutures.add(scheduledExecutorService.schedule(timerTaskOff, endTime, TimeUnit.MILLISECONDS))
-                    }
-                }
-            }
-        }
-    }
-
-    /*
     *
     * */
     override fun onStatisticsFragment(msg: String) {
@@ -619,6 +644,7 @@ class MainActivity :
             setupTimer()
         else
             cancelTimer()
+        switchFragment(ChooseTalkFragment.newInstance(1), "TAG", false)
     }
 
     override fun onWelcomeFragment(msg: String) {
