@@ -18,6 +18,8 @@ class AppPreferenceFragment :
 
     private lateinit var sharedPreferences: SharedPreferences
     private var listener: OnAppPreferenceFragmentListener? = null
+    private lateinit var previousRoomName: String
+    private var previousAutoMode: Boolean = false
 
     /**
      */
@@ -25,24 +27,25 @@ class AppPreferenceFragment :
         addPreferencesFromResource(R.xml.pref_general)
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
 
-        var summary = if (sharedPreferences.getBoolean(PreferenceKeys.VIBRATOR_KEY, true))
+        var summary = if (sharedPreferences.getBoolean(PreferenceKeys.VIBRATOR_KEY, false))
             "On" else "Off"
         var preference = findPreference(PreferenceKeys.VIBRATOR_KEY)
         preference.summary = summary
 
-        summary = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, "Undefined")
+        summary = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
         preference = findPreference(PreferenceKeys.ROOM_KEY)
         preference.summary = summary
+        previousRoomName = summary
 
-        summary = if (sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, true))
-            "On" else "Off"
+        previousAutoMode = sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
+        summary = if (previousAutoMode) "On" else "Off"
         preference = findPreference(PreferenceKeys.AUTO_MODE_KEY)
         preference.summary = summary
 
         // Vertical/Horizontal/Lineal Bar Chart
-        summary = sharedPreferences.getString(PreferenceKeys.CHART_TYPE_KEY, "Vertical Bar Chart")
-        preference = findPreference(PreferenceKeys.CHART_TYPE_KEY)
-        preference.summary = summary
+//        summary = sharedPreferences.getString(PreferenceKeys.CHART_TYPE_KEY, "Vertical Bar Chart")
+//        preference = findPreference(PreferenceKeys.CHART_TYPE_KEY)
+//        preference.summary = summary
     }
 
     override fun onResume() {
@@ -68,10 +71,19 @@ class AppPreferenceFragment :
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        if (sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name)) != previousRoomName
+                || sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false) != previousAutoMode) {
+            listener?.onAppPreferenceFragment(sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false))
+        }
+    }
+
     override fun onDetach() {
         super.onDetach()
         listener = null
     }
+
 
     interface OnAppPreferenceFragmentListener {
         fun onAppPreferenceFragment(autoMode: Boolean)
@@ -95,30 +107,32 @@ class AppPreferenceFragment :
 
         when (key) {
             PreferenceKeys.VIBRATOR_KEY -> {
-                val vibrator = sharedPreferences!!.getBoolean(key, true)
+                val vibrator = sharedPreferences!!.getBoolean(key, false)
                 val summary = if (vibrator) "On" else "Off"
                 preference.summary = summary
                 sharedPreferences.edit().putBoolean(key, vibrator).commit()
             }
             PreferenceKeys.ROOM_KEY -> {
                 val summary = sharedPreferences!!.getString(key, resources.getString(R.string.pref_default_room_name))
-                val mode = sharedPreferences!!.getBoolean(PreferenceKeys.AUTO_MODE_KEY, true)
+                val mode = sharedPreferences!!.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
                 preference.summary = summary
                 sharedPreferences.edit().putString(key, summary).commit()
-                listener?.onAppPreferenceFragment(mode)
+                // al listener se l'ha de cridar des d'onDestroy
+                //listener?.onAppPreferenceFragment(mode)
             }
             PreferenceKeys.AUTO_MODE_KEY -> {
-                val mode = sharedPreferences!!.getBoolean(key, true)
+                val mode = sharedPreferences!!.getBoolean(key, false)
                 val summary = if (mode) "On" else "Off"
                 preference.summary = summary
                 sharedPreferences.edit().putBoolean(key, mode).commit()
-                listener?.onAppPreferenceFragment(mode)
+                // al listener se l'ha de cridar des d'onDestroy
+                //listener?.onAppPreferenceFragment(mode)
             }
-            PreferenceKeys.CHART_TYPE_KEY -> {
-                val summary = sharedPreferences!!.getString(key, resources.getString(R.string.pref_default_chart_type))
-                preference.summary = summary
-                sharedPreferences.edit().putString(key, summary).commit()
-            }
+//            PreferenceKeys.CHART_TYPE_KEY -> {
+//                val summary = sharedPreferences!!.getString(key, resources.getString(R.string.pref_default_chart_type))
+//                preference.summary = summary
+//                sharedPreferences.edit().putString(key, summary).commit()
+//            }
         }
     }
 }

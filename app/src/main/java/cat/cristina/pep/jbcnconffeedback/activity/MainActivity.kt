@@ -125,10 +125,6 @@ class MainActivity :
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
-    }
-
-    override fun onStart() {
-        super.onStart()
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
@@ -137,6 +133,11 @@ class MainActivity :
         databaseHelper = OpenHelperManager.getHelper(applicationContext, DatabaseHelper::class.java)
 
         utilDAOImpl = UtilDAOImpl(this, databaseHelper)
+
+    }
+
+    override fun onStart() {
+        super.onStart()
 
         val (connected, reason) = isDeviceConnectedToWifiOrData()
 
@@ -195,32 +196,50 @@ class MainActivity :
         setup(false)
     }
 
-    private fun setup(isConnected: Boolean): Unit =
 
-            if (isConnected) {
-                dialog = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT) // this = YourActivity
-                dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
-                dialog.setMessage(resources.getString(R.string.loading))
-                dialog.isIndeterminate = true
-                dialog.setCanceledOnTouchOutside(false)
-                dialog.show()
-                downloadSpeakers()
-            } else {
-                /*
-               * Un cop que les dades estan assentades a la base de dades local desde el servidor
-               * posem el fragment segons dels mode de treball auto/manual.
-               *
-               * */
+    fun getAutoModeAndRoomName(): Pair<Boolean, String> =
+            Pair(sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false), sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name)))
 
-                autoMode = sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, true)
+    /*
+    * This method downloads speakers and talks if there is a suitable connection. It also
+    * has into account autoMode and roomName to present the right initial fragment
+    * */
+    private fun setup(downloadData: Boolean): Unit {
 
-                if (autoMode) {
-                    //val fragment = WelcomeFragment.newInstance("", "")
-                    //switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
+        if (downloadData) {
+            dialog = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT) // this = YourActivity
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
+            dialog.setMessage(resources.getString(R.string.loading))
+            dialog.isIndeterminate = true
+            dialog.setCanceledOnTouchOutside(false)
+            dialog.show()
+            downloadSpeakers()
+        } else {
+            /*
+           * Un cop que les dades estan assentades a la base de dades local desde el servidor
+           * posem el fragment segons el mode de treball auto/manual.
+           *
+           * */
 
+            autoMode = getAutoModeAndRoomName().first
+
+            roomName = getAutoModeAndRoomName().second
+
+            if (autoMode) {
+                //val fragment = WelcomeFragment.newInstance("", "")
+                //switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
+
+                if (roomName == resources.getString(R.string.pref_default_room_name)) {
+                    sharedPreferences.edit().putBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
+                    Toast.makeText(this, resources.getString(R.string.pref_default_room_name), Toast.LENGTH_LONG).show()
+                    val fragment = ChooseTalkFragment.newInstance(1)
+                    switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
+                } else { // autoMode and roomName set
+                    // talkSchedules is a Map<Talk, Pair<SessionsTimes, TalksLocations>>
                     val talkDao: Dao<Talk, Int> = databaseHelper.getTalkDao()
                     talkDao.queryForAll().forEach {
                         val scheduleId = it.scheduleId
+                        // scheduleId format #MON-TC1-SE1
                         val session = SessionsTimes.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}")
                         val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")
                         Log.d(TAG, "$it $scheduleId $session $location")
@@ -228,11 +247,13 @@ class MainActivity :
                         talkSchedules.put(it, session to location)
                     }
                     setupTimer()
-                } else {
-                    val fragment = ChooseTalkFragment.newInstance(1)
-                    switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
                 }
+            } else { // autoMode is false (manual)
+                val fragment = ChooseTalkFragment.newInstance(1)
+                switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
             }
+        }
+    }
 
     /*
        * Set timers according to date/time and room name, one task per pending talk.
@@ -244,15 +265,9 @@ class MainActivity :
        *
        * */
     private fun setupTimer() {
+
         val fragment = WelcomeFragment.newInstance("", "")
         switchFragment(fragment, WELLCOME_FRAGMENT, false)
-        roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
-        if (roomName == resources.getString(R.string.pref_default_room_name)) {
-
-            Toast.makeText(this, resources.getString(R.string.pref_default_room_name), Toast.LENGTH_LONG).show()
-            // sharedPreferences.edit().putBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
-            return
-        }
         Toast.makeText(this, "Setting timers...", Toast.LENGTH_LONG).show()
         scheduledExecutorService = Executors.newScheduledThreadPool(5)
         scheduledFutures = mutableListOf()
@@ -640,11 +655,12 @@ class MainActivity :
     *
     * */
     override fun onAppPreferenceFragment(autoMode: Boolean) {
-        if (autoMode)
+        if (autoMode) {
             setupTimer()
-        else
+        } else {
             cancelTimer()
-        switchFragment(ChooseTalkFragment.newInstance(1), "TAG", false)
+            switchFragment(ChooseTalkFragment.newInstance(1), "TAG", false)
+        }
     }
 
     override fun onWelcomeFragment(msg: String) {
