@@ -24,6 +24,9 @@ data class Talk (
         @DatabaseField(columnName = LEVEL_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
         var level: String = "",
 
+        @DatabaseField(columnName = SCHEDULEDID_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
+        var scheduleId: String = "",
+
         @DatabaseField(columnName = SPEAKERS_FIELD_NAME, dataType = DataType.SERIALIZABLE, canBeNull = false)
         var speakers: Array<String>? = null) {
 
@@ -35,6 +38,7 @@ data class Talk (
         const val TYPE_FIELD_NAME = "type"
         //const val TAGS_FIELD_NAME = "tags"
         const val LEVEL_FIELD_NAME = "level"
+        const val SCHEDULEDID_FIELD_NAME = "scheduleId"
         const val SPEAKERS_FIELD_NAME = "speakers"
     }
 }

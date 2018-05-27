@@ -61,14 +61,30 @@
     <string name="pref_description_vibrator">Get vibration feedback</string>
 
     <string name="pref_title_room_name">Room name</string>
-    <string name="pref_default_room_name">No room assigned</string>
+    <string name="pref_default_room_name">Room Not Defined</string>
+    <string-array name="pref_room_names_titles">
+        <item>First Room</item>
+        <item>Second Room</item>
+        <item>Third Room</item>
+        <item>Fourth Room</item>
+        <item>Fifth Room</item>
+        <item>Sixth Room</item>
+    </string-array>
+
+    <string-array name="pref_room_names_values">
+        <item>Room #1</item>
+        <item>Room #2</item>
+        <item>Room #3</item>
+        <item>Room #4</item>
+        <item>Room #5</item>
+        <item>Room #6</item>
+    </string-array>
 
     <string name="pref_title_auto_mode">Auto Mode</string>
     <string name="pref_description_auto_mode">Voting is triggered automatically</string>
 
     <string name="pref_title_chart_type">Chart Type</string>
     <string name="pref_default_chart_type">Vertical Bar Chart</string>
-
     <string-array name="pref_chart_type_titles">
         <item>Vertical Bar Chart</item>
         <item>Horizontal Bar Chart</item>
