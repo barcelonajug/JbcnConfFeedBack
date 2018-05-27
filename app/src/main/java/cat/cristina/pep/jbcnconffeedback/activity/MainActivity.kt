@@ -7,10 +7,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
-import android.os.Build
-import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
+import android.net.Uri
+import android.os.*
 import android.support.annotation.CallSuper
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
@@ -40,9 +38,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import com.j256.ormlite.android.apptools.OpenHelperManager
 import com.j256.ormlite.dao.Dao
+import com.opencsv.CSVWriter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import org.json.JSONObject
+import java.io.File
+import java.io.FileWriter
 import java.util.*
 
 
@@ -320,7 +321,7 @@ class MainActivity :
 
         val scoreDao: Dao<Score, Int> = databaseHelper.getScoreDao()
 
-        if(scoreDao.countOf() > 0) {
+        if (scoreDao.countOf() > 0) {
 
             if (isDeviceConnectedToWifiOrData().first) {
 
@@ -347,12 +348,10 @@ class MainActivity :
 
                 }
 
-            }
-            else { // no connection
+            } else { // no connection
                 Toast.makeText(this, R.string.sorry_not_connected, Toast.LENGTH_LONG).show()
             }
-        }
-        else { // no records
+        } else { // no records
             Toast.makeText(this, R.string.sorry_no_local_data, Toast.LENGTH_LONG).show()
         }
 
@@ -382,19 +381,92 @@ class MainActivity :
                 return true
             }
             R.id.email -> {
-                var to = arrayOf(sharedPreferences.getString(PreferenceKeys.EMAIL,""))
-
-                val emailIntent = Intent(Intent.ACTION_SEND)
-                emailIntent.type = "text/html"
-                emailIntent.putExtra(Intent.EXTRA_EMAIL, to)
-                emailIntent.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.email_subject))
-                emailIntent.putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.email_message))
-                startActivity(emailIntent)
+                createCSVFileExternalStorage()
             }
         }
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+//    fun writeCsv() {
+//        val fileName = "talks.csv"
+//
+//        try {
+//            val file = File(filesDir, fileName)
+//            val fileWriter: FileWriter = FileWriter(file)
+//            val csvWriter: CSVWriter = CSVWriter(fileWriter, CSVWriter.DEFAULT_SEPARATOR,
+//                    CSVWriter.NO_QUOTE_CHARACTER,
+//                    CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+//                    CSVWriter.DEFAULT_LINE_END)
+//
+//            csvWriter.writeNext(arrayOf("Cris", "cris@hotmail.com", "+1-1111111112", "Spain"))
+//            csvWriter.writeNext(arrayOf("Pep", "pep@hotmail.com", "+1-1111111112", "Spain"))
+//            csvWriter.flush()
+//            csvWriter.close()
+//            Toast.makeText(this, "ECG values saved", Toast.LENGTH_SHORT).show()
+//
+//            //val contentUri = FileProvider.getUriForFile(applicationContext, "cat.cristina.pep.jbcnconffeedback", file)
+//
+//            var to = arrayOf(sharedPreferences.getString(PreferenceKeys.EMAIL, ""))
+//
+//            val emailIntent = Intent(Intent.ACTION_SEND)
+//            emailIntent.type = "text/plain"
+//            emailIntent.putExtra(Intent.EXTRA_EMAIL, to)
+//            emailIntent.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.email_subject))
+//            emailIntent.putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.email_message))
+//            emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//            emailIntent.putExtra(Intent.EXTRA_STREAM, file.toURI())
+//            startActivity(emailIntent)
+//        } catch (e: IOException) {
+//            Toast.makeText(this, "Error while saving values", Toast.LENGTH_SHORT).show()
+//            Log.e("error", "" + e.message)
+//            Log.e("error", "" + e.stackTrace)
+//        }
+//    }
+
+    /**
+     * /storage/emulated/0/Android/data/org.escoladeltreball.schedulerdemo1/files/Documents/data.csv
+     */
+    private fun createCSVFileExternalStorage(): Unit {
+        val fileName = "talks.csv"
+        try {
+            // Get the directory for the user's public pictures directory.
+            val file = File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
+            val writer = FileWriter(file)
+            val csvWriter = CSVWriter(writer,
+                    CSVWriter.DEFAULT_SEPARATOR,
+                    CSVWriter.NO_QUOTE_CHARACTER,
+                    CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+                    CSVWriter.DEFAULT_LINE_END)
+
+            csvWriter.writeNext(arrayOf("Name", "Email", "Phone", "Country"))
+            csvWriter.writeNext(arrayOf("pep", "pep@gmail.com", "100000000", "catalunya"))
+            csvWriter.writeNext(arrayOf("cris", "cris@gmail.com", "111111111", "spain"))
+            csvWriter.flush()
+            csvWriter.close()
+            if (!file.exists())
+                Toast.makeText(this, "$file no exists", Toast.LENGTH_LONG).show()
+
+            Log.d(TAG, "${file.absolutePath}")
+
+            sendCSVByEmail(fileName)
+        } catch (e: Exception) {
+            Log.d(TAG, e.message)
+        }
+    }
+
+    private fun sendCSVByEmail(fileName: String): Unit {
+        var emailAddress = arrayOf(sharedPreferences.getString(PreferenceKeys.EMAIL, ""))
+        val file = File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
+        val emailIntent = Intent(Intent.ACTION_SEND)
+        emailIntent.type = "text/plain"
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, emailAddress)
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.email_subject))
+        emailIntent.putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.email_message))
+        val uri = Uri.fromFile(file)
+        emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
+        startActivity(Intent.createChooser(emailIntent, "Pick an Email provider"))
     }
 
     /*
@@ -460,15 +532,14 @@ class MainActivity :
     private fun setupTimer(autoMode: Boolean) {
         if (autoMode) {
             timer = Timer("autoMode")
-            timer?.scheduleAtFixedRate(object: TimerTask() {
+            timer?.scheduleAtFixedRate(object : TimerTask() {
                 /* The action to be performed by this timer task */
                 override fun run() {
                     Log.d(TAG, "in timer")
                 }
 
             }, Date(), 1_000)
-        }
-        else {
+        } else {
             timer?.cancel()
             timer = null
         }
