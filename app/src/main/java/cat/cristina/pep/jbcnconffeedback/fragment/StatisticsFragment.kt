@@ -94,7 +94,11 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.action_send_statistics -> createCVSFromStatistics(DEFAULT_STATISTICS_FILE_NAME)
+            R.id.action_send_statistics -> {
+                createCVSFromStatistics(DEFAULT_STATISTICS_FILE_NAME)
+                sendCSVByEmail(DEFAULT_STATISTICS_FILE_NAME)
+            }
+
         }
         return true
     }
@@ -350,23 +354,30 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
         dataFromFirestore
                 ?.asSequence()
                 ?.forEach {
+                    val idTalk = it.key
+                    var title = databaseHelper.getTalkDao().queryForId(idTalk?.toInt()).title
+                    title = title.replace(",", " ")
+                    if (title.length > 30)
+                        title = title.substring(0, 30) + " ..."
                     dataFromFirestore?.get(it.key)
                             ?.asSequence()
-                            ?.map { doc ->
-                                val id_talk = doc.getLong("id_talk")
-                                val title = databaseHelper.getTalkDao().queryForId(id?.toInt()).title
-                                val score = doc.get("score") as Int
-                                val date = doc.getDate("date") as Date
-                                csvWriter.writeNext(arrayOf(id_talk.toString(), title, score.toString(), date.toString()))
+                            ?.forEach { doc: QueryDocumentSnapshot ->
+                                val score = doc.get("score")
+                                val date = doc.getDate("date")
+                                Log.d(TAG, "$idTalk $title $score $date")
+                                csvWriter.writeNext(arrayOf(idTalk.toString(), title, score.toString(), date.toString()))
                             }
                 }
+
+        csvWriter.close()
+        //Toast.makeText(context, "SCV file created", Toast.LENGTH_LONG).show()
 
 
         Log.d(TAG, file.absolutePath)
     }
 
     private fun sendCSVByEmail(fileName: String): Unit {
-        var emailAddress = arrayOf(sharedPreferences.getString(PreferenceKeys.EMAIL, ""))
+        var emailAddress = arrayOf(sharedPreferences.getString(PreferenceKeys.EMAIL, resources.getString(R.string.pref_default_email)))
         val file = File(context?.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
         val emailIntent = Intent(Intent.ACTION_SEND)
         emailIntent.type = "text/plain"
@@ -375,7 +386,13 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
         emailIntent.putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.email_message))
         val uri = Uri.fromFile(file)
         emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
-        startActivity(Intent.createChooser(emailIntent, "Pick an Email provider"))
+        val componentName = emailIntent.resolveActivity(context?.packageManager)
+        if (componentName != null)
+            startActivity(Intent.createChooser(emailIntent, "Pick an Email provider"))
+        else
+            Toast.makeText(context, "There is no application installed in this device to handle this request", Toast.LENGTH_LONG).show()
+
+        //Toast.makeText(context, "email sent", Toast.LENGTH_LONG).show()
     }
 
 

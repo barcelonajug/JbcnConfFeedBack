@@ -33,6 +33,15 @@
         android:summary="@string/pref_description_vibrator"
         android:title="@string/pref_title_vibrator" />
 
+    <EditTextPreference
+        android:capitalize="none"
+        android:defaultValue="@string/pref_default_email"
+        android:inputType="textEmailAddress"
+        android:key="@string/pref_email_key"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="@string/pref_title_email" />
+
 
     <!-- ListPreference
         android:defaultValue="@string/pref_title_chart_type"

@@ -128,6 +128,13 @@ class AppPreferenceFragment :
                 // al listener se l'ha de cridar des d'onDestroy
                 //listener?.onAppPreferenceFragment(mode)
             }
+
+            PreferenceKeys.EMAIL -> {
+                val summary = sharedPreferences!!.getString(key, resources.getString(R.string.pref_default_email))
+                preference.summary = summary
+                sharedPreferences.edit().putString(key, summary).commit()
+            }
+
 //            PreferenceKeys.CHART_TYPE_KEY -> {
 //                val summary = sharedPreferences!!.getString(key, resources.getString(R.string.pref_default_chart_type))
 //                preference.summary = summary

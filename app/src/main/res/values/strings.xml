@@ -10,6 +10,7 @@
     <string name="action_exit">Exit</string>
 
     <!-- Main Activity -->
+
     <string name="talk_title">Talk Title</string>
     <string name="speaker_name">Speaker Name</string>
     <string name="not_implemented">Not implemented.</string>
@@ -20,13 +21,14 @@
 
     <!-- StatisticsFragment  -->
 
-    <string name="email_subject">Jbcn Conf Stadistics CSV</string>
-    <string name="email_message">This is the CSV with all the data related to stadistics</string>
+    <string name="email_subject">Statistics Report</string>
+    <string name="email_message">Please, double click the CSV file to download.</string>
 
 
     <string name="sorry_working_offline">Sorry, working offline.</string>
 
     <!-- CardView -->
+
     <string name="cardview_talk_title">title</string>
     <string name="cardview_speaker_name">speaker name</string>
     <string name="cardview_item_number">1</string>
@@ -62,12 +64,15 @@
     <string name="pref_auto_mode_key">auto_mode_key</string>
     <string name="pref_chart_type_key">chart_type_key</string>
     <string name="pref_email_key">email_key</string>
+    <string name="pref_title_email">Email</string>
+    <string name="pref_default_email">jmendez1@xtec.cat</string>
 
     <string name="pref_title_vibrator">Vibrator</string>
     <string name="pref_description_vibrator">Get vibration feedback</string>
 
     <string name="pref_title_room_name">Room name</string>
     <string name="pref_default_room_name">Room Not Defined</string>
+
     <string-array name="pref_room_names_titles">
         <item>First Room</item>
         <item>Second Room</item>
