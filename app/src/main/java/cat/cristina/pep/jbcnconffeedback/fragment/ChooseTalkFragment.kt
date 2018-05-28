@@ -7,6 +7,7 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
+import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent.TalkItem
@@ -24,6 +25,7 @@ class ChooseTalkFragment : Fragment() {
 
     // TODO: Customize parameters
     private var columnCount = 1
+    private var isFiltered = false
 
     private var listener: OnChooseTalkListener? = null
 
@@ -32,6 +34,7 @@ class ChooseTalkFragment : Fragment() {
 
         arguments?.let {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
+            isFiltered = it.getBoolean(ARG_FILTER_BY_DATE)
         }
         talkContent = TalkContent(activity!!.applicationContext)
         setHasOptionsMenu(true)
@@ -48,9 +51,17 @@ class ChooseTalkFragment : Fragment() {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                adapter = MyTalkRecyclerViewAdapter(talkContent.ITEMS, listener, context)
+                adapter =
+                        if (isFiltered) MyTalkRecyclerViewAdapter(talkContent.ITEMS_FILTERED_BY_DATE, listener, context)
+                        else MyTalkRecyclerViewAdapter(talkContent.ITEMS, listener, context)
             }
         }
+//        if (isFiltered) {
+//            Toast.makeText(context, "Talks filtered by date and room.", Toast.LENGTH_LONG).show()
+//        }
+//        else {
+//            Toast.makeText(context, "All talks are shown.", Toast.LENGTH_LONG).show()
+//        }
         return view
     }
 
@@ -76,9 +87,14 @@ class ChooseTalkFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+
         when (item?.itemId) {
             R.id.action_update -> {
                 listener?.onUpdateTalks()
+                return true
+            }
+            R.id.action_filter -> {
+                listener?.onFilterTalks(!isFiltered)
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
@@ -100,19 +116,22 @@ class ChooseTalkFragment : Fragment() {
     interface OnChooseTalkListener {
         fun onChooseTalk(item: TalkItem?)
         fun onUpdateTalks()
+        fun onFilterTalks(filtered: Boolean)
     }
 
     companion object {
 
         // TODO: Customize parameter argument names
         const val ARG_COLUMN_COUNT = "column-count"
+        const val ARG_FILTER_BY_DATE = "filter-by-day"
 
         // TODO: Customize parameter initialization
         @JvmStatic
-        fun newInstance(columnCount: Int) =
+        fun newInstance(columnCount: Int, filterByDay: Boolean = false) =
                 ChooseTalkFragment().apply {
                     arguments = Bundle().apply {
                         putInt(ARG_COLUMN_COUNT, columnCount)
+                        putBoolean(ARG_FILTER_BY_DATE, filterByDay)
                     }
                 }
     }

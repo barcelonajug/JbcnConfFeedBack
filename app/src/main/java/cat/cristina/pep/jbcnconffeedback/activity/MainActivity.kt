@@ -6,7 +6,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.support.annotation.CallSuper
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
@@ -35,14 +38,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import com.j256.ormlite.android.apptools.OpenHelperManager
 import com.j256.ormlite.dao.Dao
-import com.opencsv.CSVWriter
-import com.opencsv.bean.ColumnPositionMappingStrategy
-import com.opencsv.bean.StatefulBeanToCsvBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import org.json.JSONObject
-import java.io.File
-import java.io.FileWriter
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -108,8 +106,9 @@ class MainActivity :
     private val talkSchedules = HashMap<Talk, Pair<SessionsTimes, TalksLocations>>()
     // TODO("Delete in production")
     private val setOfScheduleIds: MutableSet<String> = mutableSetOf()
+    private lateinit var sharedPreferences: SharedPreferences
+    private var filteredTalks = true
 
-    lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -247,7 +246,8 @@ class MainActivity :
                     setupTimer()
                 }
             } else { // autoMode is false (manual)
-                val fragment = ChooseTalkFragment.newInstance(1)
+                filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
+                val fragment = ChooseTalkFragment.newInstance(1, filteredTalks)
                 switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
             }
         }
@@ -270,7 +270,7 @@ class MainActivity :
         scheduledExecutorService = Executors.newScheduledThreadPool(5)
         scheduledFutures = mutableListOf()
         // val today = GregorianCalendar.getInstance()
-        /* Testing...  */
+        /* TODO("REMOVE in production") */
         val today = GregorianCalendar(2018, 6, 11, 9, 0)
 
         talkSchedules.forEach { talk: Talk, pair: Pair<SessionsTimes, TalksLocations> ->
@@ -554,6 +554,13 @@ class MainActivity :
         return true
     }
 
+    override fun onFilterTalks(filtered: Boolean) {
+        sharedPreferences.edit().putBoolean(PreferenceKeys.FILTERED_TALKS_KEY, filtered).commit()
+        filteredTalks = filtered
+        val fragment = ChooseTalkFragment.newInstance(1, filtered)
+        switchFragment(fragment, "$CHOOSE_TALK_FRAGMENT$filtered", false)
+    }
+
     /*
     *
     * Note that documents in a collections can contain different sets of information, key-value pairs
@@ -633,7 +640,8 @@ class MainActivity :
             setupTimer()
         } else {
             cancelTimer()
-            switchFragment(ChooseTalkFragment.newInstance(1), "TAG", false)
+            val roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
+            switchFragment(ChooseTalkFragment.newInstance(1, filteredTalks), "$CHOOSE_TALK_FRAGMENT$roomName", false)
         }
     }
 

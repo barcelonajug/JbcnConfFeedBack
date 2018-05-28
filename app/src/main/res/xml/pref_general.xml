@@ -18,7 +18,6 @@
 
     <ListPreference
         android:defaultValue="@string/pref_default_room_name"
-        android:dependency="@string/pref_auto_mode_key"
         android:entries="@array/pref_room_names_titles"
         android:entryValues="@array/pref_room_names_values"
         android:key="@string/pref_room_key"

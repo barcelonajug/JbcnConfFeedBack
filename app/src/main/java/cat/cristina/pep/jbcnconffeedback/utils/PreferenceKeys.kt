@@ -8,5 +8,6 @@ class PreferenceKeys {
         const val CHART_TYPE_KEY = "chart_type_key"
         const val AUTO_MODE_KEY = "auto_mode_key"
         const val EMAIL = "email_key"
+        const val FILTERED_TALKS_KEY = "filtered_talks_rey"
     }
 }
