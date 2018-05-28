@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 
 import cat.cristina.pep.jbcnconffeedback.R
+import kotlinx.android.synthetic.main.fragment_vote.*
+import kotlinx.android.synthetic.main.fragment_welcome.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -41,6 +43,11 @@ class WelcomeFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_welcome, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        tvRoomName.text = param1
     }
 
     // TODO: Rename method, update argument and hook method into UI event

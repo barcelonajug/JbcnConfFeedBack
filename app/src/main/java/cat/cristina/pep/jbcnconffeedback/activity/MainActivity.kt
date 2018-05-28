@@ -223,8 +223,6 @@ class MainActivity :
             roomName = getAutoModeAndRoomName().second
 
             if (autoMode) {
-                //val fragment = WelcomeFragment.newInstance("", "")
-                //switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
 
                 if (roomName == resources.getString(R.string.pref_default_room_name)) {
                     sharedPreferences.edit().putBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
@@ -264,8 +262,8 @@ class MainActivity :
        * */
     private fun setupTimer() {
 
-        val fragment = WelcomeFragment.newInstance("", "")
-        switchFragment(fragment, WELLCOME_FRAGMENT, false)
+        val fragment = WelcomeFragment.newInstance(roomName, "")
+        switchFragment(fragment, "$WELLCOME_FRAGMENT$roomName", false)
         Toast.makeText(this, "Setting timers...", Toast.LENGTH_LONG).show()
         scheduledExecutorService = Executors.newScheduledThreadPool(5)
         scheduledFutures = mutableListOf()
@@ -308,7 +306,7 @@ class MainActivity :
                         // TODO("Pass arguments to Wellcome Fragment?")
                         val timerTaskOff = Runnable {
                             Log.d(TAG, "WelcomeFragment.........")
-                            switchFragment(WelcomeFragment.newInstance("not", "used"), "WelcomeFragment", false)
+                            switchFragment(WelcomeFragment.newInstance(roomName, "used"), "WelcomeFragment", false)
                         }
                         Log.d(TAG, "Setting schedule for talk  $talkId $talkTitle starts in $remainingStartTime ends in $remainingStopTime")
                         scheduledFutures?.add(scheduledExecutorService?.schedule(timerTaskIn, startTime, TimeUnit.MILLISECONDS))
@@ -636,11 +634,11 @@ class MainActivity :
     *
     * */
     override fun onAppPreferenceFragment(autoMode: Boolean) {
+        roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
         if (autoMode) {
             setupTimer()
         } else {
             cancelTimer()
-            val roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
             switchFragment(ChooseTalkFragment.newInstance(1, filteredTalks), "$CHOOSE_TALK_FRAGMENT$roomName", false)
         }
     }
