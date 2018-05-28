@@ -4,10 +4,14 @@ package cat.cristina.pep.jbcnconffeedback.fragment
 //import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.support.v4.app.Fragment
+import android.support.v7.preference.PreferenceManager
 import android.util.Log
 import android.view.*
 import android.widget.Toast
@@ -15,6 +19,7 @@ import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.activity.MainActivity
 import cat.cristina.pep.jbcnconffeedback.model.DatabaseHelper
 import cat.cristina.pep.jbcnconffeedback.model.Talk
+import cat.cristina.pep.jbcnconffeedback.utils.PreferenceKeys
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -56,6 +61,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
     private var dataFromFirestore: Map<Long?, List<QueryDocumentSnapshot>>? = null
     private lateinit var dialog: ProgressDialog
     private lateinit var databaseHelper: DatabaseHelper
+    lateinit var sharedPreferences: SharedPreferences
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +72,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
         }
         setHasOptionsMenu(true)
         databaseHelper = OpenHelperManager.getHelper(activity, DatabaseHelper::class.java)
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -272,9 +279,14 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
     }
 
     /*
- * CSV From list of objects
- * No va, tiene una depedencia externa y da error
- * */
+    * No usar.
+    * CSV From list of objects
+    * No va, tiene una depedencia externa y da error missing "java.beans.Introspector"
+    * https://code.google.com/archive/p/openbeans/downloads
+    *
+    * Lo añado al proyecto como dependencia externa pero sigue sin ir y cuando
+    * hago un rebuild del proyecto elimina el directorio libs y el contenido
+    * */
     private fun createCVSFromStatisticsByObject(fileName: String): Unit {
         data class Statistic(val id: Long, val title: String, val score: Int, val date: Date)
 
@@ -352,6 +364,20 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
 
         Log.d(TAG, file.absolutePath)
     }
+
+    private fun sendCSVByEmail(fileName: String): Unit {
+        var emailAddress = arrayOf(sharedPreferences.getString(PreferenceKeys.EMAIL, ""))
+        val file = File(context?.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
+        val emailIntent = Intent(Intent.ACTION_SEND)
+        emailIntent.type = "text/plain"
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, emailAddress)
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.email_subject))
+        emailIntent.putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.email_message))
+        val uri = Uri.fromFile(file)
+        emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
+        startActivity(Intent.createChooser(emailIntent, "Pick an Email provider"))
+    }
+
 
     fun onButtonPressed(msg: String) {
         listenerStatistics?.onStatisticsFragment(msg)
