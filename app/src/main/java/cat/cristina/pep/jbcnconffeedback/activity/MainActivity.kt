@@ -144,22 +144,7 @@ class MainActivity :
                 dialogFragment.show(supportFragmentManager, "DialogFragment")
 
             }
-
-            override fun onDrawerStateChanged(newState: Int) {
-                super.onDrawerStateChanged(newState)
-                when(newState) {
-                    DrawerLayout.STATE_DRAGGING -> {
-                        //drawer_layout.closeDrawer(Gravity.LEFT)
-                    }
-                    DrawerLayout.STATE_IDLE -> {
-
-                    }
-                    DrawerLayout.STATE_SETTLING -> {
-
-                    }
-
-                }
-            }
+            
         })
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
