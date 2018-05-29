@@ -28,6 +28,12 @@
     <string name="sign_in">Sign in</string>
     <string name="cancel">Cancel</string>
 
+
+    <!-- AboutUsDialogFragment  -->
+
+    <string name="about_pep">Pep Mendez #pepmenval</string>
+    <string name="about_cristina">Cristina Asensio #cristiasensiom</string>
+
     <!-- StatisticsFragment  -->
 
     <string name="email_subject">Statistics Report</string>
