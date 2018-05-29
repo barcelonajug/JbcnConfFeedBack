@@ -94,7 +94,7 @@ class MainActivity :
         AppPreferenceFragment.OnAppPreferenceFragmentListener,
         StatisticsFragment.OnStatisticsFragmentListener,
         WelcomeFragment.OnWelcomeFragmentListener,
-        CredentialsFragment.CredentialsFragmentListener {
+        CredentialsDialogFragment.CredentialsDialogFragmentListener {
 
     private val random = Random()
 
@@ -140,11 +140,11 @@ class MainActivity :
 
             override fun onDrawerOpened(drawerView: View) {
                 super.onDrawerOpened(drawerView)
-                dialogFragment = CredentialsFragment.newInstance("", "")
+                dialogFragment = CredentialsDialogFragment.newInstance("", "")
                 dialogFragment.show(supportFragmentManager, "DialogFragment")
 
             }
-            
+
         })
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)

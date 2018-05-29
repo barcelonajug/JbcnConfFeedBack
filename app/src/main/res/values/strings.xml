@@ -21,7 +21,7 @@
     <string name="success_data_updated">All data updated successfully.</string>
 
 
-    <!-- CredentialsFragment  -->
+    <!-- CredentialsDialogFragment  -->
 
     <string name="username">User name</string>
     <string name="password">Password</string>

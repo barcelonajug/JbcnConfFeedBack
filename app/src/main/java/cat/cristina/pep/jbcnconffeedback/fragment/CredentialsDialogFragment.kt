@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.widget.EditText
-import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
 
 
@@ -21,9 +20,9 @@ private const val ARG_PARAM2 = "param2"
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [CredentialsFragment.CredentialsFragmentListener] interface
+ * [CredentialsDialogFragment.CredentialsDialogFragmentListener] interface
  * to handle interaction events.
- * Use the [CredentialsFragment.newInstance] factory method to
+ * Use the [CredentialsDialogFragment.newInstance] factory method to
  * create an instance of this fragment.
  *
  * onAttach
@@ -35,7 +34,7 @@ private const val ARG_PARAM2 = "param2"
  * onResume
  *
  */
-class CredentialsFragment : DialogFragment() {
+class CredentialsDialogFragment : DialogFragment() {
     /**
      * Called when an action is being performed.
      *
@@ -51,13 +50,13 @@ class CredentialsFragment : DialogFragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private var listener: CredentialsFragmentListener? = null
+    private var listenerDialog: CredentialsDialogFragmentListener? = null
 
     private lateinit var usernameET: EditText
     private lateinit var passwordET: EditText
 
 
-    private val TAG = CredentialsFragment::class.java.name
+    private val TAG = CredentialsDialogFragment::class.java.name
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,7 +86,7 @@ class CredentialsFragment : DialogFragment() {
                 })
                 .setNegativeButton(R.string.cancel, DialogInterface.OnClickListener { dialog, id ->
                     onButtonPressed(Dialog.BUTTON_NEGATIVE)
-                    //this@CredentialsFragment.dialog.cancel()
+                    //this@CredentialsDialogFragment.dialog.cancel()
                 }).create()
 
     }
@@ -99,13 +98,13 @@ class CredentialsFragment : DialogFragment() {
         val passWord = passwordET.text.toString()
 
         if (userName.isEmpty() || passWord.isEmpty()) {
-            listener?.onCredentitalsFragmentInteraction(Dialog.BUTTON_NEGATIVE)
+            listenerDialog?.onCredentitalsFragmentInteraction(Dialog.BUTTON_NEGATIVE)
         } else
             if (answer == Dialog.BUTTON_POSITIVE)
                 if (userName == passWord) {
-                    listener?.onCredentitalsFragmentInteraction(Dialog.BUTTON_POSITIVE)
+                    listenerDialog?.onCredentitalsFragmentInteraction(Dialog.BUTTON_POSITIVE)
                 } else {
-                    listener?.onCredentitalsFragmentInteraction(Dialog.BUTTON_NEGATIVE)
+                    listenerDialog?.onCredentitalsFragmentInteraction(Dialog.BUTTON_NEGATIVE)
                 }
 
     }
@@ -117,21 +116,21 @@ class CredentialsFragment : DialogFragment() {
     override fun onCancel(dialog: DialogInterface?) {
         super.onCancel(dialog)
         // Toast.makeText(activity, "onCancel", Toast.LENGTH_LONG).show()
-        listener?.onCredentitalsFragmentInteraction(Dialog.BUTTON_NEGATIVE)
+        listenerDialog?.onCredentitalsFragmentInteraction(Dialog.BUTTON_NEGATIVE)
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is CredentialsFragmentListener) {
-            listener = context
+        if (context is CredentialsDialogFragmentListener) {
+            listenerDialog = context
         } else {
-            throw RuntimeException(context.toString() + " must implement CredentialsFragmentListener")
+            throw RuntimeException(context.toString() + " must implement CredentialsDialogFragmentListener")
         }
     }
 
     override fun onDetach() {
         super.onDetach()
-        listener = null
+        listenerDialog = null
     }
 
     /**
@@ -145,7 +144,7 @@ class CredentialsFragment : DialogFragment() {
      * (http://developer.android.com/training/basics/fragments/communicating.html)
      * for more information.
      */
-    interface CredentialsFragmentListener {
+    interface CredentialsDialogFragmentListener {
         fun onCredentitalsFragmentInteraction(answer: Int)
     }
 
@@ -156,12 +155,12 @@ class CredentialsFragment : DialogFragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment CredentialsFragment.
+         * @return A new instance of fragment CredentialsDialogFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-                CredentialsFragment().apply {
+                CredentialsDialogFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_PARAM1, param1)
                         putString(ARG_PARAM2, param2)
