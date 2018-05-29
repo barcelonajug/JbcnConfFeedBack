@@ -670,7 +670,7 @@ class MainActivity :
     override fun onWelcomeFragment(msg: String) {
     }
 
-    override fun onCredentitalsFragmentInteraction(answer: Int) {
+    override fun onCredentialsDialogFragmentInteraction(answer: Int) {
         when(answer) {
             Dialog.BUTTON_POSITIVE -> {
                 // do nothing

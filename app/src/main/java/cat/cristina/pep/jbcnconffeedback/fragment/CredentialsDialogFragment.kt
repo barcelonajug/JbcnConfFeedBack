@@ -74,7 +74,7 @@ class CredentialsDialogFragment : DialogFragment() {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        val view = inflater.inflate(R.layout.fragment_credentials, null)
+        val view = inflater.inflate(R.layout.fragment_credentials_dialog, null)
 
         usernameET = view.findViewById(R.id.username)
         passwordET = view.findViewById(R.id.password)
@@ -98,13 +98,13 @@ class CredentialsDialogFragment : DialogFragment() {
         val passWord = passwordET.text.toString()
 
         if (userName.isEmpty() || passWord.isEmpty()) {
-            listenerDialog?.onCredentitalsFragmentInteraction(Dialog.BUTTON_NEGATIVE)
+            listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
         } else
             if (answer == Dialog.BUTTON_POSITIVE)
                 if (userName == passWord) {
-                    listenerDialog?.onCredentitalsFragmentInteraction(Dialog.BUTTON_POSITIVE)
+                    listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_POSITIVE)
                 } else {
-                    listenerDialog?.onCredentitalsFragmentInteraction(Dialog.BUTTON_NEGATIVE)
+                    listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
                 }
 
     }
@@ -116,7 +116,7 @@ class CredentialsDialogFragment : DialogFragment() {
     override fun onCancel(dialog: DialogInterface?) {
         super.onCancel(dialog)
         // Toast.makeText(activity, "onCancel", Toast.LENGTH_LONG).show()
-        listenerDialog?.onCredentitalsFragmentInteraction(Dialog.BUTTON_NEGATIVE)
+        listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
     }
 
     override fun onAttach(context: Context) {
@@ -145,7 +145,7 @@ class CredentialsDialogFragment : DialogFragment() {
      * for more information.
      */
     interface CredentialsDialogFragmentListener {
-        fun onCredentitalsFragmentInteraction(answer: Int)
+        fun onCredentialsDialogFragmentInteraction(answer: Int)
     }
 
     companion object {
