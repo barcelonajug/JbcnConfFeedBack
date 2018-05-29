@@ -31,8 +31,9 @@
 
     <!-- AboutUsDialogFragment  -->
 
-    <string name="about_pep">Pep Mendez #pepmenval</string>
-    <string name="about_cristina">Cristina Asensio #cristiasensiom</string>
+    <string name="about_pep">Execution: Pep Mendez. #pepmenval</string>
+    <string name="about_cristina">Idea &amp; Testing: Cristina Asensio. #cristiasensiom</string>
+    <string name="ok">OK</string>
 
     <!-- StatisticsFragment  -->
 

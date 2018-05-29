@@ -1,9 +1,13 @@
 package cat.cristina.pep.jbcnconffeedback.fragment
 
+import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +34,8 @@ class AboutUsDialogFragment : DialogFragment() {
     private var param2: String? = null
     private var listener: AboutUsDialogFragmentListener? = null
 
+    private val TAG = AboutUsDialogFragment::class.java.name
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -37,12 +43,24 @@ class AboutUsDialogFragment : DialogFragment() {
             param2 = it.getString(ARG_PARAM2)
         }
     }
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        Log.d(TAG, "onCreateDialog")
+        val builder = AlertDialog.Builder(activity!!)
+        // Get the layout inflater
+        val inflater = activity!!.layoutInflater
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_about_us_dialog, container, false)
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        val view = inflater.inflate(R.layout.fragment_about_us_dialog, null)
+
+        return builder.setView(view)
+                // Add action buttons
+                .setPositiveButton(R.string.ok, DialogInterface.OnClickListener { dialog, id ->
+                    onButtonPressed("")
+                }).create()
+
     }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(msg: String) {

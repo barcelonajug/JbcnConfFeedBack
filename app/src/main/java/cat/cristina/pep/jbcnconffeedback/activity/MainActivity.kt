@@ -94,7 +94,8 @@ class MainActivity :
         AppPreferenceFragment.OnAppPreferenceFragmentListener,
         StatisticsFragment.OnStatisticsFragmentListener,
         WelcomeFragment.OnWelcomeFragmentListener,
-        CredentialsDialogFragment.CredentialsDialogFragmentListener {
+        CredentialsDialogFragment.CredentialsDialogFragmentListener,
+        AboutUsDialogFragment.AboutUsDialogFragmentListener {
 
     private val random = Random()
 
@@ -560,13 +561,16 @@ class MainActivity :
                 switchFragment(fragment, STATISTICS_FRAGMENT)
             }
             R.id.about_us -> {
-                val alertDialogBuilder = AlertDialog.Builder(this, R.style.Base_V7_Theme_AppCompat_Dialog)
-                alertDialogBuilder.setTitle(R.string.about_us_title)
-                alertDialogBuilder.setMessage(R.string.about_us_authors)
-                alertDialogBuilder.setPositiveButton(R.string.about_us_positive_button) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                alertDialogBuilder.create().show()
+                val aboutUsFragment = AboutUsDialogFragment.newInstance("", "")
+                aboutUsFragment.show(supportFragmentManager, "AboutUsDialogFragment")
+
+//                val alertDialogBuilder = AlertDialog.Builder(this, R.style.Base_V7_Theme_AppCompat_Dialog)
+//                alertDialogBuilder.setTitle(R.string.about_us_title)
+//                alertDialogBuilder.setMessage(R.string.about_us_authors)
+//                alertDialogBuilder.setPositiveButton(R.string.about_us_positive_button) { dialog, _ ->
+//                    dialog.dismiss()
+//                }
+//                alertDialogBuilder.create().show()
 
                 return true
 
@@ -679,6 +683,9 @@ class MainActivity :
                 drawer_layout.closeDrawer(Gravity.LEFT)
             }
         }
+    }
+
+    override fun onAboutUsDialogFragmentInteraction(msg: String) {
     }
 
 }

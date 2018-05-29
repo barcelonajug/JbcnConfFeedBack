@@ -13,27 +13,25 @@
         android:contentDescription="@string/app_name" />
 
     <TextView
+        android:id="@+id/about_cris"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="sans-serif"
+        android:text="@string/about_cristina" />
+
+    <TextView
         android:id="@+id/about_pep"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginBottom="4dp"
-        android:fontFamily="sans-serif"
-        android:text="@string/about_pep"
-        />
-
-    <TextView
-        android:id="@+id/about_cris"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
         android:fontFamily="sans-serif"
-        android:text="@string/about_cristina"
-        />
+        android:text="@string/about_pep" />
 
 </LinearLayout>
