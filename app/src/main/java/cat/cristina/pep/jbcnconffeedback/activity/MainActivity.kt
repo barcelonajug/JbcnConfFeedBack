@@ -1,5 +1,6 @@
 package cat.cristina.pep.jbcnconffeedback.activity
 
+import android.app.Dialog
 import android.app.FragmentTransaction
 import android.app.ProgressDialog
 import android.content.Context
@@ -12,15 +13,19 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.support.annotation.CallSuper
 import android.support.design.widget.NavigationView
+import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
+import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.PreferenceManager
 import android.util.Log
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.fragment.*
@@ -88,7 +93,8 @@ class MainActivity :
         VoteFragment.OnVoteFragmentListener,
         AppPreferenceFragment.OnAppPreferenceFragmentListener,
         StatisticsFragment.OnStatisticsFragmentListener,
-        WelcomeFragment.OnWelcomeFragmentListener {
+        WelcomeFragment.OnWelcomeFragmentListener,
+        CredentialsFragment.CredentialsFragmentListener {
 
     private val random = Random()
 
@@ -108,6 +114,7 @@ class MainActivity :
     private val setOfScheduleIds: MutableSet<String> = mutableSetOf()
     private lateinit var sharedPreferences: SharedPreferences
     private var filteredTalks = true
+    private lateinit var dialogFragment: DialogFragment
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -122,6 +129,38 @@ class MainActivity :
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+
+        /*
+        * int STATE_SETTLING Indicates that a drawer is in the process of settling to a final position.
+        * int STATE_DRAGGING Indicates that a drawer is currently being dragged by the user.
+        * int STATE_IDLE Indicates that any drawers are in an idle, settled state. No animation is in progress.
+        *
+        * */
+        drawer_layout.addDrawerListener(object: DrawerLayout.SimpleDrawerListener(){
+
+            override fun onDrawerOpened(drawerView: View) {
+                super.onDrawerOpened(drawerView)
+                dialogFragment = CredentialsFragment.newInstance("", "")
+                dialogFragment.show(supportFragmentManager, "DialogFragment")
+
+            }
+
+            override fun onDrawerStateChanged(newState: Int) {
+                super.onDrawerStateChanged(newState)
+                when(newState) {
+                    DrawerLayout.STATE_DRAGGING -> {
+                        //drawer_layout.closeDrawer(Gravity.LEFT)
+                    }
+                    DrawerLayout.STATE_IDLE -> {
+
+                    }
+                    DrawerLayout.STATE_SETTLING -> {
+
+                    }
+
+                }
+            }
+        })
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
@@ -234,6 +273,7 @@ class MainActivity :
                     val talkDao: Dao<Talk, Int> = databaseHelper.getTalkDao()
                     talkDao.queryForAll().forEach {
                         val scheduleId = it.scheduleId
+                        //                   0123456789012
                         // scheduleId format #MON-TC1-SE1
                         val session = SessionsTimes.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}")
                         val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")
@@ -627,7 +667,6 @@ class MainActivity :
     *
     * */
     override fun onStatisticsFragment(msg: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     /*
@@ -644,6 +683,17 @@ class MainActivity :
     }
 
     override fun onWelcomeFragment(msg: String) {
+    }
+
+    override fun onCredentitalsFragmentInteraction(answer: Int) {
+        when(answer) {
+            Dialog.BUTTON_POSITIVE -> {
+                // do nothing
+            }
+            Dialog.BUTTON_NEGATIVE -> {
+                drawer_layout.closeDrawer(Gravity.LEFT)
+            }
+        }
     }
 
 }

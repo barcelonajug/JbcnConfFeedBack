@@ -20,6 +20,14 @@
     <string name="sorry_no_graphic_available">Sorry, no graphic available.</string>
     <string name="success_data_updated">All data updated successfully.</string>
 
+
+    <!-- CredentialsFragment  -->
+
+    <string name="username">User name</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="cancel">Cancel</string>
+
     <!-- StatisticsFragment  -->
 
     <string name="email_subject">Statistics Report</string>
@@ -44,7 +52,6 @@
 
     <string name="loading">Loading. Please wait...</string>
     <string name="processing">Processing. Please wait...</string>
-
 
 
     <string name="about_us_title">About Us</string>
@@ -114,5 +121,8 @@
     <!-- Statistics menu   -->
 
     <string name="action_send_statistics">Send</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

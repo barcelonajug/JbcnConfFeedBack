@@ -1,0 +1,171 @@
+package cat.cristina.pep.jbcnconffeedback.fragment
+
+import android.app.Dialog
+import android.content.Context
+import android.content.DialogInterface
+import android.os.Bundle
+import android.support.v4.app.DialogFragment
+import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
+import android.util.Log
+import android.widget.EditText
+import android.widget.Toast
+import cat.cristina.pep.jbcnconffeedback.R
+
+
+// TODO: Rename parameter arguments, choose names that match
+// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+private const val ARG_PARAM1 = "param1"
+private const val ARG_PARAM2 = "param2"
+
+/**
+ * A simple [Fragment] subclass.
+ * Activities that contain this fragment must implement the
+ * [CredentialsFragment.CredentialsFragmentListener] interface
+ * to handle interaction events.
+ * Use the [CredentialsFragment.newInstance] factory method to
+ * create an instance of this fragment.
+ *
+ * onAttach
+ * onCreate
+ * onCreateDialog
+ * onCreateView
+ * onActivityCreated
+ * onStart
+ * onResume
+ *
+ */
+class CredentialsFragment : DialogFragment() {
+    /**
+     * Called when an action is being performed.
+     *
+     * @param v The view that was clicked.
+     * @param actionId Identifier of the action.  This will be either the
+     * identifier you supplied, or [ EditorInfo.IME_NULL][EditorInfo.IME_NULL] if being called due to the enter key
+     * being pressed.
+     * @param event If triggered by an enter key, this is the event;
+     * otherwise, this is null.
+     * @return Return true if you have consumed the action, else false.
+     */
+
+    // TODO: Rename and change types of parameters
+    private var param1: String? = null
+    private var param2: String? = null
+    private var listener: CredentialsFragmentListener? = null
+
+    private lateinit var usernameET: EditText
+    private lateinit var passwordET: EditText
+
+
+    private val TAG = CredentialsFragment::class.java.name
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            param1 = it.getString(ARG_PARAM1)
+            param2 = it.getString(ARG_PARAM2)
+        }
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        Log.d(TAG, "onCreateDialog")
+        val builder = AlertDialog.Builder(activity!!)
+        // Get the layout inflater
+        val inflater = activity!!.layoutInflater
+
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        val view = inflater.inflate(R.layout.fragment_credentials, null)
+
+        usernameET = view.findViewById(R.id.username)
+        passwordET = view.findViewById(R.id.password)
+
+        return builder.setView(view)
+                // Add action buttons
+                .setPositiveButton(R.string.sign_in, DialogInterface.OnClickListener { dialog, id ->
+                    onButtonPressed(Dialog.BUTTON_POSITIVE)
+                })
+                .setNegativeButton(R.string.cancel, DialogInterface.OnClickListener { dialog, id ->
+                    onButtonPressed(Dialog.BUTTON_NEGATIVE)
+                    //this@CredentialsFragment.dialog.cancel()
+                }).create()
+
+    }
+
+
+    fun onButtonPressed(answer: Int) {
+
+        val userName = usernameET.text.toString()
+        val passWord = passwordET.text.toString()
+
+        if (userName.isEmpty() || passWord.isEmpty()) {
+            listener?.onCredentitalsFragmentInteraction(Dialog.BUTTON_NEGATIVE)
+        } else
+            if (answer == Dialog.BUTTON_POSITIVE)
+                if (userName == passWord) {
+                    listener?.onCredentitalsFragmentInteraction(Dialog.BUTTON_POSITIVE)
+                } else {
+                    listener?.onCredentitalsFragmentInteraction(Dialog.BUTTON_NEGATIVE)
+                }
+
+    }
+
+
+    /*
+    * Called when the user presses de back button to cancel the dialog
+    * */
+    override fun onCancel(dialog: DialogInterface?) {
+        super.onCancel(dialog)
+        // Toast.makeText(activity, "onCancel", Toast.LENGTH_LONG).show()
+        listener?.onCredentitalsFragmentInteraction(Dialog.BUTTON_NEGATIVE)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is CredentialsFragmentListener) {
+            listener = context
+        } else {
+            throw RuntimeException(context.toString() + " must implement CredentialsFragmentListener")
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     *
+     *
+     * See the Android Training lesson [Communicating with Other Fragments]
+     * (http://developer.android.com/training/basics/fragments/communicating.html)
+     * for more information.
+     */
+    interface CredentialsFragmentListener {
+        fun onCredentitalsFragmentInteraction(answer: Int)
+    }
+
+    companion object {
+        /**
+         * Use this factory method to create a new instance of
+         * this fragment using the provided parameters.
+         *
+         * @param param1 Parameter 1.
+         * @param param2 Parameter 2.
+         * @return A new instance of fragment CredentialsFragment.
+         */
+        // TODO: Rename and change types and number of parameters
+        @JvmStatic
+        fun newInstance(param1: String, param2: String) =
+                CredentialsFragment().apply {
+                    arguments = Bundle().apply {
+                        putString(ARG_PARAM1, param1)
+                        putString(ARG_PARAM2, param2)
+                    }
+                }
+    }
+}
