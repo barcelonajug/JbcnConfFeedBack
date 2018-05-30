@@ -25,7 +25,7 @@ class TalkContent(val context: Context) {
      * An array of talk items.
      */
     val ITEMS: MutableList<TalkItem> = ArrayList()
-    val ITEMS_FILTERED_BY_DATE: MutableList<TalkItem> = ArrayList()
+    val ITEMS_FILTERED_BY_DATE_AND_ROOM_NAME: MutableList<TalkItem> = ArrayList()
 
     /**
      * A map of talks by ID. Not used
@@ -62,7 +62,7 @@ class TalkContent(val context: Context) {
                 && today.get(Calendar.MONTH) == session.getStartTime().get(Calendar.MONTH)
                 && today.get(Calendar.YEAR) == session.getStartTime().get(Calendar.YEAR)
                 && roomName == location.getRoomName()) {
-            ITEMS_FILTERED_BY_DATE.add(item)
+            ITEMS_FILTERED_BY_DATE_AND_ROOM_NAME.add(item)
         }
     }
 

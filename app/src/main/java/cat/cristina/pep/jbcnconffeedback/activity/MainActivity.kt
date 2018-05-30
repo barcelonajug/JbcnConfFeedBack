@@ -501,6 +501,12 @@ class MainActivity :
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+
+
     /* From onChooseTalk  */
     override fun onChooseTalk(item: TalkContent.TalkItem?) {
         val voteFragment = VoteFragment.newInstance(item?.talk?.id.toString(), item?.talk?.title!!, item.speaker.name)
@@ -581,6 +587,10 @@ class MainActivity :
         return true
     }
 
+    /*
+    * This method is called from ChooseTalkFragment when there's a filter request by date and room
+    *
+    * */
     override fun onFilterTalks(filtered: Boolean) {
         sharedPreferences.edit().putBoolean(PreferenceKeys.FILTERED_TALKS_KEY, filtered).commit()
         filteredTalks = filtered

@@ -7,10 +7,11 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
-import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent.TalkItem
+import cat.cristina.pep.jbcnconffeedback.model.DatabaseHelper
+import com.j256.ormlite.android.apptools.OpenHelperManager
 
 /**
  * A fragment representing a list of Items.
@@ -22,7 +23,8 @@ class ChooseTalkFragment : Fragment() {
     private val TAG = ChooseTalkFragment::class.java.name
 
     private lateinit var talkContent: TalkContent
-
+    private lateinit var databaseHelper: DatabaseHelper
+    //private lateinit var utilDAOImpl: UtilDAOImpl
     // TODO: Customize parameters
     private var columnCount = 1
     private var isFiltered = false
@@ -52,19 +54,17 @@ class ChooseTalkFragment : Fragment() {
                     else -> GridLayoutManager(context, columnCount)
                 }
                 adapter =
-                        if (isFiltered) MyTalkRecyclerViewAdapter(talkContent.ITEMS_FILTERED_BY_DATE, listener, context)
+                        if (isFiltered) MyTalkRecyclerViewAdapter(talkContent.ITEMS_FILTERED_BY_DATE_AND_ROOM_NAME, listener, context)
                         else MyTalkRecyclerViewAdapter(talkContent.ITEMS, listener, context)
             }
         }
-//        if (isFiltered) {
-//            Toast.makeText(context, "Talks filtered by date and room.", Toast.LENGTH_LONG).show()
-//        }
-//        else {
-//            Toast.makeText(context, "All talks are shown.", Toast.LENGTH_LONG).show()
-//        }
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper::class.java)
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -101,6 +101,18 @@ class ChooseTalkFragment : Fragment() {
         }
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu?) {
+        super.onPrepareOptionsMenu(menu)
+        val itemFilter = menu?.findItem(R.id.action_filter)
+        itemFilter?.title =
+                resources.getString(if (isFiltered) R.string.filter_all else R.string.filter_apply)
+
+        val itemUpdate = menu?.findItem(R.id.action_update)
+
+        itemUpdate?.isEnabled = databaseHelper.getScoreDao().queryForAll().size > 0
+
+    }
+
 
     /**
      * This interface must be implemented by activities that contain this
@@ -127,11 +139,11 @@ class ChooseTalkFragment : Fragment() {
 
         // TODO: Customize parameter initialization
         @JvmStatic
-        fun newInstance(columnCount: Int, filterByDay: Boolean = false) =
+        fun newInstance(columnCount: Int, filterByDayAndRoomName: Boolean = false) =
                 ChooseTalkFragment().apply {
                     arguments = Bundle().apply {
                         putInt(ARG_COLUMN_COUNT, columnCount)
-                        putBoolean(ARG_FILTER_BY_DATE, filterByDay)
+                        putBoolean(ARG_FILTER_BY_DATE, filterByDayAndRoomName)
                     }
                 }
     }

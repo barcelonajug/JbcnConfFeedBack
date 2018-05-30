@@ -40,6 +40,11 @@
     <string name="email_subject">Statistics Report</string>
     <string name="email_message">Please, double click the CSV file to download.</string>
 
+    <!-- ChooseFragment -->
+
+    <string name="filter_apply">FILTER</string>
+    <string name="filter_all">ALL</string>
+
 
     <string name="sorry_working_offline">Sorry, working offline.</string>
 
