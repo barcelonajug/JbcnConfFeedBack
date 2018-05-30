@@ -1,7 +1,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <SwitchPreferenceCompat
-        android:defaultValue="true"
+        android:defaultValue="false"
         android:key="@string/pref_auto_mode_key"
         android:summary="@string/pref_description_auto_mode"
         android:title="@string/pref_title_auto_mode" />

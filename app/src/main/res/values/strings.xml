@@ -19,6 +19,7 @@
     <string name="sorry_no_local_data">Sorry, no local data available.</string>
     <string name="sorry_no_graphic_available">Sorry, no graphic available.</string>
     <string name="sorry_no_scoring_avaiable">Sorry, no scoring available.</string>
+    <string name="sorry_no_room_set">Sorry, room is not set.</string>
     <string name="success_data_updated">All data updated successfully.</string>
 
 

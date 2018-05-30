@@ -25,7 +25,7 @@ class AppPreferenceFragment :
      */
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.pref_general)
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
 
         var summary = if (sharedPreferences.getBoolean(PreferenceKeys.VIBRATOR_KEY, false))
             "On" else "Off"

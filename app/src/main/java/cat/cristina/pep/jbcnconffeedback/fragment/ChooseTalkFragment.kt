@@ -1,15 +1,19 @@
 package cat.cristina.pep.jbcnconffeedback.fragment
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.preference.PreferenceManager
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
+import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent.TalkItem
+import cat.cristina.pep.jbcnconffeedback.utils.PreferenceKeys
 
 /**
  * A fragment representing a list of Items.
@@ -26,7 +30,7 @@ class ChooseTalkFragment : Fragment() {
     // TODO: Customize parameters
     private var columnCount = 1
     private var isFiltered = false
-
+    private lateinit var sharedPreferences: SharedPreferences
     private var listener: OnChooseTalkListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +41,7 @@ class ChooseTalkFragment : Fragment() {
             isFiltered = it.getBoolean(ARG_FILTER_BY_DATE)
         }
         talkContent = TalkContent(activity!!.applicationContext)
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         setHasOptionsMenu(true)
     }
 
@@ -88,7 +93,12 @@ class ChooseTalkFragment : Fragment() {
 
         when (item?.itemId) {
             R.id.action_filter -> {
-                listener?.onFilterTalks(!isFiltered)
+                val roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
+                if (roomName == resources.getString(R.string.pref_default_room_name)) {
+                    Toast.makeText(context, resources.getString(R.string.sorry_no_room_set), Toast.LENGTH_LONG).show()
+                } else {
+                    listener?.onFilterTalks(!isFiltered)
+                }
                 return true
             }
             else -> return super.onOptionsItemSelected(item)

@@ -116,7 +116,7 @@ class MainActivity :
     // TODO("Delete in production")
     private val setOfScheduleIds: MutableSet<String> = mutableSetOf()
     private lateinit var sharedPreferences: SharedPreferences
-    private var filteredTalks = true
+    private var filteredTalks = false
     private lateinit var dialogFragment: DialogFragment
     private var dataFromFirestore: Map<Long?, List<QueryDocumentSnapshot>>? = null
 
