@@ -4,10 +4,8 @@ package cat.cristina.pep.jbcnconffeedback.fragment
 //import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import android.app.ProgressDialog
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.support.v4.app.Fragment
@@ -19,7 +17,6 @@ import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.activity.MainActivity
 import cat.cristina.pep.jbcnconffeedback.model.DatabaseHelper
 import cat.cristina.pep.jbcnconffeedback.model.Talk
-import cat.cristina.pep.jbcnconffeedback.utils.PreferenceKeys
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -262,9 +259,12 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
             axisLeft.axisMaximum = 5.0F
             fitScreen()
             description.isEnabled = true
+            description.text = resources.getString(R.string.chart_description)
+            setNoDataText(resources.getString(R.string.sorry_no_graphic_available))
             setDrawBarShadow(true)
             //setDrawValueAboveBar(true)
             //setFitBars(true)
+            setDrawBorders(true)
             setBorderColor(Color.BLACK)
             setTouchEnabled(true)
             // onChartGestureListener = this@StatisticsFragment

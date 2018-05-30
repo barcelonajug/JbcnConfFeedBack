@@ -40,6 +40,7 @@
 
     <string name="email_subject">Statistics Report</string>
     <string name="email_message">Please, double click the CSV file to download.</string>
+    <string name="chart_description">JBCNConf 2018.</string>
 
     <!-- ChooseFragment -->
 
