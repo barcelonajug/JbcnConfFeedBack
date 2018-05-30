@@ -45,8 +45,8 @@ class VoteFragment : Fragment() {
         }
         setHasOptionsMenu(true)
 
-        activity?.toolbar?.setNavigationIcon(null)
-        activity?.drawer_layout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        // activity?.toolbar?.setNavigationIcon(null)
+        // activity?.drawer_layout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
     }
 
@@ -132,8 +132,8 @@ class VoteFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         listener = null
-        activity?.toolbar?.setNavigationIcon(R.drawable.hamburger_icon_white)
-        activity?.drawer_layout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+        // activity?.toolbar?.setNavigationIcon(R.drawable.hamburger_icon_white)
+        // activity?.drawer_layout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
     }
 
     /**
