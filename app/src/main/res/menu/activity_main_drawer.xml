@@ -16,6 +16,11 @@
             android:title="@string/menu_statistics" />
 
         <item
+            android:id="@+id/action_send_statistics"
+            android:icon="@drawable/ic_menu_send"
+            android:title="@string/action_send_statistics" />
+
+        <item
             android:id="@+id/action_update"
             android:icon="@drawable/ic_menu_share"
             android:title="@string/action_update" />

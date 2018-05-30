@@ -53,8 +53,6 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
 
     private val TAG = StatisticsFragment::class.java.name
 
-    private val DEFAULT_STATISTICS_FILE_NAME = "statistics.csv"
-
     private var param1: String? = null
     private var param2: String? = null
     private var listenerStatistics: OnStatisticsFragmentListener? = null
@@ -93,13 +91,13 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
-            R.id.action_send_statistics -> {
-                createCVSFromStatistics(DEFAULT_STATISTICS_FILE_NAME)
-                sendCSVByEmail(DEFAULT_STATISTICS_FILE_NAME)
-            }
-
-        }
+//        when (item?.itemId) {
+//            R.id.action_send_statistics -> {
+//                createCVSFromStatistics(DEFAULT_STATISTICS_FILE_NAME)
+//                sendCSVByEmail(DEFAULT_STATISTICS_FILE_NAME)
+//            }
+//
+//        }
         return true
     }
 
@@ -331,69 +329,6 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
         Log.d(TAG, fileWriter.toString())
     }
 
-
-    /*
-    * /storage/emulated/0/Android/data/cat.cristina.pep.jbcnconffeedback/files/Documents/statistics.csv
-    *
-    *
-    * */
-    private fun createCVSFromStatistics(fileName: String): Unit {
-        data class Statistic(val id: Long, val title: String, val score: Int, val date: Date)
-
-        val file = File(context?.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
-        val fileWriter = FileWriter(file)
-
-        val csvWriter = CSVWriter(fileWriter,
-                CSVWriter.DEFAULT_SEPARATOR,
-                CSVWriter.NO_QUOTE_CHARACTER,
-                CSVWriter.DEFAULT_ESCAPE_CHARACTER,
-                CSVWriter.DEFAULT_LINE_END)
-
-        csvWriter.writeNext(arrayOf("id_talk", "title", "score", "date"))
-
-        dataFromFirestore
-                ?.asSequence()
-                ?.forEach {
-                    val idTalk = it.key
-                    var title = databaseHelper.getTalkDao().queryForId(idTalk?.toInt()).title
-                    title = title.replace(",", " ")
-                    if (title.length > 30)
-                        title = title.substring(0, 30) + " ..."
-                    dataFromFirestore?.get(it.key)
-                            ?.asSequence()
-                            ?.forEach { doc: QueryDocumentSnapshot ->
-                                val score = doc.get("score")
-                                val date = doc.getDate("date")
-                                Log.d(TAG, "$idTalk $title $score $date")
-                                csvWriter.writeNext(arrayOf(idTalk.toString(), title, score.toString(), date.toString()))
-                            }
-                }
-
-        csvWriter.close()
-        //Toast.makeText(context, "SCV file created", Toast.LENGTH_LONG).show()
-
-
-        Log.d(TAG, file.absolutePath)
-    }
-
-    private fun sendCSVByEmail(fileName: String): Unit {
-        var emailAddress = arrayOf(sharedPreferences.getString(PreferenceKeys.EMAIL_KEY, resources.getString(R.string.pref_default_email)))
-        val file = File(context?.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
-        val emailIntent = Intent(Intent.ACTION_SEND)
-        emailIntent.type = "text/plain"
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, emailAddress)
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.email_subject))
-        emailIntent.putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.email_message))
-        val uri = Uri.fromFile(file)
-        emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
-        val componentName = emailIntent.resolveActivity(context?.packageManager)
-        if (componentName != null)
-            startActivity(Intent.createChooser(emailIntent, "Pick an Email provider"))
-        else
-            Toast.makeText(context, "There is no application installed in this device to handle this request", Toast.LENGTH_LONG).show()
-
-        //Toast.makeText(context, "email sent", Toast.LENGTH_LONG).show()
-    }
 
 
     fun onButtonPressed(msg: String) {

@@ -18,6 +18,7 @@
     <string name="sorry_not_connected">Sorry, device not connected.</string>
     <string name="sorry_no_local_data">Sorry, no local data available.</string>
     <string name="sorry_no_graphic_available">Sorry, no graphic available.</string>
+    <string name="sorry_no_scoring_avaiable">Sorry, no scoring available.</string>
     <string name="success_data_updated">All data updated successfully.</string>
 
 

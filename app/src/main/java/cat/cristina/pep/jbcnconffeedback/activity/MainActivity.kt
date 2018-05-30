@@ -4,13 +4,12 @@ import android.app.Dialog
 import android.app.FragmentTransaction
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
-import android.os.Build
-import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
+import android.net.Uri
+import android.os.*
 import android.support.annotation.CallSuper
 import android.support.design.widget.NavigationView
 import android.support.v4.app.DialogFragment
@@ -39,12 +38,16 @@ import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.gson.Gson
 import com.j256.ormlite.android.apptools.OpenHelperManager
 import com.j256.ormlite.dao.Dao
+import com.opencsv.CSVWriter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import org.json.JSONObject
+import java.io.File
+import java.io.FileWriter
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -97,7 +100,7 @@ class MainActivity :
         AboutUsDialogFragment.AboutUsDialogFragmentListener {
 
     private val random = Random()
-
+    private val DEFAULT_STATISTICS_FILE_NAME = "statistics.csv"
     private lateinit var databaseHelper: DatabaseHelper
     private lateinit var utilDAOImpl: UtilDAOImpl
     private var requestQueue: RequestQueue? = null
@@ -115,7 +118,7 @@ class MainActivity :
     private lateinit var sharedPreferences: SharedPreferences
     private var filteredTalks = true
     private lateinit var dialogFragment: DialogFragment
-
+    private var dataFromFirestore: Map<Long?, List<QueryDocumentSnapshot>>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -463,7 +466,6 @@ class MainActivity :
         switchFragment(voteFragment, VOTE_FRAGMENT)
     }
 
-    /* From onChooseTalk  */
     override fun onUpdateTalks() {
         val scoreDao: Dao<Score, Int> = databaseHelper.getScoreDao()
         if (scoreDao.countOf() > 0) {
@@ -506,8 +508,11 @@ class MainActivity :
                 val fragment = AppPreferenceFragment()
                 switchFragment(fragment, STATISTICS_FRAGMENT)
             }
+            R.id.action_send_statistics -> {
+                downloadScoring()
+            }
             R.id.action_update -> {
-                    onUpdateTalks()
+                onUpdateTalks()
             }
             R.id.action_about_us -> {
                 val aboutUsFragment = AboutUsDialogFragment.newInstance("", "")
@@ -518,6 +523,98 @@ class MainActivity :
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
+
+    /* This method downloads the Scoring collection made up of documents(id_talk, score, date) */
+    private fun downloadScoring(): Unit {
+
+        if (!isDeviceConnectedToWifiOrData().first) {
+            Toast.makeText(this, R.string.sorry_not_connected, Toast.LENGTH_LONG).show()
+            return
+        }
+
+        dialog = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT)
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
+        dialog.setMessage(resources.getString(R.string.loading))
+        dialog.isIndeterminate = true
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
+
+        FirebaseFirestore.getInstance()
+                .collection("Scoring")
+                .get()
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        dataFromFirestore = it.result.groupBy {
+                            it.getLong("id_talk")
+                        }
+                        dialog.dismiss()
+                        createCVSFromStatistics(DEFAULT_STATISTICS_FILE_NAME)
+                    } else {
+                        dialog.dismiss()
+                        Toast.makeText(this, R.string.sorry_no_scoring_avaiable, Toast.LENGTH_LONG).show()
+                        //Log.d(TAG, "*** Error *** ${it.exception?.message}")
+                    }
+                }
+    }
+
+    /*
+   * /storage/emulated/0/Android/data/cat.cristina.pep.jbcnconffeedback/files/Documents/statistics.csv
+   *
+   *
+   * */
+    private fun createCVSFromStatistics(fileName: String): Unit {
+        val file = File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
+        val fileWriter = FileWriter(file)
+
+        val csvWriter = CSVWriter(fileWriter,
+                CSVWriter.DEFAULT_SEPARATOR,
+                CSVWriter.NO_QUOTE_CHARACTER,
+                CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+                CSVWriter.DEFAULT_LINE_END)
+
+        csvWriter.writeNext(arrayOf("id_talk", "title", "score", "date"))
+
+        dataFromFirestore
+                ?.asSequence()
+                ?.forEach {
+                    val idTalk = it.key
+                    var title = databaseHelper.getTalkDao().queryForId(idTalk?.toInt()).title
+                    title = title.replace(",", " ")
+                    if (title.length > 30)
+                        title = title.substring(0, 30) + " ..."
+                    dataFromFirestore?.get(it.key)
+                            ?.asSequence()
+                            ?.forEach { doc: QueryDocumentSnapshot ->
+                                val score = doc.get("score")
+                                val date = doc.getDate("date")
+                                Log.d(TAG, "$idTalk $title $score $date")
+                                csvWriter.writeNext(arrayOf(idTalk.toString(), title, score.toString(), date.toString()))
+                            }
+                }
+
+        csvWriter.close()
+        sendCSVByEmail(DEFAULT_STATISTICS_FILE_NAME)
+    }
+
+    private fun sendCSVByEmail(fileName: String): Unit {
+        var emailAddress = arrayOf(sharedPreferences.getString(PreferenceKeys.EMAIL_KEY, resources.getString(R.string.pref_default_email)))
+        val file = File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
+        val emailIntent = Intent(Intent.ACTION_SEND)
+        emailIntent.type = "text/plain"
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, emailAddress)
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.email_subject))
+        emailIntent.putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.email_message))
+        val uri = Uri.fromFile(file)
+        emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
+        val componentName = emailIntent.resolveActivity(packageManager)
+        if (componentName != null)
+            startActivity(Intent.createChooser(emailIntent, "Pick an Email provider"))
+        else
+            Toast.makeText(this, "There is no application installed in this device to handle this request", Toast.LENGTH_LONG).show()
+
+        //Toast.makeText(context, "email sent", Toast.LENGTH_LONG).show()
+    }
+
 
     /* This method is called from ChooseTalkFragment when there's a filter request by date and room */
     override fun onFilterTalks(filtered: Boolean) {
