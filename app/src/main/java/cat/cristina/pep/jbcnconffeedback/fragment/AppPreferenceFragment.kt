@@ -43,9 +43,9 @@ class AppPreferenceFragment :
         preference.summary = summary
 
         // Vertical/Horizontal/Lineal Bar Chart
-//        summary = sharedPreferences.getString(PreferenceKeys.CHART_TYPE_KEY, "Vertical Bar Chart")
-//        preference = findPreference(PreferenceKeys.CHART_TYPE_KEY)
-//        preference.summary = summary
+        summary = sharedPreferences.getString(PreferenceKeys.EMAIL_KEY, resources.getString(R.string.pref_default_email))
+        preference = findPreference(PreferenceKeys.EMAIL_KEY)
+        preference.summary = summary
     }
 
     override fun onResume() {
@@ -129,7 +129,7 @@ class AppPreferenceFragment :
                 //listener?.onAppPreferenceFragment(mode)
             }
 
-            PreferenceKeys.EMAIL -> {
+            PreferenceKeys.EMAIL_KEY -> {
                 val summary = sharedPreferences!!.getString(key, resources.getString(R.string.pref_default_email))
                 preference.summary = summary
                 sharedPreferences.edit().putString(key, summary).commit()

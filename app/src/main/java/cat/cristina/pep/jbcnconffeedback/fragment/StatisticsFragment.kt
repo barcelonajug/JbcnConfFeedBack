@@ -377,7 +377,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
     }
 
     private fun sendCSVByEmail(fileName: String): Unit {
-        var emailAddress = arrayOf(sharedPreferences.getString(PreferenceKeys.EMAIL, resources.getString(R.string.pref_default_email)))
+        var emailAddress = arrayOf(sharedPreferences.getString(PreferenceKeys.EMAIL_KEY, resources.getString(R.string.pref_default_email)))
         val file = File(context?.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
         val emailIntent = Intent(Intent.ACTION_SEND)
         emailIntent.type = "text/plain"
