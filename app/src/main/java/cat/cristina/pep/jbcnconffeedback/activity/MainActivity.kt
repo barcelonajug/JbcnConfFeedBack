@@ -18,7 +18,6 @@ import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.PreferenceManager
 import android.util.Log
@@ -137,40 +136,28 @@ class MainActivity :
         * int STATE_IDLE Indicates that any drawers are in an idle, settled state. No animation is in progress.
         *
         * */
-        drawer_layout.addDrawerListener(object: DrawerLayout.SimpleDrawerListener(){
+        drawer_layout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
 
             override fun onDrawerOpened(drawerView: View) {
                 super.onDrawerOpened(drawerView)
                 dialogFragment = CredentialsDialogFragment.newInstance("", "")
                 dialogFragment.show(supportFragmentManager, "DialogFragment")
-
             }
-
         })
-
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-
         databaseHelper = OpenHelperManager.getHelper(applicationContext, DatabaseHelper::class.java)
-
         utilDAOImpl = UtilDAOImpl(this, databaseHelper)
-
     }
 
     override fun onStart() {
         super.onStart()
-
         val (connected, reason) = isDeviceConnectedToWifiOrData()
-
-        if (connected) {
+        if (connected)
             requestQueue = Volley.newRequestQueue(this)
-        } else {
+        else
             Toast.makeText(applicationContext, "${resources.getString(R.string.sorry_working_offline)}: $reason", Toast.LENGTH_LONG).show()
-        }
-
         setup(connected)
-
         /* TODO("Remove in production")  */
         generateScheduleId()
     }
@@ -242,13 +229,9 @@ class MainActivity :
            * posem el fragment segons el mode de treball auto/manual.
            *
            * */
-
             autoMode = getAutoModeAndRoomName().first
-
             roomName = getAutoModeAndRoomName().second
-
             if (autoMode) {
-
                 if (roomName == resources.getString(R.string.pref_default_room_name)) {
                     sharedPreferences.edit().putBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
                     Toast.makeText(this, resources.getString(R.string.pref_default_room_name), Toast.LENGTH_LONG).show()
@@ -287,7 +270,6 @@ class MainActivity :
        *
        * */
     private fun setupTimer() {
-
         val fragment = WelcomeFragment.newInstance(roomName, "")
         switchFragment(fragment, "$WELLCOME_FRAGMENT$roomName", false)
         Toast.makeText(this, "Setting timers...", Toast.LENGTH_LONG).show()
@@ -296,7 +278,6 @@ class MainActivity :
         // val today = GregorianCalendar.getInstance()
         /* TODO("REMOVE in production") */
         val today = GregorianCalendar(2018, 6, 11, 9, 0)
-
         talkSchedules.forEach { talk: Talk, pair: Pair<SessionsTimes, TalksLocations> ->
             /* roomName es el nom de la room que gestionas aquesta tablet */
             if (roomName == pair.second.getRoomName()) {
@@ -316,15 +297,12 @@ class MainActivity :
                         /* TODO("Remove in production")  */
                         val startTime = pair.first.getStartTimeMinusOffset().time - today.time.time
                         val endTime = pair.first.getEndTimePlusOffset().time - today.time.time
-
                         val remainingStartTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(startTime),
                                 TimeUnit.MILLISECONDS.toMinutes(startTime) % TimeUnit.HOURS.toMinutes(1),
                                 TimeUnit.MILLISECONDS.toSeconds(startTime) % TimeUnit.MINUTES.toSeconds(1))
-
                         val remainingStopTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(endTime),
                                 TimeUnit.MILLISECONDS.toMinutes(endTime) % TimeUnit.HOURS.toMinutes(1),
                                 TimeUnit.MILLISECONDS.toSeconds(endTime) % TimeUnit.MINUTES.toSeconds(1))
-
                         val timerTaskIn = Runnable {
                             Log.d(TAG, "VoteFragment........")
                             switchFragment(VoteFragment.newInstance("$talkId", talkTitle, talkAuthorName), "VoteFragment", false)
@@ -337,19 +315,15 @@ class MainActivity :
                         Log.d(TAG, "Setting schedule for talk  $talkId $talkTitle starts in $remainingStartTime ends in $remainingStopTime")
                         scheduledFutures?.add(scheduledExecutorService?.schedule(timerTaskIn, startTime, TimeUnit.MILLISECONDS))
                         scheduledFutures?.add(scheduledExecutorService?.schedule(timerTaskOff, endTime, TimeUnit.MILLISECONDS))
-
                     }
                 }
             }
         }
-
         scheduledExecutorService?.shutdown()
     }
 
     private fun switchFragment(fragment: Fragment, tag: String, addToStack: Boolean = true): Unit {
-
         val actualFragment = supportFragmentManager.findFragmentByTag(tag)
-
         actualFragment?.tag.run {
             if (this != tag) {
                 val transaction = supportFragmentManager.beginTransaction()
@@ -360,12 +334,9 @@ class MainActivity :
                 transaction.commit()
             }
         }
-
     }
 
     private fun downloadSpeakers() {
-
-
         val speakersRequest: JsonObjectRequest = JsonObjectRequest(Request.Method.GET, SPEAKERS_URL, null,
                 Response.Listener { response ->
                     Log.d(TAG, "Speakers Response: %s".format(response.toString()))
@@ -375,32 +346,12 @@ class MainActivity :
                     Log.e(TAG, error.message)
                 })
         speakersRequest.tag = TAG
-        /*
-        * When you call add(), Volley runs one cache processing thread and a pool of network dispatch threads.
-        * When you add a request to the queue, it is picked up by the cache thread and triaged:
-        * if the request can be serviced from cache, the cached response is parsed on the cache
-        * thread and the parsed response is delivered on the main thread.
-        *
-        * If the request cannot be serviced from cache, it is placed on the network queue.
-        *
-        * The first available network thread takes the request from the queue,
-        * performs the HTTP transaction, parses the response on the worker thread,
-        * writes the response to cache, and posts the parsed response back to the main thread for delivery.
-        *
-        * Note that expensive operations like blocking I/O and parsing/decoding are done on worker threads.
-        * You can add a request from any thread, but responses are always delivered on the main thread.
-        *
-        * No bloque el main thread
-        *
-        * */
+        /* No bloquea el main thread */
         requestQueue?.add(speakersRequest)
-
     }
 
     private fun parseAndStoreSpeakers(speakersJson: String) {
-
         downloadTalks()
-
         val json = JSONObject(speakersJson)
         val items = json.getJSONArray("items")
         val speakerDao: Dao<Speaker, Int> = databaseHelper.getSpeakerDao()
@@ -418,7 +369,6 @@ class MainActivity :
     }
 
     private fun downloadTalks() {
-
         val talksRequest = JsonObjectRequest(Request.Method.GET, TALKS_URL, null,
                 Response.Listener { response ->
                     Log.d(TAG, "Talks Response: %s".format(response.toString()))
@@ -488,8 +438,6 @@ class MainActivity :
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        // menuInflater.inflate(R.menu.main, menu)
         return true
     }
 
@@ -502,9 +450,11 @@ class MainActivity :
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        val menu = nav_view.menu
+        val itemUpdate = menu.findItem(R.id.action_update)
+        itemUpdate?.isEnabled = databaseHelper.getScoreDao().queryForAll().size > 0
         return super.onPrepareOptionsMenu(menu)
     }
-
 
 
     /* From onChooseTalk  */
@@ -515,23 +465,16 @@ class MainActivity :
 
     /* From onChooseTalk  */
     override fun onUpdateTalks() {
-
         val scoreDao: Dao<Score, Int> = databaseHelper.getScoreDao()
-
         if (scoreDao.countOf() > 0) {
-
             if (isDeviceConnectedToWifiOrData().first) {
-
                 Toast.makeText(this, R.string.success_data_updated, Toast.LENGTH_LONG).show()
-
                 val firestore = FirebaseFirestore.getInstance()
-
                 scoreDao.queryForAll().forEach {
                     val id = it.id
                     val scoringDoc = mapOf(FIREBASE_COLLECTION_FIELD_1 to it.id_talk,
                             FIREBASE_COLLECTION_FIELD_2 to it.score,
                             FIREBASE_COLLECTION_FIELD_3 to it.date)
-
                     firestore
                             .collection(FIREBASE_COLLECTION)
                             .add(scoringDoc)
@@ -542,55 +485,41 @@ class MainActivity :
                             .addOnFailureListener {
                                 Log.d(TAG, it.message)
                             }
-
                 }
-
             } else { // no connection
                 Toast.makeText(this, R.string.sorry_not_connected, Toast.LENGTH_LONG).show()
             }
         } else { // no records
             Toast.makeText(this, R.string.sorry_no_local_data, Toast.LENGTH_LONG).show()
         }
-
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
-            R.id.statistics -> {
+            R.id.action_statistics -> {
                 val fragment = StatisticsFragment.newInstance()
                 switchFragment(fragment, STATISTICS_FRAGMENT)
             }
-            R.id.settings -> {
+            R.id.action_settings -> {
                 //startActivity(Intent(this, SettingsActivity::class.java))
                 val fragment = AppPreferenceFragment()
                 switchFragment(fragment, STATISTICS_FRAGMENT)
             }
-            R.id.about_us -> {
+            R.id.action_update -> {
+                    onUpdateTalks()
+            }
+            R.id.action_about_us -> {
                 val aboutUsFragment = AboutUsDialogFragment.newInstance("", "")
                 aboutUsFragment.show(supportFragmentManager, "AboutUsDialogFragment")
-
-//                val alertDialogBuilder = AlertDialog.Builder(this, R.style.Base_V7_Theme_AppCompat_Dialog)
-//                alertDialogBuilder.setTitle(R.string.about_us_title)
-//                alertDialogBuilder.setMessage(R.string.about_us_authors)
-//                alertDialogBuilder.setPositiveButton(R.string.about_us_positive_button) { dialog, _ ->
-//                    dialog.dismiss()
-//                }
-//                alertDialogBuilder.create().show()
-
                 return true
-
             }
         }
-
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
 
-    /*
-    * This method is called from ChooseTalkFragment when there's a filter request by date and room
-    *
-    * */
+    /* This method is called from ChooseTalkFragment when there's a filter request by date and room */
     override fun onFilterTalks(filtered: Boolean) {
         sharedPreferences.edit().putBoolean(PreferenceKeys.FILTERED_TALKS_KEY, filtered).commit()
         filteredTalks = filtered
@@ -610,16 +539,12 @@ class MainActivity :
     *
     * */
     override fun onVoteFragment(id_talk: Int, score: Int) {
-
         val scoreDao: Dao<Score, Int> = databaseHelper.getScoreDao()
-
         if (isDeviceConnectedToWifiOrData().first) {
             val firestore = FirebaseFirestore.getInstance()
-
             val scoringDoc = mapOf(FIREBASE_COLLECTION_FIELD_1 to id_talk,
                     FIREBASE_COLLECTION_FIELD_2 to score,
                     FIREBASE_COLLECTION_FIELD_3 to java.util.Date())
-
             firestore
                     .collection(FIREBASE_COLLECTION)
                     .add(scoringDoc)
@@ -635,7 +560,6 @@ class MainActivity :
             scoreDao.create(scoreObj)
             Log.d(TAG, scoreObj.toString())
         }
-
         /* Some user feedback in the form of a light vibration. Oreo. Android 8.0. APIS 26-27 */
         if (sharedPreferences.getBoolean(PreferenceKeys.VIBRATOR_KEY, true)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -681,11 +605,17 @@ class MainActivity :
         }
     }
 
+    /*
+    *
+    * */
     override fun onWelcomeFragment(msg: String) {
     }
 
+    /*
+    *
+    * */
     override fun onCredentialsDialogFragmentInteraction(answer: Int) {
-        when(answer) {
+        when (answer) {
             Dialog.BUTTON_POSITIVE -> {
                 // do nothing
             }
@@ -695,6 +625,9 @@ class MainActivity :
         }
     }
 
+    /*
+    *
+    * */
     override fun onAboutUsDialogFragmentInteraction(msg: String) {
     }
 

@@ -6,17 +6,22 @@
     <group android:checkableBehavior="single">
 
         <item
-            android:id="@+id/settings"
+            android:id="@+id/action_settings"
             android:icon="@drawable/ic_menu_manage"
             android:title="@string/menu_settings" />
 
         <item
-            android:id="@+id/statistics"
+            android:id="@+id/action_statistics"
             android:icon="@drawable/ic_statistics"
             android:title="@string/menu_statistics" />
 
         <item
-            android:id="@+id/about_us"
+            android:id="@+id/action_update"
+            android:icon="@drawable/ic_menu_share"
+            android:title="@string/action_update" />
+
+        <item
+            android:id="@+id/action_about_us"
             android:icon="@android:drawable/ic_dialog_info"
             android:title="@string/menu_about_us" />
 
