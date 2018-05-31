@@ -727,7 +727,9 @@ class MainActivity :
                 // do nothing
             }
             Dialog.BUTTON_NEGATIVE -> {
-                drawer_layout.closeDrawer(Gravity.LEFT)
+                if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
+                    drawer_layout.closeDrawer(GravityCompat.START)
+                }
             }
         }
     }

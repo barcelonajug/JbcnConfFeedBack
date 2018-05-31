@@ -21,6 +21,8 @@
     <string name="sorry_no_scoring_avaiable">Sorry, no scoring available.</string>
     <string name="sorry_no_room_set">Sorry, room is not set.</string>
     <string name="success_data_updated">All data updated successfully.</string>
+    <string name="wrong_credentials">Wrong credentials, try again.</string>
+    <string name="blank_credentials">Credentials can not be empty, try again.</string>
 
 
     <!-- CredentialsDialogFragment  -->

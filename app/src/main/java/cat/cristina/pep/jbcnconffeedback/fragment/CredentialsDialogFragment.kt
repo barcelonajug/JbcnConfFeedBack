@@ -11,8 +11,8 @@ import android.support.v7.widget.AppCompatAutoCompleteTextView
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
-import kotlinx.android.synthetic.main.fragment_credentials_dialog.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -58,7 +58,7 @@ class CredentialsDialogFragment : DialogFragment() {
     private lateinit var usernameET: AppCompatAutoCompleteTextView
     private lateinit var passwordET: EditText
 
-    private val USERNAMES = arrayOf("nacho@barcelonajug.org","jonathan@barcelonajug.org","cristina.asensio.munoz@gmail.com","jmendez1@xtec.cat")
+    private val USERNAMES = arrayOf("nacho@barcelonajug.org", "jonathan@barcelonajug.org", "cristina.asensio.munoz@gmail.com", "jmendez1@xtec.cat")
 
 
     private val TAG = CredentialsDialogFragment::class.java.name
@@ -107,27 +107,31 @@ class CredentialsDialogFragment : DialogFragment() {
         val passWord = passwordET.text.toString()
 
         /* param1 es desde donde se llama  */
-        if(param1 == "MainActivity") {
-            if (userName.isEmpty() || passWord.isEmpty()) {
-                listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
-            } else
-                if (answer == Dialog.BUTTON_POSITIVE)
-                    if (userName == passWord) {
-                        listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_POSITIVE)
-                    } else {
-                        listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
-                    }
+        if (answer == Dialog.BUTTON_NEGATIVE) {
+            listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
+        } else if (userName.isEmpty() || passWord.isEmpty()) {
+            Toast.makeText(activity, R.string.blank_credentials, Toast.LENGTH_LONG).show()
+            listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
+        } else if (param1 == "MainActivity") {
+            if (answer == Dialog.BUTTON_POSITIVE) {
+                if (userName == passWord) {
+                    /* Do nothing  */
+                    listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_POSITIVE)
+                } else {
+                    Toast.makeText(activity, R.string.wrong_credentials, Toast.LENGTH_LONG).show()
+                    listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
+                }
+            }
+        } else if (param1 == "VoteFragment") {
+            if (answer == Dialog.BUTTON_POSITIVE) {
+                if (userName == passWord) {
+                    fragmentManager?.popBackStack()
+                } else {
+                    Toast.makeText(activity, R.string.wrong_credentials, Toast.LENGTH_LONG).show()
+                    listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
+                }
+            }
         }
-        else if (param1 == "VoteFragment") {
-            if (userName.isEmpty() || passWord.isEmpty()) {
-                // do nothing
-            } else
-                if (answer == Dialog.BUTTON_POSITIVE)
-                    if (userName == passWord) {
-                        fragmentManager?.popBackStack()
-                    }
-        }
-
     }
 
 
