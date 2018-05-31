@@ -92,20 +92,32 @@ class CredentialsDialogFragment : DialogFragment() {
     }
 
 
-    fun onButtonPressed(answer: Int) {
+    private fun onButtonPressed(answer: Int) {
 
         val userName = usernameET.text.toString()
         val passWord = passwordET.text.toString()
 
-        if (userName.isEmpty() || passWord.isEmpty()) {
-            listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
-        } else
-            if (answer == Dialog.BUTTON_POSITIVE)
-                if (userName == passWord) {
-                    listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_POSITIVE)
-                } else {
-                    listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
-                }
+        /* param1 es desde donde se llama  */
+        if(param1 == "MainActivity") {
+            if (userName.isEmpty() || passWord.isEmpty()) {
+                listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
+            } else
+                if (answer == Dialog.BUTTON_POSITIVE)
+                    if (userName == passWord) {
+                        listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_POSITIVE)
+                    } else {
+                        listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
+                    }
+        }
+        else if (param1 == "VoteFragment") {
+            if (userName.isEmpty() || passWord.isEmpty()) {
+                // do nothing
+            } else
+                if (answer == Dialog.BUTTON_POSITIVE)
+                    if (userName == passWord) {
+                        fragmentManager?.popBackStack()
+                    }
+        }
 
     }
 

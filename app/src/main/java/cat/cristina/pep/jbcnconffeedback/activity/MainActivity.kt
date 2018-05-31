@@ -144,8 +144,8 @@ class MainActivity :
 
             override fun onDrawerOpened(drawerView: View) {
                 super.onDrawerOpened(drawerView)
-                dialogFragment = CredentialsDialogFragment.newInstance("", "")
-                dialogFragment.show(supportFragmentManager, "DialogFragment")
+                dialogFragment = CredentialsDialogFragment.newInstance("MainActivity", "")
+                dialogFragment.show(supportFragmentManager, "CredentialsDialogFragment")
             }
         })
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)

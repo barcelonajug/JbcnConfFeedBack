@@ -100,17 +100,20 @@ class VoteFragment : Fragment() {
         when (item?.itemId) {
             R.id.action_exit -> {
 
-                val alertDialogBuilder = AlertDialog.Builder(context!!, R.style.Base_V7_Theme_AppCompat_Dialog)
-                alertDialogBuilder.setTitle(R.string.alert_title)
-                alertDialogBuilder.setMessage(R.string.alert_message)
-                // TODO ("What of backstack empty as in automode")
-                alertDialogBuilder.setPositiveButton(R.string.alert_positive_button) {
-                    _, _ ->  fragmentManager?.popBackStack()
-                }
-                alertDialogBuilder.setNegativeButton(R.string.alert_negative_button) {
-                    _, _ ->
-                }
-                alertDialogBuilder.create().show()
+                val dialogFragment = CredentialsDialogFragment.newInstance("VoteFragment", "")
+                dialogFragment.show(activity?.supportFragmentManager, "CredentialDialogFragment")
+
+//                val alertDialogBuilder = AlertDialog.Builder(context!!, R.style.Base_V7_Theme_AppCompat_Dialog)
+//                alertDialogBuilder.setTitle(R.string.alert_title)
+//                alertDialogBuilder.setMessage(R.string.alert_message)
+//                // TODO ("What of backstack empty as in automode")
+//                alertDialogBuilder.setPositiveButton(R.string.alert_positive_button) {
+//                    _, _ ->  fragmentManager?.popBackStack()
+//                }
+//                alertDialogBuilder.setNegativeButton(R.string.alert_negative_button) {
+//                    _, _ ->
+//                }
+//                alertDialogBuilder.create().show()
 
                 return true
 

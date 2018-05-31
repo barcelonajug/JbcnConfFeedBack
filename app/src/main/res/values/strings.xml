@@ -33,8 +33,8 @@
 
     <!-- AboutUsDialogFragment  -->
 
-    <string name="about_pep">Execution: Pep Mendez. #pepmenval</string>
-    <string name="about_cristina">Idea &amp; Testing: Cristina Asensio. #cristiasensiom</string>
+    <string name="line_one">nacho@barcelonajug.org &amp; jonathan@barcelonajug.org</string>
+    <string name="line_two">cristina.asensio.munoz@gmail.com &amp; jmendez1@xtec.cat</string>
     <string name="ok">OK</string>
 
     <!-- StatisticsFragment  -->
