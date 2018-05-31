@@ -433,11 +433,17 @@ class MainActivity :
         } else {
             val actualFragment = supportFragmentManager.findFragmentById(R.id.contentFragment)
 
-            actualFragment?.tag.run {
-                if (this != VOTE_FRAGMENT) {
-                    super.onBackPressed()
-                }
+            /* aixo evita sortir de l'app amb el back button  */
+            if (supportFragmentManager.backStackEntryCount == 0) {
+                return
             }
+            /* quan es mostra el votefragment backStackEntryCount es 1. VoteFragment te el su boto de sortir  */
+            if (actualFragment?.tag == VOTE_FRAGMENT) {
+                return
+            }
+            /* per sortir de l'app hi ha un menu finish  */
+            super.onBackPressed()
+
         }
     }
 
@@ -514,6 +520,9 @@ class MainActivity :
             }
             R.id.action_update -> {
                 onUpdateTalks()
+            }
+            R.id.action_finish -> {
+                finishAndRemoveTask()
             }
             R.id.action_about_us -> {
                 val aboutUsFragment = AboutUsDialogFragment.newInstance("", "")
