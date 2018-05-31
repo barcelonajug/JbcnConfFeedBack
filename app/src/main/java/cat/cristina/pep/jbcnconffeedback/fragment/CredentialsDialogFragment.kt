@@ -7,9 +7,12 @@ import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.AppCompatAutoCompleteTextView
 import android.util.Log
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import cat.cristina.pep.jbcnconffeedback.R
+import kotlinx.android.synthetic.main.fragment_credentials_dialog.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -52,8 +55,10 @@ class CredentialsDialogFragment : DialogFragment() {
     private var param2: String? = null
     private var listenerDialog: CredentialsDialogFragmentListener? = null
 
-    private lateinit var usernameET: EditText
+    private lateinit var usernameET: AppCompatAutoCompleteTextView
     private lateinit var passwordET: EditText
+
+    private val USERNAMES = arrayOf("nacho@barcelonajug.org","jonathan@barcelonajug.org","cristina.asensio.munoz@gmail.com","jmendez1@xtec.cat")
 
 
     private val TAG = CredentialsDialogFragment::class.java.name
@@ -78,6 +83,10 @@ class CredentialsDialogFragment : DialogFragment() {
 
         usernameET = view.findViewById(R.id.username)
         passwordET = view.findViewById(R.id.password)
+
+        val arrayAdapter = ArrayAdapter<String>(activity, android.R.layout.simple_dropdown_item_1line, USERNAMES)
+
+        usernameET.setAdapter(arrayAdapter)
 
         return builder.setView(view)
                 // Add action buttons
