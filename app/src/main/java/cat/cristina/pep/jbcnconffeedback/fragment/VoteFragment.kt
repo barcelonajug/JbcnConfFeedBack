@@ -1,14 +1,17 @@
 package cat.cristina.pep.jbcnconffeedback.fragment
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AlertDialog
+import android.support.v7.preference.PreferenceManager
 import android.util.Log
 import android.view.*
 import android.view.animation.AnimationUtils
 import cat.cristina.pep.jbcnconffeedback.R
+import cat.cristina.pep.jbcnconffeedback.utils.PreferenceKeys
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.fragment_vote.*
@@ -35,6 +38,7 @@ class VoteFragment : Fragment() {
     private lateinit var talkTitle: String
     private lateinit var speakerName: String
     private var listener: OnVoteFragmentListener? = null
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,7 +86,7 @@ class VoteFragment : Fragment() {
             ibCry.startAnimation(onTouchAnimation)
             onButtonPressed(talkId.toInt(), VOTE_ONE)
         }
-        Log.d(TAG, "talkTitle -> " + talkTitle + ", speakerName -> " + speakerName)
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -113,6 +117,12 @@ class VoteFragment : Fragment() {
             }
         }
         return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?) {
+        super.onPrepareOptionsMenu(menu)
+        val menuExit = menu?.findItem(R.id.action_exit)
+        menuExit?.isEnabled = !sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
     }
 
     /*  */

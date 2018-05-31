@@ -60,7 +60,8 @@ private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jb
 private const val CHOOSE_TALK_FRAGMENT = "ChooseTalkFragment"
 private const val STATISTICS_FRAGMENT = "StatisticsFragment"
 private const val VOTE_FRAGMENT = "VoteFragment"
-private const val WELLCOME_FRAGMENT = "WellcomeFragment"
+private const val WELCOME_FRAGMENT = "WelcomeFragment"
+private const val SETTINGS_FRAGMENT = "SettingsFragment"
 private const val FIREBASE_COLLECTION = "Scoring"
 private const val FIREBASE_COLLECTION_FIELD_1 = "id_talk"
 private const val FIREBASE_COLLECTION_FIELD_2 = "score"
@@ -274,7 +275,7 @@ class MainActivity :
        * */
     private fun setupTimer() {
         val fragment = WelcomeFragment.newInstance(roomName, "")
-        switchFragment(fragment, "$WELLCOME_FRAGMENT$roomName", false)
+        switchFragment(fragment, "$WELCOME_FRAGMENT$roomName", false)
         Toast.makeText(this, "Setting timers...", Toast.LENGTH_LONG).show()
         scheduledExecutorService = Executors.newScheduledThreadPool(5)
         scheduledFutures = mutableListOf()
@@ -506,7 +507,7 @@ class MainActivity :
             R.id.action_settings -> {
                 //startActivity(Intent(this, SettingsActivity::class.java))
                 val fragment = AppPreferenceFragment()
-                switchFragment(fragment, STATISTICS_FRAGMENT)
+                switchFragment(fragment, SETTINGS_FRAGMENT)
             }
             R.id.action_send_statistics -> {
                 downloadScoring()
