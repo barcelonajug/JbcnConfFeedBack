@@ -47,6 +47,12 @@
             android:checkableBehavior="single">
 
             <item
+                android:id="@+id/action_license"
+                android:icon="@android:drawable/ic_lock_power_off"
+                android:title="@string/menu_license" />
+
+
+            <item
                 android:id="@+id/action_finish"
                 android:icon="@android:drawable/ic_lock_power_off"
                 android:title="@string/menu_finish" />

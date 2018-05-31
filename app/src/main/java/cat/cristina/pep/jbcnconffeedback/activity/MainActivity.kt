@@ -98,7 +98,8 @@ class MainActivity :
         StatisticsFragment.OnStatisticsFragmentListener,
         WelcomeFragment.OnWelcomeFragmentListener,
         CredentialsDialogFragment.CredentialsDialogFragmentListener,
-        AboutUsDialogFragment.AboutUsDialogFragmentListener {
+        AboutUsDialogFragment.AboutUsDialogFragmentListener,
+        LicenseDialogFragment.LicenseDialogFragmentListener {
 
     private val random = Random()
     private val DEFAULT_STATISTICS_FILE_NAME = "statistics.csv"
@@ -524,6 +525,10 @@ class MainActivity :
             R.id.action_finish -> {
                 finishAndRemoveTask()
             }
+            R.id.action_license -> {
+                val licenseFragment = LicenseDialogFragment.newInstance("","")
+                licenseFragment.show(supportFragmentManager, "LicenseDialogFrgment")
+            }
             R.id.action_about_us -> {
                 val aboutUsFragment = AboutUsDialogFragment.newInstance("", "")
                 aboutUsFragment.show(supportFragmentManager, "AboutUsDialogFragment")
@@ -738,6 +743,10 @@ class MainActivity :
     *
     * */
     override fun onAboutUsDialogFragmentInteraction(msg: String) {
+    }
+
+    override fun onLicenseDialogFragmentInteraction(msg: String) {
+
     }
 
 }

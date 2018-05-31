@@ -17,6 +17,7 @@
     <dimen name="thirty_two">32dp</dimen>
     <dimen name="sixty_four">64dp</dimen>
     <dimen name="seventy_two">72dp</dimen>
+    <dimen name="logo_margin">10dp</dimen>
 
     <!-- Text sizes -->
     <dimen name="text_thirty">30sp</dimen>

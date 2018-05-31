@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:scaleType="center"
         android:background="#FFFFFF"
+        android:padding="@dimen/logo_margin"
         android:contentDescription="@string/app_name" />
 
     <TextView
