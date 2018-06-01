@@ -48,7 +48,7 @@
 
             <item
                 android:id="@+id/action_license"
-                android:icon="@android:drawable/ic_lock_power_off"
+                android:icon="@android:drawable/ic_menu_share"
                 android:title="@string/menu_license" />
 
 
