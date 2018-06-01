@@ -124,6 +124,7 @@ class MainActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate()")
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
@@ -152,10 +153,6 @@ class MainActivity :
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         databaseHelper = OpenHelperManager.getHelper(applicationContext, DatabaseHelper::class.java)
         utilDAOImpl = UtilDAOImpl(this, databaseHelper)
-    }
-
-    override fun onStart() {
-        super.onStart()
         val (connected, reason) = isDeviceConnectedToWifiOrData()
         if (connected)
             requestQueue = Volley.newRequestQueue(this)
@@ -164,6 +161,40 @@ class MainActivity :
         setup(connected)
         /* TODO("Remove in production")  */
         generateScheduleId()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d(TAG, "onStart()")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume()")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(TAG, "onPause()")
+    }
+
+    @CallSuper
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "onStop()")
+
+    }
+
+    override fun onRestart() {
+        Log.d(TAG, "onRestart()")
+        super.onRestart()
+    }
+
+    override fun onDestroy() {
+        Log.d(TAG, "onDestroy()")
+        super.onDestroy()
+        requestQueue?.cancelAll(TAG)
+        cancelTimer()
     }
 
     fun getAutoModeAndRoomName(): Pair<Boolean, String> =
@@ -256,8 +287,6 @@ class MainActivity :
         val fragment = WelcomeFragment.newInstance(roomName, "")
         switchFragment(fragment, "$WELCOME_FRAGMENT$roomName", false)
 
-        Toast.makeText(this, "Setting timers...", Toast.LENGTH_LONG).show()
-
         scheduledExecutorService = Executors.newScheduledThreadPool(5)
         scheduledFutures = mutableListOf()
 
@@ -266,6 +295,8 @@ class MainActivity :
         /* TODO("REMOVE in production") */
 
         val today = GregorianCalendar(2018, 6, 11, 9, 0)
+
+        Log.d(TAG, "****** ${today.toString()} ******")
 
         talkSchedules.forEach { talk: Talk, pair: Pair<SessionsTimes, TalksLocations> ->
 
@@ -311,7 +342,7 @@ class MainActivity :
                         /* Dos runnable, un que posara el fragment de votar i un altre que el treura  */
 
                         val timerTaskIn = Runnable {
-                            Log.d(TAG, "VoteFragment........")
+                            Log.d(TAG, "VoteFragment... $talkId $talkTitle $talkAuthorName")
                             switchFragment(VoteFragment.newInstance("$talkId", talkTitle, talkAuthorName), "VoteFragment", false)
                         }
 
@@ -322,15 +353,18 @@ class MainActivity :
 
                         /* Finalment posem en marxa el scheduler  */
 
-                        Log.d(TAG, "Setting schedule for talk  $talkId $talkTitle starts in $remainingStartTime ends in $remainingStopTime")
-
                         scheduledFutures?.add(scheduledExecutorService?.schedule(timerTaskIn, startTime, TimeUnit.MILLISECONDS))
                         scheduledFutures?.add(scheduledExecutorService?.schedule(timerTaskOff, endTime, TimeUnit.MILLISECONDS))
+
+                        Log.d(TAG, "Setting schedule for talk $talk starts in $remainingStartTime ends in $remainingStopTime")
 
                     }
                 }
             }
         }
+
+        //Toast.makeText(this, R.string.setting_timers, Toast.LENGTH_LONG).show()
+        Toast.makeText(this, """${scheduledFutures?.size?.div(2) ?: "0"} timers set""", Toast.LENGTH_LONG).show()
 
         /* Cerramos el executor service para que no se sirvan más tareas, pero las tareas pendientes no se cancelan  */
 
@@ -562,7 +596,8 @@ class MainActivity :
 
         //return netInfo != null && netInfo.isConnectedOrConnecting()
 
-        return Pair(netInfo?.isConnected ?: false, netInfo?.reason ?: resources.getString(R.string.sorry_not_connected))
+        return Pair(netInfo?.isConnected ?: false, netInfo?.reason
+                ?: resources.getString(R.string.sorry_not_connected))
     }
 
     /*
@@ -896,12 +931,7 @@ class MainActivity :
         }
     }
 
-    @CallSuper
-    override fun onStop() {
-        super.onStop()
-        requestQueue?.cancelAll(TAG)
-        cancelTimer()
-    }
+
 
     /*
     * This method might be called from the StatisticsFragment
@@ -919,7 +949,7 @@ class MainActivity :
         roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
 
         if (autoMode) {
-            setupTimer()
+            setup(false)
         } else {
             cancelTimer()
             switchFragment(ChooseTalkFragment.newInstance(1, filteredTalks), "$CHOOSE_TALK_FRAGMENT$roomName", false)

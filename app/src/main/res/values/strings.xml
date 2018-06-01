@@ -23,6 +23,7 @@
     <string name="success_data_updated">All data updated successfully.</string>
     <string name="wrong_credentials">Wrong credentials, try again.</string>
     <string name="blank_credentials">Credentials can not be empty, try again.</string>
+    <string name="setting_timers">Setting timers ....</string>
 
     <!-- LicenseDialogFragment  -->
 
