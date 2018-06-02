@@ -115,7 +115,8 @@ class CredentialsDialogFragment : DialogFragment() {
             listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
         } else if (origin == MainActivity.MAIN_ACTIVITY) {
             if (answer == Dialog.BUTTON_POSITIVE) {
-                if (userName == passWord) {
+                //if (userName == passWord) {
+                if (resources.getString(R.string.secret_password) == passWord) {
                     /* Do nothing  */
                     listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_POSITIVE)
                 } else {
@@ -127,7 +128,8 @@ class CredentialsDialogFragment : DialogFragment() {
             Log.d(TAG, "$autoMode")
             if (autoMode == false) {
                 if (answer == Dialog.BUTTON_POSITIVE) {
-                    if (userName == passWord) {
+                    //if (userName == passWord) {
+                    if (resources.getString(R.string.secret_password) == passWord) {
                         fragmentManager?.popBackStack()
                     } else {
                         Toast.makeText(activity, R.string.wrong_credentials, Toast.LENGTH_LONG).show()

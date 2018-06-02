@@ -52,10 +52,12 @@
 
     <!-- CredentialsDialogFragment  -->
 
+    <string name="enter_password">Enter password</string>
     <string name="username">User name</string>
     <string name="password">Password</string>
     <string name="sign_in">Accept</string>
     <string name="cancel">Cancel</string>
+    <string name="secret_password">1103</string>
 
 
     <!-- AboutUsDialogFragment  -->
@@ -119,7 +121,7 @@
     <string name="pref_email_key">email_key</string>
     <string name="pref_title_email">Email</string>
     <string name="menu_update">Upload Votes</string>
-    <string name="pref_default_email">jmendez1@xtec.cat</string>
+    <string name="pref_default_email">1103</string>
 
     <string name="pref_title_vibrator">Vibrator</string>
     <string name="pref_description_vibrator">Get vibration feedback</string>
