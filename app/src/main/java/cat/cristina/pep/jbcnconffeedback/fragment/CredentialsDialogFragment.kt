@@ -89,15 +89,19 @@ class CredentialsDialogFragment : DialogFragment() {
 
         usernameET.setAdapter(arrayAdapter)
 
-        return builder.setView(view)
+        val dialog = builder.setView(view)
                 // Add action buttons
-                .setPositiveButton(R.string.sign_in, DialogInterface.OnClickListener { dialog, id ->
+                .setPositiveButton(R.string.sign_in, { _, _ ->
                     onButtonPressed(Dialog.BUTTON_POSITIVE)
                 })
-                .setNegativeButton(R.string.cancel, DialogInterface.OnClickListener { dialog, id ->
+                .setNegativeButton(R.string.cancel, { dialog, id ->
                     onButtonPressed(Dialog.BUTTON_NEGATIVE)
                     //this@CredentialsDialogFragment.dialog.cancel()
                 }).create()
+
+        dialog.window.setBackgroundDrawableResource(android.R.drawable.dialog_holo_light_frame)
+
+        return dialog
 
     }
 

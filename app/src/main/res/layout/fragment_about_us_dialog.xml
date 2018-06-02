@@ -13,6 +13,12 @@
         android:padding="@dimen/logo_margin"
         android:contentDescription="@string/app_name" />
 
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" />
+
     <TextView
         android:id="@+id/about_cris"
         android:layout_width="match_parent"

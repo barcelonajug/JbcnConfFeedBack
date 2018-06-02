@@ -32,7 +32,6 @@ class LicenseDialogFragment : DialogFragment() {
     private var listener: LicenseDialogFragmentListener? = null
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -51,11 +50,15 @@ class LicenseDialogFragment : DialogFragment() {
         // Pass null as the parent view because its going in the dialog layout
         val view = inflater.inflate(R.layout.fragment_license_dialog, null)
 
-        return builder.setView(view)
+        val dialog = builder.setView(view)
                 // Add action buttons
-                .setPositiveButton(R.string.ok, DialogInterface.OnClickListener { dialog, id ->
+                .setPositiveButton(R.string.ok, { _, _ ->
                     onButtonPressed("")
                 }).create()
+
+        dialog.window.setBackgroundDrawableResource(android.R.drawable.dialog_holo_light_frame)
+
+        return dialog
     }
 
     // TODO: Rename method, update argument and hook method into UI event
