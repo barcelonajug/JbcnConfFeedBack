@@ -741,7 +741,7 @@ class MainActivity :
             }
             R.id.action_license -> {
                 val licenseFragment = LicenseDialogFragment.newInstance("", "")
-                licenseFragment.show(supportFragmentManager, "LicenseDialogFrgment")
+                licenseFragment.show(supportFragmentManager, "LicenseDialogFragment")
             }
             R.id.action_about_us -> {
                 val aboutUsFragment = AboutUsDialogFragment.newInstance("", "")
@@ -989,6 +989,9 @@ class MainActivity :
     *
     * */
     override fun onAboutUsDialogFragmentInteraction(msg: String) {
+        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
+            drawer_layout.closeDrawer(GravityCompat.START)
+        }
     }
 
     /*
@@ -996,6 +999,9 @@ class MainActivity :
     *
     * */
     override fun onLicenseDialogFragmentInteraction(msg: String) {
+        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
+            drawer_layout.closeDrawer(GravityCompat.START)
+        }
 
     }
 
