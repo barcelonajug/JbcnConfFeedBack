@@ -259,7 +259,9 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
             xAxis.yOffset = 100.0F
             xAxis.setLabelCount(firstTen!!.size, false)
             axisLeft.axisMinimum = 0.0F
-            axisLeft.axisMaximum = 6.0F
+            axisLeft.axisMaximum = 5.25F
+            axisLeft.setDrawLabels(false)
+            axisRight.setDrawLabels(false)
             fitScreen()
             description.isEnabled = false
             //description.text = resources.getString(R.string.chart_description)
