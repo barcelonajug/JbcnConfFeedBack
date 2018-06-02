@@ -91,7 +91,7 @@ class VoteFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater?.inflate(R.menu.vote_fragment, menu)
+//        inflater?.inflate(R.menu.vote_fragment, menu)
     }
 
     /* TODO("retore ChooseTalkFragment")  */
@@ -100,8 +100,8 @@ class VoteFragment : Fragment() {
         when (item?.itemId) {
             R.id.action_exit -> {
 
-                val dialogFragment = CredentialsDialogFragment.newInstance("VoteFragment", "")
-                dialogFragment.show(activity?.supportFragmentManager, "CredentialDialogFragment")
+//                val dialogFragment = CredentialsDialogFragment.newInstance("VoteFragment", "")
+//                dialogFragment.show(activity?.supportFragmentManager, "CredentialDialogFragment")
 
 //                val alertDialogBuilder = AlertDialog.Builder(context!!, R.style.Base_V7_Theme_AppCompat_Dialog)
 //                alertDialogBuilder.setTitle(R.string.alert_title)
@@ -115,7 +115,7 @@ class VoteFragment : Fragment() {
 //                }
 //                alertDialogBuilder.create().show()
 
-                return true
+//                return true
 
             }
         }
@@ -124,8 +124,8 @@ class VoteFragment : Fragment() {
 
     override fun onPrepareOptionsMenu(menu: Menu?) {
         super.onPrepareOptionsMenu(menu)
-        val menuExit = menu?.findItem(R.id.action_exit)
-        menuExit?.isEnabled = !sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
+//        val menuExit = menu?.findItem(R.id.action_exit)
+//        menuExit?.isEnabled = !sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
     }
 
     /*  */

@@ -12,7 +12,6 @@ import android.net.Uri
 import android.os.*
 import android.support.annotation.CallSuper
 import android.support.design.widget.NavigationView
-import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -56,11 +55,7 @@ import java.util.concurrent.TimeUnit
 
 private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
 private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/talks.json"
-private const val CHOOSE_TALK_FRAGMENT = "ChooseTalkFragment"
-private const val STATISTICS_FRAGMENT = "StatisticsFragment"
-private const val VOTE_FRAGMENT = "VoteFragment"
-private const val WELCOME_FRAGMENT = "WelcomeFragment"
-private const val SETTINGS_FRAGMENT = "SettingsFragment"
+
 private const val FIREBASE_COLLECTION = "Scoring"
 private const val FIREBASE_COLLECTION_FIELD_1 = "id_talk"
 private const val FIREBASE_COLLECTION_FIELD_2 = "score"
@@ -112,13 +107,13 @@ class MainActivity :
     private var scheduledFutures: MutableList<ScheduledFuture<*>?>? = null
     //private var timer: Timer? = null
     private lateinit var roomName: String
-    private var autoMode: Boolean = true
+    private var autoMode: Boolean = false
     private val talkSchedules = HashMap<Talk, Pair<SessionsTimes, TalksLocations>>()
     // TODO("Delete in production")
     private val setOfScheduleIds: MutableSet<String> = mutableSetOf()
     private lateinit var sharedPreferences: SharedPreferences
     private var filteredTalks = false
-    private lateinit var dialogFragment: DialogFragment
+    //private lateinit var dialogFragment: DialogFragment
     private var dataFromFirestore: Map<Long?, List<QueryDocumentSnapshot>>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -145,7 +140,7 @@ class MainActivity :
 
             override fun onDrawerOpened(drawerView: View) {
                 super.onDrawerOpened(drawerView)
-                dialogFragment = CredentialsDialogFragment.newInstance("MainActivity", "")
+                val dialogFragment = CredentialsDialogFragment.newInstance(MAIN_ACTIVITY, autoMode)
                 dialogFragment.show(supportFragmentManager, "CredentialsDialogFragment")
             }
         })
@@ -364,7 +359,8 @@ class MainActivity :
         }
 
         //Toast.makeText(this, R.string.setting_timers, Toast.LENGTH_LONG).show()
-        Toast.makeText(this, """${scheduledFutures?.size?.div(2) ?: "0"} timers set""", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, """${scheduledFutures?.size?.div(2)
+                ?: "0"} timers set""", Toast.LENGTH_LONG).show()
 
         /* Cerramos el executor service para que no se sirvan más tareas, pero las tareas pendientes no se cancelan  */
 
@@ -621,13 +617,20 @@ class MainActivity :
 
             /* aixo evita sortir de l'app amb el back button  */
             if (supportFragmentManager.backStackEntryCount == 0) {
+                Toast.makeText(this, R.string.choose_finish_to_exit, Toast.LENGTH_LONG).show()
                 return
             }
 
             /* quan es mostra el votefragment backStackEntryCount es 1. VoteFragment te el su boto de sortir  */
             if (actualFragment?.tag == VOTE_FRAGMENT) {
+                val dialogFragment = CredentialsDialogFragment.newInstance(VOTE_FRAGMENT, autoMode)
+                dialogFragment.show(supportFragmentManager, "CredentialsDialogFragment")
                 return
             }
+
+//            if (supportFragmentManager.backStackEntryCount == 1) {
+//                return
+//            }
 
             /* per sortir de l'app hi ha un menu finish  */
             super.onBackPressed()
@@ -932,7 +935,6 @@ class MainActivity :
     }
 
 
-
     /*
     * This method might be called from the StatisticsFragment
     * */
@@ -947,6 +949,7 @@ class MainActivity :
     override fun onAppPreferenceFragment(autoMode: Boolean) {
 
         roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
+        this.autoMode = autoMode
 
         if (autoMode) {
             setup(false)
@@ -993,6 +996,17 @@ class MainActivity :
     *
     * */
     override fun onLicenseDialogFragmentInteraction(msg: String) {
+
+    }
+
+    companion object {
+
+        const val MAIN_ACTIVITY = "MainActivity"
+        const val CHOOSE_TALK_FRAGMENT = "ChooseTalkFragment"
+        const val STATISTICS_FRAGMENT = "StatisticsFragment"
+        const val VOTE_FRAGMENT = "VoteFragment"
+        const val WELCOME_FRAGMENT = "WelcomeFragment"
+        const val SETTINGS_FRAGMENT = "SettingsFragment"
 
     }
 

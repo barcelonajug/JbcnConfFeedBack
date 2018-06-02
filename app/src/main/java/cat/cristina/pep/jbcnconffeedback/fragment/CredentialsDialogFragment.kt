@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
+import cat.cristina.pep.jbcnconffeedback.activity.MainActivity
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -52,7 +53,7 @@ class CredentialsDialogFragment : DialogFragment() {
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
-    private var param2: String? = null
+    private var param2: Boolean? = null
     private var listenerDialog: CredentialsDialogFragmentListener? = null
 
     private lateinit var usernameET: AppCompatAutoCompleteTextView
@@ -67,7 +68,7 @@ class CredentialsDialogFragment : DialogFragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            param2 = it.getBoolean(ARG_PARAM2)
         }
     }
 
@@ -112,7 +113,7 @@ class CredentialsDialogFragment : DialogFragment() {
         } else if (userName.isEmpty() || passWord.isEmpty()) {
             Toast.makeText(activity, R.string.blank_credentials, Toast.LENGTH_LONG).show()
             listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
-        } else if (param1 == "MainActivity") {
+        } else if (param1 == MainActivity.MAIN_ACTIVITY) {
             if (answer == Dialog.BUTTON_POSITIVE) {
                 if (userName == passWord) {
                     /* Do nothing  */
@@ -122,13 +123,16 @@ class CredentialsDialogFragment : DialogFragment() {
                     listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
                 }
             }
-        } else if (param1 == "VoteFragment") {
-            if (answer == Dialog.BUTTON_POSITIVE) {
-                if (userName == passWord) {
-                    fragmentManager?.popBackStack()
-                } else {
-                    Toast.makeText(activity, R.string.wrong_credentials, Toast.LENGTH_LONG).show()
-                    listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
+        } else if (param1 == MainActivity.VOTE_FRAGMENT) {
+            Log.d(TAG, "$param2")
+            if (param2 == false) {
+                if (answer == Dialog.BUTTON_POSITIVE) {
+                    if (userName == passWord) {
+                        fragmentManager?.popBackStack()
+                    } else {
+                        Toast.makeText(activity, R.string.wrong_credentials, Toast.LENGTH_LONG).show()
+                        listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
+                    }
                 }
             }
         }
@@ -184,11 +188,11 @@ class CredentialsDialogFragment : DialogFragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance(param1: String, param2: Boolean) =
                 CredentialsDialogFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_PARAM1, param1)
-                        putString(ARG_PARAM2, param2)
+                        putBoolean(ARG_PARAM2, param2)
                     }
                 }
     }
