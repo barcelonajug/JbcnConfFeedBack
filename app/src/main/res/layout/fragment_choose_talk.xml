@@ -80,7 +80,8 @@
                 android:layout_alignParentRight="true"
                 android:layout_margin="@dimen/text_margin"
                 android:hint="@string/cardview_item_number"
-                android:textAppearance="?attr/textAppearanceListItem" />
+                android:textAppearance="?attr/textAppearanceListItem"
+                android:visibility="gone"/>
 
         </RelativeLayout>
 

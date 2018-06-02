@@ -17,6 +17,7 @@ import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.activity.MainActivity
 import cat.cristina.pep.jbcnconffeedback.model.DatabaseHelper
 import cat.cristina.pep.jbcnconffeedback.model.Talk
+import cat.cristina.pep.jbcnconffeedback.model.UtilDAOImpl
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -199,6 +200,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
         val entries = ArrayList<BarEntry>()
         var index = 0.0F
         val talkDao: Dao<Talk, Int> = databaseHelper.getTalkDao()
+        val utilDAOImpl = UtilDAOImpl(context!!, databaseHelper)
 
         dataFromFirestore
                 ?.asSequence()
@@ -206,12 +208,18 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                     it.key
                 }
                 ?.forEach {
+                    val votes = it.value.size
                     val avg: Double? = dataFromFirestore?.get(it.key)
                             ?.asSequence()
                             ?.map { doc ->
                                 doc.get("score") as Long
                             }?.average()
                     var title: String = talkDao.queryForId(it.key?.toInt()).title
+                    var refAuthor = talkDao.queryForId(it.key?.toInt()).speakers?.get(0)
+                    var author = utilDAOImpl.lookupSpeakerByRef(refAuthor!!).name
+                    author = author.substring(0, 1) + "." + author.substring(author.indexOf(" "))
+                    title = if (title.length > 35) "'${StringBuilder(title.substring(0, 35)).toString()}...' by $author. ($votes votes)"
+                    else "'$title' by $author. ($votes votes)"
                     titleAndAvg.add(Pair(title, avg!!))
                     // Log.d(TAG, "************************************ $title $avg")
                 }
@@ -224,12 +232,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
 
         for (pair: Pair<String, Double> in firstTen) {
             entries.add(BarEntry(index++, pair.second.toFloat()))
-            var title: String = pair.first.let {
-                if (it.length > 60) StringBuilder(it.substring(0, 60))
-                        .append(" ...")
-                        .toString()
-                else it
-            }
+            var title: String = pair.first
             //title = StringBuilder(title).append(" (${String.format("%.2f", pair.second)})").toString()
             labels.add(title)
         }
@@ -249,17 +252,17 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
         with(barChart) {
             data = barData
             xAxis.valueFormatter = IndexAxisValueFormatter(labels) as IAxisValueFormatter?
-            xAxis.textSize = 32.0F
+            xAxis.textSize = 20.0F
             xAxis.setDrawLabels(true)
             xAxis.position = XAxis.XAxisPosition.BOTTOM_INSIDE
-            xAxis.xOffset = 850.0F
+            xAxis.xOffset = 650.0F
             xAxis.yOffset = 100.0F
             xAxis.setLabelCount(firstTen!!.size, false)
             axisLeft.axisMinimum = 0.0F
-            axisLeft.axisMaximum = 5.0F
+            axisLeft.axisMaximum = 6.0F
             fitScreen()
-            description.isEnabled = true
-            description.text = resources.getString(R.string.chart_description)
+            description.isEnabled = false
+            //description.text = resources.getString(R.string.chart_description)
             setNoDataText(resources.getString(R.string.sorry_no_graphic_available))
             setDrawBarShadow(true)
             //setDrawValueAboveBar(true)
@@ -328,7 +331,6 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
         beanToCsv.write(statistics)
         Log.d(TAG, fileWriter.toString())
     }
-
 
 
     fun onButtonPressed(msg: String) {
