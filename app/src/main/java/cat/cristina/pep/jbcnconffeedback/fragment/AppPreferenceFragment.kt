@@ -32,6 +32,7 @@ class AppPreferenceFragment :
         var preference = findPreference(PreferenceKeys.VIBRATOR_KEY)
         preference.summary = summary
 
+
         summary = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
         preference = findPreference(PreferenceKeys.ROOM_KEY)
         preference.summary = summary
@@ -71,11 +72,15 @@ class AppPreferenceFragment :
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         if (sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name)) != previousRoomName
                 || sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false) != previousAutoMode) {
-            listener?.onAppPreferenceFragment(sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false))
+            listener?.onAppPreferenceFragmentAutoModeRoomNameChanged(sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false))
         }
     }
 
@@ -86,7 +91,7 @@ class AppPreferenceFragment :
 
 
     interface OnAppPreferenceFragmentListener {
-        fun onAppPreferenceFragment(autoMode: Boolean)
+        fun onAppPreferenceFragmentAutoModeRoomNameChanged(autoMode: Boolean)
     }
 
     /**
@@ -118,15 +123,13 @@ class AppPreferenceFragment :
                 preference.summary = summary
                 sharedPreferences.edit().putString(key, summary).commit()
                 // al listener se l'ha de cridar des d'onDestroy
-                //listener?.onAppPreferenceFragment(mode)
+                //listener?.onAppPreferenceFragmentAutoModeRoomNameChanged(mode)
             }
             PreferenceKeys.AUTO_MODE_KEY -> {
                 val mode = sharedPreferences!!.getBoolean(key, false)
                 val summary = if (mode) "On" else "Off"
                 preference.summary = summary
                 sharedPreferences.edit().putBoolean(key, mode).commit()
-                // al listener se l'ha de cridar des d'onDestroy
-                //listener?.onAppPreferenceFragment(mode)
             }
 
             PreferenceKeys.EMAIL_KEY -> {

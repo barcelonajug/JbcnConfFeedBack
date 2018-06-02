@@ -22,7 +22,11 @@ enum class TalksLocations {
     TUE_TC5 { override fun getRoomName() = "Room #5" },
     TUE_TC6 { override fun getRoomName() = "Room #6" },
     WED_TC1 { override fun getRoomName() = "Room #1" },
-    WED_TC2 { override fun getRoomName() = "Room #2" };
+    WED_TC2 { override fun getRoomName() = "Room #2" },
+    WED_TC3 { override fun getRoomName() = "Room #3" },
+    WED_TC4 { override fun getRoomName() = "Room #4" },
+    WED_TC5 { override fun getRoomName() = "Room #5" },
+    WED_TC6 { override fun getRoomName() = "Room #6" };
 
     abstract fun getRoomName(): String
 }

@@ -19,16 +19,16 @@ class TalkContent(val context: Context) {
     private var utilDAOImpl: UtilDAOImpl
     private var speakerDao: Dao<Speaker, Int>
     private var talkDao: Dao<Talk, Int>
-    private var speakerTalkDao: Dao<SpeakerTalk, Int>
+    //private var speakerTalkDao: Dao<SpeakerTalk, Int>
 
     /**
      * An array of talk items.
      */
-    val ITEMS: MutableList<TalkItem> = ArrayList()
-    val ITEMS_FILTERED_BY_DATE_AND_ROOM_NAME: MutableList<TalkItem> = ArrayList()
+    val ITEMS: MutableList<TalkItem> = mutableListOf()
+    val ITEMS_FILTERED_BY_DATE_AND_ROOM_NAME: MutableList<TalkItem> = mutableListOf()
 
     /**
-     * A map of talks by ID. Not used
+     * A map of pairs <scheduleId, TalkItem
      */
     val ITEM_MAP: MutableMap<String, TalkItem> = HashMap()
 
@@ -36,11 +36,14 @@ class TalkContent(val context: Context) {
         utilDAOImpl = UtilDAOImpl(context, databaseHelper)
         talkDao = databaseHelper.getTalkDao()
         speakerDao = databaseHelper.getSpeakerDao()
-        speakerTalkDao = databaseHelper.getSpeakerTalkDao()
+        //speakerTalkDao = databaseHelper.getSpeakerTalkDao()
 
         var i = 1
         talkDao
                 .queryForAll()
+                .stream()
+                // by scheduleId
+                .sorted()
                 .forEach {
                     addItem(createTalkItem(i++, it))
                 }
@@ -48,14 +51,24 @@ class TalkContent(val context: Context) {
     }
 
     private fun addItem(item: TalkItem) {
+
+        /* ITEMS contiene todos  */
         ITEMS.add(item)
+
+        /* Cada entrada de ITEM_MAP contiene un scheduleId y un talkitem   */
+        ITEM_MAP.put(item.talk.scheduleId, item)
+
         /* TODO("REMOVE in production") */
         val today = GregorianCalendar(2018, 6, 11, 9, 0)
+
+        /* TODO("Uncomment in production") */
         // val today = GregorianCalendar()
+
         val scheduleId = item.talk.scheduleId
         val session = SessionsTimes.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}")
         val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+
         val roomName =
                 sharedPreferences?.getString(PreferenceKeys.ROOM_KEY, context.resources.getString(R.string.pref_default_room_name))
         if (today.get(Calendar.DATE) == session.getStartTime().get(Calendar.DATE)
@@ -66,7 +79,6 @@ class TalkContent(val context: Context) {
         }
     }
 
-    /* TODO("description should be speaker") */
     private fun createTalkItem(position: Int, talk: Talk): TalkItem {
         val speakerRef: String = talk.speakers?.get(0) ?: "null"
         return TalkItem(position.toString(), talk, utilDAOImpl.lookupSpeakerByRef(speakerRef))

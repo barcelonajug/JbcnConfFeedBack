@@ -13,12 +13,15 @@ import android.widget.TextView
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.fragment.ChooseTalkFragment.OnChooseTalkListener
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent.TalkItem
+import cat.cristina.pep.jbcnconffeedback.utils.SessionsTimes
+import cat.cristina.pep.jbcnconffeedback.utils.TalksLocations
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import kotlinx.android.synthetic.main.fragment_choose_talk.view.*
 import java.lang.Exception
+import java.text.SimpleDateFormat
 
 
 /**
@@ -188,6 +191,15 @@ class MyTalkRecyclerViewAdapter(
                     } else item.talk.title
         }
         holder.mSpeakerView.text = item.speaker.name
+
+        val scheduleId = item.talk.scheduleId
+        val session = SessionsTimes.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}")
+        val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")
+
+        val simpleDateFormat = SimpleDateFormat("dd/MM/yyy hh:mm:ss")
+        val startTime = simpleDateFormat.format(session.getStartTime().time)
+        val endTime = simpleDateFormat.format(session.getEndTime().time)
+        holder.mScheduleId.text = "Code: ${item.talk.scheduleId}. Starting: ${startTime}. Ending: ${endTime}. Location: ${location.getRoomName()}"
         with(holder.mView) {
             tag = item
             setOnClickListener(mOnClickListener)
@@ -197,10 +209,11 @@ class MyTalkRecyclerViewAdapter(
     override fun getItemCount(): Int = mValues.size
 
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
-        val mIdView: TextView = mView.item_number
+        val mIdView: TextView = mView.cardViewItemNumber
         val mSpeakerImageView: ImageView = mView.cardviewSpeakerImage
         val mTitleView: TextView = mView.cardviewTalkTitle
         val mSpeakerView: TextView = mView.cardviewSpeakerName
+        val mScheduleId: TextView = mView.cardviewScheduleId
 
         override fun toString(): String {
             return super.toString() + " '" + mTitleView.text + "'"

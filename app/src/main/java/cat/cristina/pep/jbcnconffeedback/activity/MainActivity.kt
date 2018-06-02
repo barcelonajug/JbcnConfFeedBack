@@ -110,7 +110,7 @@ class MainActivity :
     private var autoMode: Boolean = false
     private val talkSchedules = HashMap<Talk, Pair<SessionsTimes, TalksLocations>>()
     // TODO("Delete in production")
-    private val setOfScheduleIds: MutableSet<String> = mutableSetOf()
+    //private val setOfScheduleIds: MutableSet<String> = mutableSetOf()
     private lateinit var sharedPreferences: SharedPreferences
     private var filteredTalks = false
     //private lateinit var dialogFragment: DialogFragment
@@ -155,7 +155,7 @@ class MainActivity :
             Toast.makeText(applicationContext, "${resources.getString(R.string.sorry_working_offline)}: $reason", Toast.LENGTH_LONG).show()
         setup(connected)
         /* TODO("Remove in production")  */
-        generateScheduleId()
+        //generateScheduleId()
     }
 
     override fun onStart() {
@@ -501,7 +501,7 @@ class MainActivity :
 
             try {
                 /* TODO("Delete this line") */
-                talk.scheduleId = getRandomScheduleId()
+                //talk.scheduleId = getRandomScheduleId()
                 /* Guardamos cada talk */
                 talkDao.create(talk)
                 // Log.d(TAG, "Talk ${talk} created")
@@ -546,21 +546,21 @@ class MainActivity :
     * */
     private fun generateScheduleId(): Unit {
 
-        for (room in 1..6) {
-            for (session in 1..7) {
-                setOfScheduleIds.add("#MON-TC$room-SE$session")
-            }
-        }
-        for (room in 1..6) {
-            for (session in 1..8) {
-                setOfScheduleIds.add("#TUE-TC$room-SE$session")
-            }
-        }
-        for (room in 1..2) {
-            for (session in 1..2) {
-                setOfScheduleIds.add("#WED-TC$room-SE$session")
-            }
-        }
+//        for (room in 1..6) {
+//            for (session in 1..7) {
+//                setOfScheduleIds.add("#MON-TC$room-SE$session")
+//            }
+//        }
+//        for (room in 1..6) {
+//            for (session in 1..8) {
+//                setOfScheduleIds.add("#TUE-TC$room-SE$session")
+//            }
+//        }
+//        for (room in 1..2) {
+//            for (session in 1..2) {
+//                setOfScheduleIds.add("#WED-TC$room-SE$session")
+//            }
+//        }
 
     }
 
@@ -570,15 +570,15 @@ class MainActivity :
     * This methods randomly selects an scheduleId to be assigned to a talk
     *
     * */
-    private fun getRandomScheduleId(): String {
-
-        val rnd = random.nextInt(setOfScheduleIds.size)
-        val scheduleId = setOfScheduleIds.elementAt(rnd)
-        setOfScheduleIds.remove(scheduleId)
-
-        return scheduleId
-
-    }
+//    private fun getRandomScheduleId(): String {
+//
+//        val rnd = random.nextInt(setOfScheduleIds.size)
+//        val scheduleId = setOfScheduleIds.elementAt(rnd)
+//        setOfScheduleIds.remove(scheduleId)
+//
+//        return scheduleId
+//
+//    }
 
     /*
     * This method checks whether the device is connected or not
@@ -911,10 +911,11 @@ class MainActivity :
 
         /* Some user feedback in the form of a light vibration. Oreo. Android 8.0. APIS 26-27 */
 
-        if (sharedPreferences.getBoolean(PreferenceKeys.VIBRATOR_KEY, true)) {
+        if (sharedPreferences.getBoolean(PreferenceKeys.VIBRATOR_KEY, false)) {
+            Log.d(TAG, "vibrating ......")
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
+                vibrator.vibrate(VibrationEffect.createOneShot(250, VibrationEffect.DEFAULT_AMPLITUDE))
             } else {
                 //deprecated in API 26
                 vibrator.vibrate(250)
@@ -946,7 +947,7 @@ class MainActivity :
     * automode and/or roomName
     *
     * */
-    override fun onAppPreferenceFragment(autoMode: Boolean) {
+    override fun onAppPreferenceFragmentAutoModeRoomNameChanged(autoMode: Boolean) {
 
         roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
         this.autoMode = autoMode
@@ -959,7 +960,6 @@ class MainActivity :
         }
 
     }
-
     /*
     * This method might get called from WelcomeFragment eventually
     *

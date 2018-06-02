@@ -40,7 +40,8 @@
     <dimen name="inner_cardview_radius">20dp</dimen>
     <dimen name="cardview_image_size">200dp</dimen>
     <dimen name="cardview_talk_title">30sp</dimen>
-    <dimen name="cardview_speaker_name">20sp</dimen>
+    <dimen name="cardview_speaker_name">25sp</dimen>
+    <dimen name="cardview_scheduleId">18sp</dimen>
 
     <!-- Welcome Fragment -->
     <dimen name="welcome_padding">150dp</dimen>

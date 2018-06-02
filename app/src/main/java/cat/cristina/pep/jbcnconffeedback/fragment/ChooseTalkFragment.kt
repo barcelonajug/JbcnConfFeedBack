@@ -66,7 +66,13 @@ class ChooseTalkFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper::class.java)
+        var numTalks = 0
+        numTalks = if (isFiltered) {
+            talkContent.ITEMS_FILTERED_BY_DATE_AND_ROOM_NAME.size
+        } else {
+            talkContent.ITEMS.size
+        }
+        Toast.makeText(context, "$numTalks ${resources.getString(R.string.showing_n_talks)}", Toast.LENGTH_LONG).show()
     }
 
     override fun onAttach(context: Context) {

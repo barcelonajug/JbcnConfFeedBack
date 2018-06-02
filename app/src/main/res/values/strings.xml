@@ -76,6 +76,7 @@
 
     <string name="filter_apply">FILTER</string>
     <string name="filter_all">ALL</string>
+    <string name="showing_n_talks">talks in display</string>
 
 
     <string name="sorry_working_offline">Sorry, working offline.</string>
@@ -85,6 +86,7 @@
     <string name="cardview_talk_title">title</string>
     <string name="cardview_speaker_name">speaker name</string>
     <string name="cardview_item_number">1</string>
+    <string name="cardview_item_info">scheduleId</string>
 
     <!-- Lateral Menu -->
     <string name="menu_statistics">Statistics</string>
@@ -121,7 +123,7 @@
     <string name="pref_email_key">email_key</string>
     <string name="pref_title_email">Email</string>
     <string name="menu_update">Upload Votes</string>
-    <string name="pref_default_email">1103</string>
+    <string name="pref_default_email">info@barcelonajug.org</string>
 
     <string name="pref_title_vibrator">Vibrator</string>
     <string name="pref_description_vibrator">Get vibration feedback</string>

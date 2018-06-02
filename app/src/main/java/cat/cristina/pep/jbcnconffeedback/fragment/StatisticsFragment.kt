@@ -217,6 +217,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                     var title: String = talkDao.queryForId(it.key?.toInt()).title
                     var refAuthor = talkDao.queryForId(it.key?.toInt()).speakers?.get(0)
                     var author = utilDAOImpl.lookupSpeakerByRef(refAuthor!!).name
+                    /* Si el nombre es demasiado largo se saldra de la barra  */
                     author = author.substring(0, 1) + "." + author.substring(author.indexOf(" "))
                     title = if (title.length > 35) "'${StringBuilder(title.substring(0, 35)).toString()}...' by $author. ($votes votes)"
                     else "'$title' by $author. ($votes votes)"
