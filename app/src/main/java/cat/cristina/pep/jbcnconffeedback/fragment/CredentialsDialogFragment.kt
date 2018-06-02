@@ -52,8 +52,8 @@ class CredentialsDialogFragment : DialogFragment() {
      */
 
     // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: Boolean? = null
+    private var origin: String? = null
+    private var autoMode: Boolean? = null
     private var listenerDialog: CredentialsDialogFragmentListener? = null
 
     private lateinit var usernameET: AppCompatAutoCompleteTextView
@@ -67,8 +67,8 @@ class CredentialsDialogFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getBoolean(ARG_PARAM2)
+            origin = it.getString(ARG_PARAM1)
+            autoMode = it.getBoolean(ARG_PARAM2)
         }
     }
 
@@ -107,13 +107,13 @@ class CredentialsDialogFragment : DialogFragment() {
         val userName = usernameET.text.toString()
         val passWord = passwordET.text.toString()
 
-        /* param1 es desde donde se llama  */
+        /* origin es desde donde se llama  */
         if (answer == Dialog.BUTTON_NEGATIVE) {
             listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
         } else if (userName.isEmpty() || passWord.isEmpty()) {
             Toast.makeText(activity, R.string.blank_credentials, Toast.LENGTH_LONG).show()
             listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
-        } else if (param1 == MainActivity.MAIN_ACTIVITY) {
+        } else if (origin == MainActivity.MAIN_ACTIVITY) {
             if (answer == Dialog.BUTTON_POSITIVE) {
                 if (userName == passWord) {
                     /* Do nothing  */
@@ -123,9 +123,9 @@ class CredentialsDialogFragment : DialogFragment() {
                     listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)
                 }
             }
-        } else if (param1 == MainActivity.VOTE_FRAGMENT) {
-            Log.d(TAG, "$param2")
-            if (param2 == false) {
+        } else if (origin == MainActivity.VOTE_FRAGMENT) {
+            Log.d(TAG, "$autoMode")
+            if (autoMode == false) {
                 if (answer == Dialog.BUTTON_POSITIVE) {
                     if (userName == passWord) {
                         fragmentManager?.popBackStack()
@@ -186,7 +186,6 @@ class CredentialsDialogFragment : DialogFragment() {
          * @param param2 Parameter 2.
          * @return A new instance of fragment CredentialsDialogFragment.
          */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: Boolean) =
                 CredentialsDialogFragment().apply {
