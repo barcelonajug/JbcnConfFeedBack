@@ -93,7 +93,8 @@ class MainActivity :
         WelcomeFragment.OnWelcomeFragmentListener,
         CredentialsDialogFragment.CredentialsDialogFragmentListener,
         AboutUsDialogFragment.AboutUsDialogFragmentListener,
-        LicenseDialogFragment.LicenseDialogFragmentListener {
+        LicenseDialogFragment.LicenseDialogFragmentListener,
+        ScheduleFragment.ScheduleFragmentListener {
 
     private val random = Random()
     private val DEFAULT_STATISTICS_FILE_NAME = "statistics.csv"
@@ -137,14 +138,17 @@ class MainActivity :
         * int STATE_IDLE Indicates that any drawers are in an idle, settled state. No animation is in progress.
         *
         * */
-        drawer_layout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
 
-            override fun onDrawerOpened(drawerView: View) {
-                super.onDrawerOpened(drawerView)
-                val dialogFragment = CredentialsDialogFragment.newInstance(MAIN_ACTIVITY, autoMode)
-                dialogFragment.show(supportFragmentManager, "CredentialsDialogFragment")
-            }
-        })
+        /* TODO("Uncomment in production")  */
+//        drawer_layout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
+//
+//            override fun onDrawerOpened(drawerView: View) {
+//                super.onDrawerOpened(drawerView)
+//                val dialogFragment = CredentialsDialogFragment.newInstance(MAIN_ACTIVITY, autoMode)
+//                dialogFragment.show(supportFragmentManager, "CredentialsDialogFragment")
+//            }
+//        })
+
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         databaseHelper = OpenHelperManager.getHelper(applicationContext, DatabaseHelper::class.java)
@@ -761,7 +765,8 @@ class MainActivity :
                 licenseFragment.show(supportFragmentManager, LICENSE_DIALOG_FRAGMENT)
             }
             R.id.action_schedule -> {
-
+                val fragment = ScheduleFragment.newInstance()
+                switchFragment(fragment, SCHEDULE_FRAGMENT)
             }
             R.id.action_about_us -> {
                 val aboutUsFragment = AboutUsDialogFragment.newInstance("", "")
@@ -1021,6 +1026,14 @@ class MainActivity :
         closeLateralMenu()
     }
 
+    /*
+    * This method might get called from LicenseDialogFragment eventually
+    *
+    * */
+    override fun onScheduleFragmentInteraction(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+    }
+
     companion object {
 
         const val MAIN_ACTIVITY = "MainActivity"
@@ -1032,6 +1045,8 @@ class MainActivity :
         const val SETTINGS_FRAGMENT = "SettingsFragment"
         const val ABOUT_US_FRAGMENT = "AboutUsFragment"
         const val LICENSE_DIALOG_FRAGMENT = "LicenseDialogFragment"
+        const val SCHEDULE_FRAGMENT = "ScheduleFragment"
+        const val DATE_PICKER_FRAGMENT = "DatePickerFragment"
 
     }
 
