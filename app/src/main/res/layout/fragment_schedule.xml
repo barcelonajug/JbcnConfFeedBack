@@ -12,68 +12,10 @@
         android:orientation="vertical">
 
         <android.support.v7.widget.LinearLayoutCompat
-            android:id="@+id/top_selector"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-        </android.support.v7.widget.LinearLayoutCompat>
-
-
-        <android.support.v7.widget.LinearLayoutCompat
             android:id="@+id/sessions_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
-
-            <android.support.v7.widget.LinearLayoutCompat
-                android:id="@+id/room1_contaier"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-            </android.support.v7.widget.LinearLayoutCompat>
-
-            <android.support.v7.widget.LinearLayoutCompat
-                android:id="@+id/room2_contaier"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-            </android.support.v7.widget.LinearLayoutCompat>
-
-            <android.support.v7.widget.LinearLayoutCompat
-                android:id="@+id/room3_contaier"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-            </android.support.v7.widget.LinearLayoutCompat>
-
-            <android.support.v7.widget.LinearLayoutCompat
-                android:id="@+id/room4_contaier"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-            </android.support.v7.widget.LinearLayoutCompat>
-
-            <android.support.v7.widget.LinearLayoutCompat
-                android:id="@+id/room5_contaier"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-            </android.support.v7.widget.LinearLayoutCompat>
-
-            <android.support.v7.widget.LinearLayoutCompat
-                android:id="@+id/room6_contaier"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-            </android.support.v7.widget.LinearLayoutCompat>
-
 
         </android.support.v7.widget.LinearLayoutCompat>
 

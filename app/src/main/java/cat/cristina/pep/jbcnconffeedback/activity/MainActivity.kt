@@ -764,10 +764,10 @@ class MainActivity :
                 val licenseFragment = LicenseDialogFragment.newInstance("", "")
                 licenseFragment.show(supportFragmentManager, LICENSE_DIALOG_FRAGMENT)
             }
-            R.id.action_schedule -> {
-                val fragment = ScheduleFragment.newInstance()
-                switchFragment(fragment, SCHEDULE_FRAGMENT)
-            }
+//            R.id.action_schedule -> {
+//                val fragment = ScheduleFragment.newInstance()
+//                switchFragment(fragment, SCHEDULE_FRAGMENT)
+//            }
             R.id.action_about_us -> {
                 val aboutUsFragment = AboutUsDialogFragment.newInstance("", "")
                 aboutUsFragment.show(supportFragmentManager, ABOUT_US_FRAGMENT)
