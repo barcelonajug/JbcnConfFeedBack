@@ -515,8 +515,6 @@ class MainActivity :
             val talk: Talk = gson.fromJson(talkObject.toString(), Talk::class.java)
 
             try {
-                /* TODO("Delete this line") */
-                //talk.scheduleId = getRandomScheduleId()
                 /* Guardamos cada talk */
                 talkDao.create(talk)
                 // Log.d(TAG, "Talk ${talk} created")
@@ -552,7 +550,6 @@ class MainActivity :
 
 
     /*
-    * TODO("Delete in production")
     *
     * This method generates a set of scheduleId's with no duplicates
     *
@@ -580,7 +577,6 @@ class MainActivity :
     }
 
     /*
-    * TODO("Delete in production")
     *
     * This methods randomly selects an scheduleId to be assigned to a talk
     *
@@ -1035,7 +1031,6 @@ class MainActivity :
         const val WELCOME_FRAGMENT = "WelcomeFragment"
         const val SETTINGS_FRAGMENT = "SettingsFragment"
         const val ABOUT_US_FRAGMENT = "AboutUsFragment"
-        const val APP_PREFERENCE_FRAGMENT = "AppPreferenceFragment"
         const val LICENSE_DIALOG_FRAGMENT = "LicenseDialogFragment"
 
     }

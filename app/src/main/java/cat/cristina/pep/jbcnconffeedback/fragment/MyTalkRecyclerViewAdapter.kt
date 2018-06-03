@@ -22,6 +22,7 @@ import com.bumptech.glide.request.target.Target
 import kotlinx.android.synthetic.main.fragment_choose_talk.view.*
 import java.lang.Exception
 import java.text.SimpleDateFormat
+import java.util.*
 
 
 /**
@@ -196,10 +197,15 @@ class MyTalkRecyclerViewAdapter(
         val session = SessionsTimes.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}")
         val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")
 
-        val simpleDateFormat = SimpleDateFormat("dd/MM/yyy hh:mm:ss")
+//        val simpleDateFormat = SimpleDateFormat("dd/MM/yyy hh:mm:ss")
+        val simpleDateFormat = SimpleDateFormat("hh:mm")
         val startTime = simpleDateFormat.format(session.getStartTime().time)
         val endTime = simpleDateFormat.format(session.getEndTime().time)
-        holder.mScheduleId.text = "Code: ${item.talk.scheduleId}. Starting: ${startTime}. Ending: ${endTime}. Location: ${location.getRoomName()}"
+//        simpleDateFormat.applyPattern("EEEE d MMM yyyy")
+        simpleDateFormat.applyPattern("EEEE dd MMMM")
+        val due = simpleDateFormat.format(session.getStartTime().time)
+//        holder.mScheduleId.text = "Code: ${item.talk.scheduleId}. Starting: ${startTime}. Ending: ${endTime}. Location: ${location.getRoomName()}"
+        holder.mScheduleId.text = "Due on $due from $startTime to $endTime in ${location.getRoomName()}"
         with(holder.mView) {
             tag = item
             setOnClickListener(mOnClickListener)
