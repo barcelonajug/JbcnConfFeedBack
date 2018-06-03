@@ -116,6 +116,7 @@ class MainActivity :
     //private lateinit var dialogFragment: DialogFragment
     private var dataFromFirestore: Map<Long?, List<QueryDocumentSnapshot>>? = null
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -154,8 +155,22 @@ class MainActivity :
         else
             Toast.makeText(applicationContext, "${resources.getString(R.string.sorry_working_offline)}: $reason", Toast.LENGTH_LONG).show()
         setup(connected)
-        /* TODO("Remove in production")  */
-        //generateScheduleId()
+
+        nav_view.getHeaderView(0).setOnClickListener({
+            if (autoMode == false) {
+
+                val stackSize = supportFragmentManager.backStackEntryCount
+                if (stackSize > 0) {
+                    for (i in 1..stackSize) {
+                        supportFragmentManager.popBackStack()
+                    }
+                    filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
+                    val fragment = ChooseTalkFragment.newInstance(1, filteredTalks)
+                    switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
+                    closeLateralMenu()
+                }
+            }
+        })
     }
 
     override fun onStart() {
@@ -338,12 +353,12 @@ class MainActivity :
 
                         val timerTaskIn = Runnable {
                             Log.d(TAG, "VoteFragment... $talkId $talkTitle $talkAuthorName")
-                            switchFragment(VoteFragment.newInstance("$talkId", talkTitle, talkAuthorName), "VoteFragment", false)
+                            switchFragment(VoteFragment.newInstance("$talkId", talkTitle, talkAuthorName), VOTE_FRAGMENT, false)
                         }
 
                         val timerTaskOff = Runnable {
                             Log.d(TAG, "WelcomeFragment.........")
-                            switchFragment(WelcomeFragment.newInstance(roomName, "used"), "WelcomeFragment", false)
+                            switchFragment(WelcomeFragment.newInstance(roomName, "used"), WELCOME_FRAGMENT, false)
                         }
 
                         /* Finalment posem en marxa el scheduler  */
@@ -584,7 +599,7 @@ class MainActivity :
     * This method checks whether the device is connected or not
     *
     * */
-    public fun isDeviceConnectedToWifiOrData(): Pair<Boolean, String> {
+    fun isDeviceConnectedToWifiOrData(): Pair<Boolean, String> {
 
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
@@ -594,6 +609,12 @@ class MainActivity :
 
         return Pair(netInfo?.isConnected ?: false, netInfo?.reason
                 ?: resources.getString(R.string.sorry_not_connected))
+    }
+
+    private fun closeLateralMenu(): Unit {
+        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
+            drawer_layout.closeDrawer(GravityCompat.START)
+        }
     }
 
     /*
@@ -624,7 +645,7 @@ class MainActivity :
             /* quan es mostra el votefragment backStackEntryCount es 1. VoteFragment te el su boto de sortir  */
             if (actualFragment?.tag == VOTE_FRAGMENT) {
                 val dialogFragment = CredentialsDialogFragment.newInstance(VOTE_FRAGMENT, autoMode)
-                dialogFragment.show(supportFragmentManager, "CredentialsDialogFragment")
+                dialogFragment.show(supportFragmentManager, CREDENTIALS_DIALOG_FRAGMENT)
                 return
             }
 
@@ -741,14 +762,14 @@ class MainActivity :
             }
             R.id.action_license -> {
                 val licenseFragment = LicenseDialogFragment.newInstance("", "")
-                licenseFragment.show(supportFragmentManager, "LicenseDialogFragment")
+                licenseFragment.show(supportFragmentManager, LICENSE_DIALOG_FRAGMENT)
             }
             R.id.action_schedule -> {
-                
+
             }
             R.id.action_about_us -> {
                 val aboutUsFragment = AboutUsDialogFragment.newInstance("", "")
-                aboutUsFragment.show(supportFragmentManager, "AboutUsDialogFragment")
+                aboutUsFragment.show(supportFragmentManager, ABOUT_US_FRAGMENT)
                 return true
             }
         }
@@ -963,6 +984,7 @@ class MainActivity :
         }
 
     }
+
     /*
     * This method might get called from WelcomeFragment eventually
     *
@@ -992,9 +1014,7 @@ class MainActivity :
     *
     * */
     override fun onAboutUsDialogFragmentInteraction(msg: String) {
-        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            drawer_layout.closeDrawer(GravityCompat.START)
-        }
+        closeLateralMenu()
     }
 
     /*
@@ -1002,10 +1022,7 @@ class MainActivity :
     *
     * */
     override fun onLicenseDialogFragmentInteraction(msg: String) {
-        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            drawer_layout.closeDrawer(GravityCompat.START)
-        }
-
+        closeLateralMenu()
     }
 
     companion object {
@@ -1013,9 +1030,13 @@ class MainActivity :
         const val MAIN_ACTIVITY = "MainActivity"
         const val CHOOSE_TALK_FRAGMENT = "ChooseTalkFragment"
         const val STATISTICS_FRAGMENT = "StatisticsFragment"
+        const val CREDENTIALS_DIALOG_FRAGMENT = "CredentialsDialogFragment"
         const val VOTE_FRAGMENT = "VoteFragment"
         const val WELCOME_FRAGMENT = "WelcomeFragment"
         const val SETTINGS_FRAGMENT = "SettingsFragment"
+        const val ABOUT_US_FRAGMENT = "AboutUsFragment"
+        const val APP_PREFERENCE_FRAGMENT = "AppPreferenceFragment"
+        const val LICENSE_DIALOG_FRAGMENT = "LicenseDialogFragment"
 
     }
 
