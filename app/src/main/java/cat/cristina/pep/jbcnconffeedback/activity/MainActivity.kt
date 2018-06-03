@@ -743,6 +743,9 @@ class MainActivity :
                 val licenseFragment = LicenseDialogFragment.newInstance("", "")
                 licenseFragment.show(supportFragmentManager, "LicenseDialogFragment")
             }
+            R.id.action_schedule -> {
+                
+            }
             R.id.action_about_us -> {
                 val aboutUsFragment = AboutUsDialogFragment.newInstance("", "")
                 aboutUsFragment.show(supportFragmentManager, "AboutUsDialogFragment")
