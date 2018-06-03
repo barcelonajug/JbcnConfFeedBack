@@ -72,7 +72,8 @@ class ChooseTalkFragment : Fragment() {
         } else {
             talkContent.ITEMS.size
         }
-        Toast.makeText(context, "$numTalks ${resources.getString(R.string.showing_n_talks)}", Toast.LENGTH_LONG).show()
+        if (!sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false))
+            Toast.makeText(context, "$numTalks ${resources.getString(R.string.showing_n_talks)}", Toast.LENGTH_LONG).show()
     }
 
     override fun onAttach(context: Context) {
