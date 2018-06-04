@@ -129,12 +129,13 @@ class CredentialsDialogFragment : DialogFragment() {
                 }
             }
         } else if (origin == MainActivity.VOTE_FRAGMENT) {
-            Log.d(TAG, "$autoMode")
+            //Log.d(TAG, "$autoMode")
             if (autoMode == false) {
                 if (answer == Dialog.BUTTON_POSITIVE) {
                     //if (userName == passWord) {
                     if (resources.getString(R.string.secret_password) == passWord) {
                         fragmentManager?.popBackStack()
+                        listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_POSITIVE)
                     } else {
                         Toast.makeText(activity, R.string.wrong_credentials, Toast.LENGTH_LONG).show()
                         listenerDialog?.onCredentialsDialogFragmentInteraction(Dialog.BUTTON_NEGATIVE)

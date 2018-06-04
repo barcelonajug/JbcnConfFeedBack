@@ -610,8 +610,13 @@ class MainActivity :
 
             /* quan es mostra el votefragment backStackEntryCount es 1. VoteFragment te el su boto de sortir  */
             if (actualFragment?.tag == VOTE_FRAGMENT) {
-                val dialogFragment = CredentialsDialogFragment.newInstance(VOTE_FRAGMENT, autoMode)
-                dialogFragment.show(supportFragmentManager, CREDENTIALS_DIALOG_FRAGMENT)
+                if (isLogIn) {
+                    super.onBackPressed()
+                }
+                else {
+                    val dialogFragment = CredentialsDialogFragment.newInstance(VOTE_FRAGMENT, autoMode)
+                    dialogFragment.show(supportFragmentManager, CREDENTIALS_DIALOG_FRAGMENT)
+                }
                 return
             }
 
@@ -723,7 +728,7 @@ class MainActivity :
     }
 
     /*
-    * Menu lateral
+    * Returns true to display the item as the selected item
     *
     * */
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -732,34 +737,28 @@ class MainActivity :
             R.id.action_statistics -> {
                 val fragment = StatisticsFragment.newInstance()
                 switchFragment(fragment, STATISTICS_FRAGMENT)
-                return true
             }
             R.id.action_settings -> {
                 //startActivity(Intent(this, SettingsActivity::class.java))
                 val fragment = AppPreferenceFragment()
                 switchFragment(fragment, SETTINGS_FRAGMENT)
-                return true
             }
             R.id.action_send_statistics -> {
                 downloadScoring()
             }
             R.id.action_update -> {
                 onUpdateTalks()
-                return true
             }
             R.id.action_finish -> {
                 finishAndRemoveTask()
-                return true
             }
             R.id.action_license -> {
                 val licenseFragment = LicenseDialogFragment.newInstance("", "")
                 licenseFragment.show(supportFragmentManager, LICENSE_DIALOG_FRAGMENT)
-                return true
             }
             R.id.action_about_us -> {
                 val aboutUsFragment = AboutUsDialogFragment.newInstance("", "")
                 aboutUsFragment.show(supportFragmentManager, ABOUT_US_FRAGMENT)
-                return true
             }
         }
         drawer_layout.closeDrawer(GravityCompat.START)
@@ -1004,7 +1003,8 @@ class MainActivity :
             Dialog.BUTTON_NEGATIVE -> {
                 closeLateralMenu()
             }
-            Dialog.BUTTON_NEUTRAL -> {}
+            Dialog.BUTTON_NEUTRAL -> {
+            }
         }
     }
 
