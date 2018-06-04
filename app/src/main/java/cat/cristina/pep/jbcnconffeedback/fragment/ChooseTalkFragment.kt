@@ -83,8 +83,12 @@ class ChooseTalkFragment : Fragment() {
         } else {
             talkContent.ITEMS.size
         }
-        if (!sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false))
-            Toast.makeText(context, "$numTalks ${resources.getString(R.string.showing_n_talks)}", Toast.LENGTH_SHORT).show()
+        if (!sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false)) {
+            if (numTalks == 0) {
+                Toast.makeText(context, "${resources.getString(R.string.sorry_no_talks)}", Toast.LENGTH_SHORT).show()
+            }
+            //Toast.makeText(context, "$numTalks ${resources.getString(R.string.showing_n_talks)}", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onAttach(context: Context) {
