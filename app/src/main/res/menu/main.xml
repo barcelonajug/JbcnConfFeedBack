@@ -2,4 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item
+        android:id="@+id/action_logout"
+        android:orderInCategory="110"
+        android:icon="@drawable/menu_logout"
+        android:title="@string/action_logout"
+        android:enabled="false"
+        app:showAsAction="ifRoom" />
+
 </menu>

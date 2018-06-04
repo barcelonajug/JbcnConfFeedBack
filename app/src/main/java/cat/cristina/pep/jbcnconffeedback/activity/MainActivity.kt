@@ -14,12 +14,14 @@ import android.support.annotation.CallSuper
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
+import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.PreferenceManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.fragment.*
@@ -116,6 +118,7 @@ class MainActivity :
     //private lateinit var dialogFragment: DialogFragment
     private var dataFromFirestore: Map<Long?, List<QueryDocumentSnapshot>>? = null
     private var date = Date()
+    private var isLogIn = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -140,14 +143,16 @@ class MainActivity :
         * */
 
         /* TODO("Uncomment in production")  */
-//        drawer_layout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
-//
-//            override fun onDrawerOpened(drawerView: View) {
-//                super.onDrawerOpened(drawerView)
-//                val dialogFragment = CredentialsDialogFragment.newInstance(MAIN_ACTIVITY, autoMode)
-//                dialogFragment.show(supportFragmentManager, "CredentialsDialogFragment")
-//            }
-//        })
+        drawer_layout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
+
+            override fun onDrawerOpened(drawerView: View) {
+                if (!isLogIn) {
+                    super.onDrawerOpened(drawerView)
+                    val dialogFragment = CredentialsDialogFragment.newInstance(MAIN_ACTIVITY, autoMode)
+                    dialogFragment.show(supportFragmentManager, "CredentialsDialogFragment")
+                }
+            }
+        })
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
@@ -556,49 +561,6 @@ class MainActivity :
         setup(false)
     }
 
-
-    /*
-    *
-    * This method generates a set of scheduleId's with no duplicates
-    *
-    * Format: #MON-TC1-SE1
-    *
-    * */
-    private fun generateScheduleId(): Unit {
-
-//        for (room in 1..6) {
-//            for (session in 1..7) {
-//                setOfScheduleIds.add("#MON-TC$room-SE$session")
-//            }
-//        }
-//        for (room in 1..6) {
-//            for (session in 1..8) {
-//                setOfScheduleIds.add("#TUE-TC$room-SE$session")
-//            }
-//        }
-//        for (room in 1..2) {
-//            for (session in 1..2) {
-//                setOfScheduleIds.add("#WED-TC$room-SE$session")
-//            }
-//        }
-
-    }
-
-    /*
-    *
-    * This methods randomly selects an scheduleId to be assigned to a talk
-    *
-    * */
-//    private fun getRandomScheduleId(): String {
-//
-//        val rnd = random.nextInt(setOfScheduleIds.size)
-//        val scheduleId = setOfScheduleIds.elementAt(rnd)
-//        setOfScheduleIds.remove(scheduleId)
-//
-//        return scheduleId
-//
-//    }
-
     /*
     * This method checks whether the device is connected or not
     *
@@ -667,15 +629,26 @@ class MainActivity :
     * You must return true for the menu to be displayed; if you return false it will not be shown
     * */
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        return true
+        menuInflater.inflate(R.menu.main, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
+
     /*
-    * This far, the main activity is not responding to any menu this method is so redundant.
-    * Keep it for future use
     * */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when (item.itemId) {
+            R.id.action_logout -> {
+                Toast.makeText(this, R.string.action_logout, Toast.LENGTH_SHORT).show()
+                isLogIn = false
+                invalidateOptionsMenu()
+                return true
+            }
+        }
+
         return super.onOptionsItemSelected(item)
+
     }
 
     /*
@@ -684,10 +657,20 @@ class MainActivity :
     * */
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
 
-        val menu = nav_view.menu
-        val itemUpdate = menu.findItem(R.id.action_update)
+        val drawerMenu = nav_view.menu
+
+        val itemUpdate = drawerMenu.findItem(R.id.action_update)
         itemUpdate?.isEnabled = databaseHelper.getScoreDao().queryForAll().size > 0
-        return super.onPrepareOptionsMenu(menu)
+
+        val itemLogOut = menu?.findItem(R.id.action_logout)
+        itemLogOut?.isEnabled = isLogIn
+        if (isLogIn) {
+            itemLogOut?.icon?.alpha = 255
+        } else {
+            itemLogOut?.icon?.alpha = 85
+        }
+
+        return true
     }
 
 
@@ -749,29 +732,30 @@ class MainActivity :
             R.id.action_statistics -> {
                 val fragment = StatisticsFragment.newInstance()
                 switchFragment(fragment, STATISTICS_FRAGMENT)
+                return true
             }
             R.id.action_settings -> {
                 //startActivity(Intent(this, SettingsActivity::class.java))
                 val fragment = AppPreferenceFragment()
                 switchFragment(fragment, SETTINGS_FRAGMENT)
+                return true
             }
             R.id.action_send_statistics -> {
                 downloadScoring()
             }
             R.id.action_update -> {
                 onUpdateTalks()
+                return true
             }
             R.id.action_finish -> {
                 finishAndRemoveTask()
+                return true
             }
             R.id.action_license -> {
                 val licenseFragment = LicenseDialogFragment.newInstance("", "")
                 licenseFragment.show(supportFragmentManager, LICENSE_DIALOG_FRAGMENT)
+                return true
             }
-//            R.id.action_pick_date -> {
-//                val datePickerFragment = DatePickerDialogFragment.newInstance(fromDateToString())
-//                datePickerFragment.show(supportFragmentManager, DATE_PICKER_FRAGMENT)
-//            }
             R.id.action_about_us -> {
                 val aboutUsFragment = AboutUsDialogFragment.newInstance("", "")
                 aboutUsFragment.show(supportFragmentManager, ABOUT_US_FRAGMENT)
@@ -779,7 +763,7 @@ class MainActivity :
             }
         }
         drawer_layout.closeDrawer(GravityCompat.START)
-        return true
+        return false
     }
 
     /*
@@ -1013,11 +997,14 @@ class MainActivity :
     override fun onCredentialsDialogFragmentInteraction(answer: Int) {
         when (answer) {
             Dialog.BUTTON_POSITIVE -> {
-                // do nothing
+                Toast.makeText(this, R.string.action_login, Toast.LENGTH_SHORT).show()
+                isLogIn = true
+                invalidateOptionsMenu()
             }
             Dialog.BUTTON_NEGATIVE -> {
                 closeLateralMenu()
             }
+            Dialog.BUTTON_NEUTRAL -> {}
         }
     }
 

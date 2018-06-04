@@ -28,6 +28,8 @@
     <string name="back_button_disabled">Back button is disabled.</string>
     <string name="choose_finish_to_exit">Select \'finish\' from the lateral menu to end.</string>
     <string name="setting_timers">Setting timers ....</string>
+    <string name="action_login">Login</string>
+    <string name="action_logout">Logout</string>
 
     <!-- LicenseDialogFragment  -->
 
