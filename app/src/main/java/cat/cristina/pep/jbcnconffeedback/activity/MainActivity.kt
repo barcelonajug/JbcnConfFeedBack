@@ -14,14 +14,12 @@ import android.support.annotation.CallSuper
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
-import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.PreferenceManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.fragment.*
@@ -46,6 +44,7 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import org.json.JSONObject
 import java.io.File
 import java.io.FileWriter
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -94,7 +93,7 @@ class MainActivity :
         CredentialsDialogFragment.CredentialsDialogFragmentListener,
         AboutUsDialogFragment.AboutUsDialogFragmentListener,
         LicenseDialogFragment.LicenseDialogFragmentListener,
-        ScheduleFragment.ScheduleFragmentListener {
+        DatePickerDialogFragment.DatePickerDialogFragmentListener {
 
     private val random = Random()
     private val DEFAULT_STATISTICS_FILE_NAME = "statistics.csv"
@@ -116,6 +115,7 @@ class MainActivity :
     private var filteredTalks = false
     //private lateinit var dialogFragment: DialogFragment
     private var dataFromFirestore: Map<Long?, List<QueryDocumentSnapshot>>? = null
+    private var date = Date()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -764,10 +764,10 @@ class MainActivity :
                 val licenseFragment = LicenseDialogFragment.newInstance("", "")
                 licenseFragment.show(supportFragmentManager, LICENSE_DIALOG_FRAGMENT)
             }
-//            R.id.action_schedule -> {
-//                val fragment = ScheduleFragment.newInstance()
-//                switchFragment(fragment, SCHEDULE_FRAGMENT)
-//            }
+            R.id.action_pick_date -> {
+                val datePickerFragment = DatePickerDialogFragment.newInstance(SimpleDateFormat("dd/MM/yyyy").format(date))
+                datePickerFragment.show(supportFragmentManager, DATE_PICKER_FRAGMENT)
+            }
             R.id.action_about_us -> {
                 val aboutUsFragment = AboutUsDialogFragment.newInstance("", "")
                 aboutUsFragment.show(supportFragmentManager, ABOUT_US_FRAGMENT)
@@ -1030,8 +1030,13 @@ class MainActivity :
     * This method might get called from LicenseDialogFragment eventually
     *
     * */
-    override fun onScheduleFragmentInteraction(msg: String) {
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+    override fun onDatePikerDialogFragmentInteraction(msg: String) {
+        val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
+        date = simpleDateFormat.parse(msg)
+        val hour = GregorianCalendar().get(Calendar.HOUR_OF_DAY)
+        val minutes = GregorianCalendar().get(Calendar.MINUTE)
+        date.time = date.time + ((hour * 60 + minutes) * 60 * 1_000)
+        Toast.makeText(this, SimpleDateFormat("dd/MM/yyyy hh:mm").format(date), Toast.LENGTH_LONG).show()
     }
 
     companion object {
@@ -1045,7 +1050,7 @@ class MainActivity :
         const val SETTINGS_FRAGMENT = "SettingsFragment"
         const val ABOUT_US_FRAGMENT = "AboutUsFragment"
         const val LICENSE_DIALOG_FRAGMENT = "LicenseDialogFragment"
-        const val SCHEDULE_FRAGMENT = "ScheduleFragment"
+        const val SCHEDULE_FRAGMENT = "DatePickerDialogFragment"
         const val DATE_PICKER_FRAGMENT = "DatePickerFragment"
 
     }

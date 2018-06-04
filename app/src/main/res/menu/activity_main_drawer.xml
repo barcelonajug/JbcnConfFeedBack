@@ -35,10 +35,10 @@
             android:icon="@drawable/drawer_upload"
             android:title="@string/menu_update" />
 
-            <!-- item
-                android:id="@+id/action_schedule"
+            <item
+                android:id="@+id/action_pick_date"
                 android:icon="@drawable/drawer_schedule"
-                android:title="@string/menu_schedule" / -->
+                android:title="@string/menu_pick_date" />
 
             <item
                 android:id="@+id/action_about_us"

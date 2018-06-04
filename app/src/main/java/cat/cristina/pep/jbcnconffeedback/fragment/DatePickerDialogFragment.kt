@@ -1,20 +1,14 @@
 package cat.cristina.pep.jbcnconffeedback.fragment
 
-import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutCompat
-import android.view.*
 import android.widget.DatePicker
-import android.widget.ImageButton
-import android.widget.LinearLayout
+import java.text.SimpleDateFormat
 
-import cat.cristina.pep.jbcnconffeedback.R
-import cat.cristina.pep.jbcnconffeedback.activity.MainActivity
 import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -25,73 +19,52 @@ private const val ARG_PARAM2 = "param2"
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [ScheduleFragment.ScheduleFragmentListener] interface
+ * [DatePickerDialogFragment.DatePickerDialogFragmentListener] interface
  * to handle interaction events.
- * Use the [ScheduleFragment.newInstance] factory method to
+ * Use the [DatePickerDialogFragment.newInstance] factory method to
  * create an instance of this fragment.
  *
  */
-class ScheduleFragment : Fragment(),  DatePickerDialog.OnDateSetListener {
+class DatePickerDialogFragment : DialogFragment(),  DatePickerDialog.OnDateSetListener {
     // TODO: Rename and change types of parameters
-    private var param1: String? = null
+    private var dateSet: String? = null
     private var param2: String? = null
-    private var listener: ScheduleFragmentListener? = null
+    private var listener: DatePickerDialogFragmentListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
+            dateSet = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_schedule, container, false)
 
-        val layout = view.findViewById<LinearLayoutCompat>(R.id.schedule)
-        for (i in 1..6) {
-            val image = ImageButton(context)
-            image.setImageResource(R.drawable.cry)
-            layout.addView(image)
-        }
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        // Use the current date as the default date in the picker
+        val date = SimpleDateFormat("dd/MM/yyyy").parse(dateSet)
+        val c = GregorianCalendar()
+        c.time = date
+        val year = c.get(Calendar.YEAR)
+        val month = c.get(Calendar.MONTH)
+        val day = c.get(Calendar.DAY_OF_MONTH)
 
-        return view
-    }
-
-
-
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater?.inflate(R.menu.schedule_fragment, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-
-        when(item?.itemId) {
-            R.id.action_choose_date -> {
-                val fragment = DatePickerFragment.newInstance(MainActivity.SCHEDULE_FRAGMENT)
-                fragment.show(fragmentManager, MainActivity.DATE_PICKER_FRAGMENT)
-                return true
-            }
-        }
-
-        return super.onOptionsItemSelected(item)
+        // Create a new instance of DatePickerDialog and return it
+        return DatePickerDialog(activity, this, year, month, day)
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(msg: String) {
-        listener?.onScheduleFragmentInteraction(msg)
+        listener?.onDatePikerDialogFragmentInteraction(msg)
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is ScheduleFragmentListener) {
+        if (context is DatePickerDialogFragmentListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement ScheduleFragmentListener")
+            throw RuntimeException(context.toString() + " must implement DatePickerDialogFragmentListener")
         }
     }
 
@@ -109,7 +82,10 @@ class ScheduleFragment : Fragment(),  DatePickerDialog.OnDateSetListener {
      * month)
      */
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        onButtonPressed(GregorianCalendar(year, month, dayOfMonth).time.toString())
+//        val formatter = DateTimeFormatter("").ofPattern("MMMM d, yyyy", Locale.ENGLISH)
+        val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
+        val date = GregorianCalendar(year, month, dayOfMonth).time
+        onButtonPressed(simpleDateFormat.format(date))
     }
 
     /**
@@ -123,8 +99,8 @@ class ScheduleFragment : Fragment(),  DatePickerDialog.OnDateSetListener {
      * (http://developer.android.com/training/basics/fragments/communicating.html)
      * for more information.
      */
-    interface ScheduleFragmentListener {
-        fun onScheduleFragmentInteraction(msg: String)
+    interface DatePickerDialogFragmentListener {
+        fun onDatePikerDialogFragmentInteraction(msg: String)
     }
 
     companion object {
@@ -134,12 +110,12 @@ class ScheduleFragment : Fragment(),  DatePickerDialog.OnDateSetListener {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment ScheduleFragment.
+         * @return A new instance of fragment DatePickerDialogFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String = "", param2: String = "") =
-                ScheduleFragment().apply {
+        fun newInstance(param1: String? = null, param2: String? = null) =
+                DatePickerDialogFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_PARAM1, param1)
                         putString(ARG_PARAM2, param2)
