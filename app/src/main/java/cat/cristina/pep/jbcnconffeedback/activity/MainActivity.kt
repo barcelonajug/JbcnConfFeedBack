@@ -768,10 +768,10 @@ class MainActivity :
                 val licenseFragment = LicenseDialogFragment.newInstance("", "")
                 licenseFragment.show(supportFragmentManager, LICENSE_DIALOG_FRAGMENT)
             }
-            R.id.action_pick_date -> {
-                val datePickerFragment = DatePickerDialogFragment.newInstance(fromDateToString())
-                datePickerFragment.show(supportFragmentManager, DATE_PICKER_FRAGMENT)
-            }
+//            R.id.action_pick_date -> {
+//                val datePickerFragment = DatePickerDialogFragment.newInstance(fromDateToString())
+//                datePickerFragment.show(supportFragmentManager, DATE_PICKER_FRAGMENT)
+//            }
             R.id.action_about_us -> {
                 val aboutUsFragment = AboutUsDialogFragment.newInstance("", "")
                 aboutUsFragment.show(supportFragmentManager, ABOUT_US_FRAGMENT)

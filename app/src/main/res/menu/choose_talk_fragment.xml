@@ -3,8 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_filter"
+        android:id="@+id/action_pick_date"
         android:orderInCategory="100"
+        android:icon="@drawable/menu_calendar"
+        android:title="@string/menu_pick_date"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/action_filter"
+        android:orderInCategory="110"
+        android:icon="@drawable/menu_filter"
         android:title="@string/action_filter"
         app:showAsAction="ifRoom" />
 

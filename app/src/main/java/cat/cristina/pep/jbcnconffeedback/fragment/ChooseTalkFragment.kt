@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
+import cat.cristina.pep.jbcnconffeedback.activity.MainActivity
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent.TalkItem
 import cat.cristina.pep.jbcnconffeedback.utils.PreferenceKeys
@@ -123,6 +124,12 @@ class ChooseTalkFragment : Fragment() {
                 }
                 return true
             }
+
+            R.id.action_pick_date -> {
+                val datePickerFragment = DatePickerDialogFragment.newInstance(dateStr)
+                datePickerFragment.show(fragmentManager, MainActivity.DATE_PICKER_FRAGMENT)
+                return true
+            }
             else -> return super.onOptionsItemSelected(item)
         }
     }
@@ -132,6 +139,8 @@ class ChooseTalkFragment : Fragment() {
         val itemFilter = menu?.findItem(R.id.action_filter)
         itemFilter?.title =
                 resources.getString(if (isFiltered) R.string.filter_all else R.string.filter_apply)
+        val itemPicker = menu?.findItem(R.id.action_pick_date)
+        itemPicker?.isVisible = isFiltered
     }
 
 
