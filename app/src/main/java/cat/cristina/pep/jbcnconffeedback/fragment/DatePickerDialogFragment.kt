@@ -26,7 +26,7 @@ private const val ARG_PARAM2 = "param2"
  *
  */
 class DatePickerDialogFragment : DialogFragment(),  DatePickerDialog.OnDateSetListener {
-    // TODO: Rename and change types of parameters
+    /* dateSet esta en formate dd/MM/yyyy  */
     private var dateSet: String? = null
     private var param2: String? = null
     private var listener: DatePickerDialogFragmentListener? = null

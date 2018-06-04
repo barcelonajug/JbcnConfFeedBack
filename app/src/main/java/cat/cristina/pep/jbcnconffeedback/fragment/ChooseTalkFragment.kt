@@ -14,6 +14,8 @@ import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent.TalkItem
 import cat.cristina.pep.jbcnconffeedback.utils.PreferenceKeys
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * A fragment representing a list of Items.
@@ -32,6 +34,8 @@ class ChooseTalkFragment : Fragment() {
     private var isFiltered = false
     private lateinit var sharedPreferences: SharedPreferences
     private var listener: OnChooseTalkListener? = null
+    private var dateStr: String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,8 +43,15 @@ class ChooseTalkFragment : Fragment() {
         arguments?.let {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
             isFiltered = it.getBoolean(ARG_FILTER_BY_DATE)
+            dateStr = it.getString(ARG_DATE)
         }
-        talkContent = TalkContent(activity!!.applicationContext)
+        //            val date = SimpleDateFormat("dd/MM/yyyy").parse(dateStr)
+        val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
+        val date = simpleDateFormat.parse(dateStr)
+        val hour = GregorianCalendar().get(Calendar.HOUR_OF_DAY)
+        val minutes = GregorianCalendar().get(Calendar.MINUTE)
+        date.time = date.time + ((hour * 60 + minutes) * 60 * 1_000)
+        talkContent = TalkContent(activity!!.applicationContext, date)
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         setHasOptionsMenu(true)
     }
@@ -73,7 +84,7 @@ class ChooseTalkFragment : Fragment() {
             talkContent.ITEMS.size
         }
         if (!sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false))
-            Toast.makeText(context, "$numTalks ${resources.getString(R.string.showing_n_talks)}", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "$numTalks ${resources.getString(R.string.showing_n_talks)}", Toast.LENGTH_SHORT).show()
     }
 
     override fun onAttach(context: Context) {
@@ -102,7 +113,7 @@ class ChooseTalkFragment : Fragment() {
             R.id.action_filter -> {
                 val roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
                 if (roomName == resources.getString(R.string.pref_default_room_name)) {
-                    Toast.makeText(context, resources.getString(R.string.sorry_no_room_set), Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, resources.getString(R.string.sorry_no_room_set), Toast.LENGTH_SHORT).show()
                 } else {
                     listener?.onFilterTalks(!isFiltered)
                 }
@@ -142,14 +153,16 @@ class ChooseTalkFragment : Fragment() {
         // TODO: Customize parameter argument names
         const val ARG_COLUMN_COUNT = "column-count"
         const val ARG_FILTER_BY_DATE = "filter-by-day"
+        const val ARG_DATE = "date"
 
         // TODO: Customize parameter initialization
         @JvmStatic
-        fun newInstance(columnCount: Int, filterByDayAndRoomName: Boolean = false) =
+        fun newInstance(columnCount: Int = 1, filterByDayAndRoomName: Boolean = false, dateStr: String = SimpleDateFormat("dd/MM/yyyy").format(Date())) =
                 ChooseTalkFragment().apply {
                     arguments = Bundle().apply {
                         putInt(ARG_COLUMN_COUNT, columnCount)
                         putBoolean(ARG_FILTER_BY_DATE, filterByDayAndRoomName)
+                        putString(ARG_DATE, dateStr)
                     }
                 }
     }

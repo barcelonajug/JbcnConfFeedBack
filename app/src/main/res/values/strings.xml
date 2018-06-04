@@ -20,6 +20,7 @@
     <string name="sorry_no_graphic_available">Sorry, no graphic available.</string>
     <string name="sorry_no_scoring_avaiable">Sorry, no scoring available.</string>
     <string name="sorry_no_room_set">Sorry, room is not set.</string>
+    <string name="sorry_no_app_to_attend_this_request">There is no application installed in this device to handle this request.</string>
     <string name="success_data_updated">All data updated successfully.</string>
     <string name="wrong_credentials">Wrong credentials, try again.</string>
     <string name="blank_credentials">Credentials can not be empty, try again.</string>
@@ -138,12 +139,12 @@
     <string name="pref_default_room_name">Room Not Defined</string>
 
     <string-array name="pref_room_names_titles">
-        <item>Alpha</item>
-        <item>Bravo</item>
-        <item>Charlie</item>
-        <item>Delta</item>
-        <item>Echo</item>
-        <item>Foxtrot</item>
+        <item>Fatal 5</item>
+        <item>Traci 13</item>
+        <item>Warriors 3</item>
+        <item>Fantastic 4</item>
+        <item>Great 10</item>
+        <item>Android 16</item>
         <item>Sitges</item>
         <item>Llivia</item>
         <item>Llavorsi</item>
@@ -151,12 +152,12 @@
     </string-array>
 
     <string-array name="pref_room_names_values">
-        <item>Room #1</item>
-        <item>Room #2</item>
-        <item>Room #3</item>
-        <item>Room #4</item>
-        <item>Room #5</item>
-        <item>Room #6</item>
+        <item>Fatal 5</item>
+        <item>Traci 13</item>
+        <item>Warriors 3</item>
+        <item>Fantastic 4</item>
+        <item>Great 10</item>
+        <item>Android 16</item>
         <item>Sitges</item>
         <item>Llivia</item>
         <item>Llavorsi</item>

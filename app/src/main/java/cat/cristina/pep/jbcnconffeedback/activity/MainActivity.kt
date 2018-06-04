@@ -157,7 +157,7 @@ class MainActivity :
         if (connected)
             requestQueue = Volley.newRequestQueue(this)
         else
-            Toast.makeText(applicationContext, "${resources.getString(R.string.sorry_working_offline)}: $reason", Toast.LENGTH_LONG).show()
+            Toast.makeText(applicationContext, "${resources.getString(R.string.sorry_working_offline)}: $reason", Toast.LENGTH_SHORT).show()
         setup(connected)
 
         nav_view.getHeaderView(0).setOnClickListener({
@@ -246,7 +246,7 @@ class MainActivity :
                 if (roomName == resources.getString(R.string.pref_default_room_name)) {
 
                     sharedPreferences.edit().putBoolean(PreferenceKeys.AUTO_MODE_KEY, false).commit()
-                    Toast.makeText(this, resources.getString(R.string.pref_default_room_name), Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, resources.getString(R.string.pref_default_room_name), Toast.LENGTH_SHORT).show()
                     val fragment = ChooseTalkFragment.newInstance(1)
                     switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
 
@@ -279,7 +279,7 @@ class MainActivity :
             } else { // autoMode is false ->  mode manual
 
                 filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
-                val fragment = ChooseTalkFragment.newInstance(1, filteredTalks)
+                val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, SimpleDateFormat("dd/MM/yyyy").format(date))
 
                 switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
 
@@ -379,7 +379,7 @@ class MainActivity :
 
         //Toast.makeText(this, R.string.setting_timers, Toast.LENGTH_LONG).show()
         Toast.makeText(this, """${scheduledFutures?.size?.div(2)
-                ?: "0"} timers set""", Toast.LENGTH_LONG).show()
+                ?: "0"} timers set""", Toast.LENGTH_SHORT).show()
 
         /* Cerramos el executor service para que no se sirvan más tareas, pero las tareas pendientes no se cancelan  */
 
@@ -430,7 +430,7 @@ class MainActivity :
                 Response.ErrorListener { error ->
                     if (dialog.isShowing)
                         dialog.dismiss()
-                    Toast.makeText(this, error.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show()
                     //Log.e(TAG, error.message)
                 })
 
@@ -492,7 +492,7 @@ class MainActivity :
                     if (dialog.isShowing)
                         dialog.dismiss()
 
-                    Toast.makeText(this, error.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show()
 
                 })
 
@@ -638,7 +638,7 @@ class MainActivity :
 
             /* aixo evita sortir de l'app amb el back button  */
             if (supportFragmentManager.backStackEntryCount == 0) {
-                Toast.makeText(this, R.string.choose_finish_to_exit, Toast.LENGTH_LONG).show()
+                Toast.makeText(this, R.string.choose_finish_to_exit, Toast.LENGTH_SHORT).show()
                 return
             }
 
@@ -708,7 +708,7 @@ class MainActivity :
         if (scoreDao.countOf() > 0) {
             if (isDeviceConnectedToWifiOrData().first) {
 
-                Toast.makeText(this, R.string.success_data_updated, Toast.LENGTH_LONG).show()
+                Toast.makeText(this, R.string.success_data_updated, Toast.LENGTH_SHORT).show()
                 val firestore = FirebaseFirestore.getInstance()
 
                 scoreDao.queryForAll().forEach {
@@ -728,10 +728,10 @@ class MainActivity :
                             }
                 }
             } else { // no connection
-                Toast.makeText(this, R.string.sorry_not_connected, Toast.LENGTH_LONG).show()
+                Toast.makeText(this, R.string.sorry_not_connected, Toast.LENGTH_SHORT).show()
             }
         } else { // no records
-            Toast.makeText(this, R.string.sorry_no_local_data, Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.sorry_no_local_data, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -785,7 +785,7 @@ class MainActivity :
     private fun downloadScoring(): Unit {
 
         if (!isDeviceConnectedToWifiOrData().first) {
-            Toast.makeText(this, R.string.sorry_not_connected, Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.sorry_not_connected, Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -809,7 +809,7 @@ class MainActivity :
                         createCVSFromStatistics(DEFAULT_STATISTICS_FILE_NAME)
                     } else {
                         dialog.dismiss()
-                        Toast.makeText(this, R.string.sorry_no_scoring_avaiable, Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, R.string.sorry_no_scoring_avaiable, Toast.LENGTH_SHORT).show()
                         //Log.d(TAG, "*** Error *** ${it.exception?.message}")
                     }
                 }
@@ -876,7 +876,7 @@ class MainActivity :
         if (componentName != null)
             startActivity(Intent.createChooser(emailIntent, "Pick an Email provider"))
         else
-            Toast.makeText(this, "There is no application installed in this device to handle this request", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.sorry_no_app_to_attend_this_request, Toast.LENGTH_SHORT).show()
 
     }
 
@@ -889,8 +889,17 @@ class MainActivity :
     override fun onFilterTalks(filtered: Boolean) {
         sharedPreferences.edit().putBoolean(PreferenceKeys.FILTERED_TALKS_KEY, filtered).commit()
         filteredTalks = filtered
-        val fragment = ChooseTalkFragment.newInstance(1, filtered)
-        switchFragment(fragment, "$CHOOSE_TALK_FRAGMENT$filtered", false)
+
+//        Toast.makeText(this, SimpleDateFormat("dd/MM/yyyy").format(date), Toast.LENGTH_LONG).show()
+
+        filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
+        val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, SimpleDateFormat("dd/MM/yyyy").format(date))
+
+        switchFragment(fragment, "$CHOOSE_TALK_FRAGMENT$filtered$date", false)
+
+
+//        val fragment = ChooseTalkFragment.newInstance(1, filtered)
+//        switchFragment(fragment, "$CHOOSE_TALK_FRAGMENT$filtered", false)
     }
 
     /*
@@ -981,7 +990,9 @@ class MainActivity :
             setup(false)
         } else {
             cancelTimer()
-            switchFragment(ChooseTalkFragment.newInstance(1, filteredTalks), "$CHOOSE_TALK_FRAGMENT$roomName", false)
+            filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
+            val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, SimpleDateFormat("dd/MM/yyyy").format(date))
+            switchFragment(fragment, "$CHOOSE_TALK_FRAGMENT$roomName", false)
         }
 
     }
@@ -1003,9 +1014,7 @@ class MainActivity :
                 // do nothing
             }
             Dialog.BUTTON_NEGATIVE -> {
-                if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
-                    drawer_layout.closeDrawer(GravityCompat.START)
-                }
+                closeLateralMenu()
             }
         }
     }
@@ -1036,7 +1045,13 @@ class MainActivity :
         val hour = GregorianCalendar().get(Calendar.HOUR_OF_DAY)
         val minutes = GregorianCalendar().get(Calendar.MINUTE)
         date.time = date.time + ((hour * 60 + minutes) * 60 * 1_000)
-        Toast.makeText(this, SimpleDateFormat("dd/MM/yyyy hh:mm").format(date), Toast.LENGTH_LONG).show()
+
+//        Toast.makeText(this, SimpleDateFormat("dd/MM/yyyy").format(date), Toast.LENGTH_LONG).show()
+
+        filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
+        val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, SimpleDateFormat("dd/MM/yyyy").format(date))
+
+        switchFragment(fragment, CHOOSE_TALK_FRAGMENT + msg, false)
     }
 
     companion object {

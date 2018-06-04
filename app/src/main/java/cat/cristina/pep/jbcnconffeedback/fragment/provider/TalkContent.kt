@@ -2,6 +2,7 @@ package cat.cristina.pep.jbcnconffeedback.fragment.provider
 
 import android.content.Context
 import android.support.v7.preference.PreferenceManager
+import android.util.Log
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.model.*
 import cat.cristina.pep.jbcnconffeedback.utils.PreferenceKeys
@@ -13,7 +14,7 @@ import java.util.*
 
 private val TAG = TalkContent::class.java.name
 
-class TalkContent(val context: Context) {
+class TalkContent(val context: Context, val date: Date) {
 
     private var databaseHelper: DatabaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper::class.java)
     private var utilDAOImpl: UtilDAOImpl
@@ -58,11 +59,10 @@ class TalkContent(val context: Context) {
         /* Cada entrada de ITEM_MAP contiene un scheduleId y un talkitem   */
         ITEM_MAP.put(item.talk.scheduleId, item)
 
-        /* TODO("REMOVE in production") */
-        val today = GregorianCalendar(2018, 6, 11, 9, 0)
+        val today = GregorianCalendar()
+        today.time = date
 
-        /* TODO("Uncomment in production") */
-        // val today = GregorianCalendar()
+        Log.d(TAG, today.time.toString())
 
         val scheduleId = item.talk.scheduleId
         val session = SessionsTimes.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}")
