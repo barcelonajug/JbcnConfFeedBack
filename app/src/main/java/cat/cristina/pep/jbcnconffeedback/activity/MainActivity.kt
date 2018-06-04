@@ -280,7 +280,7 @@ class MainActivity :
 
                 // On start filteredTalks must be false to show all talks, no filter
 //                filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
-                val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, SimpleDateFormat("dd/MM/yyyy").format(date))
+                val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString())
 
                 switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
 
@@ -413,6 +413,9 @@ class MainActivity :
             }
         }
     }
+
+
+    private fun fromDateToString() = SimpleDateFormat("dd/MM/yyyy").format(date)
 
     /*
     * This method downloads de JSON with all speaker. It uses an asynch call so I have
@@ -766,7 +769,7 @@ class MainActivity :
                 licenseFragment.show(supportFragmentManager, LICENSE_DIALOG_FRAGMENT)
             }
             R.id.action_pick_date -> {
-                val datePickerFragment = DatePickerDialogFragment.newInstance(SimpleDateFormat("dd/MM/yyyy").format(date))
+                val datePickerFragment = DatePickerDialogFragment.newInstance(fromDateToString())
                 datePickerFragment.show(supportFragmentManager, DATE_PICKER_FRAGMENT)
             }
             R.id.action_about_us -> {
@@ -891,10 +894,8 @@ class MainActivity :
         sharedPreferences.edit().putBoolean(PreferenceKeys.FILTERED_TALKS_KEY, filtered).commit()
         filteredTalks = filtered
 
-//        Toast.makeText(this, SimpleDateFormat("dd/MM/yyyy").format(date), Toast.LENGTH_LONG).show()
-
         filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
-        val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, SimpleDateFormat("dd/MM/yyyy").format(date))
+        val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString())
 
         switchFragment(fragment, "$CHOOSE_TALK_FRAGMENT$filtered$date", false)
 
@@ -992,7 +993,7 @@ class MainActivity :
         } else {
             cancelTimer()
             filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
-            val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, SimpleDateFormat("dd/MM/yyyy").format(date))
+            val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString())
             switchFragment(fragment, "$CHOOSE_TALK_FRAGMENT$roomName", false)
         }
 
@@ -1037,7 +1038,7 @@ class MainActivity :
     }
 
     /*
-    * This method might get called from LicenseDialogFragment eventually
+    * This method set de date/time to filter talks
     *
     * */
     override fun onDatePikerDialogFragmentInteraction(msg: String) {
@@ -1047,10 +1048,8 @@ class MainActivity :
         val minutes = GregorianCalendar().get(Calendar.MINUTE)
         date.time = date.time + ((hour * 60 + minutes) * 60 * 1_000)
 
-//        Toast.makeText(this, SimpleDateFormat("dd/MM/yyyy").format(date), Toast.LENGTH_LONG).show()
-
         filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
-        val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, SimpleDateFormat("dd/MM/yyyy").format(date))
+        val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString())
 
         switchFragment(fragment, CHOOSE_TALK_FRAGMENT + msg, false)
     }
