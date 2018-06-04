@@ -7,25 +7,27 @@ import java.util.*
 
 @DatabaseTable(tableName = Score.TABLE_NAME)
 data class Score constructor (
-        @DatabaseField(generatedId = true, columnName = ID_FIELD_NAME, dataType = DataType.INTEGER)
+        @DatabaseField(generatedId = true, columnName = FIELD_NAME_ID, dataType = DataType.INTEGER)
         val id: Int = 0,
 
-        @DatabaseField(columnName = ID_TALK_FIELD_NAME, dataType = DataType.INTEGER, canBeNull = false)
-        val id_talk: Int = 0,
+        @DatabaseField(columnName = FIELD_NAME_TALK_ID, dataType = DataType.INTEGER, canBeNull = false)
+        val talk_id: Int = 0,
 
-        @DatabaseField(columnName = SCORE_FIELD_NAME, dataType = DataType.INTEGER, canBeNull = false)
+        @DatabaseField(columnName = FIELD_NAME_SCHEDULE_ID, dataType = DataType.STRING, canBeNull = false)
+        val schedule_id: String = "",
+
+        @DatabaseField(columnName = FIELD_NAME_SCORE, dataType = DataType.INTEGER, canBeNull = false)
         var score: Int = 0,
 
-        @DatabaseField(columnName = DATE_FIELD_NAME, dataType = DataType.DATE, canBeNull = false)
-        var date: Date = Date()
-
-) {
+        @DatabaseField(columnName = FIELD_NAME_DATE, dataType = DataType.DATE, canBeNull = false)
+        var date: Date = Date()) {
 
     companion object ScoreData {
         const val TABLE_NAME = "scores"
-        const val ID_FIELD_NAME = "_id"
-        const val ID_TALK_FIELD_NAME = "id_talk"
-        const val SCORE_FIELD_NAME = "score"
-        const val DATE_FIELD_NAME = "date"
+        const val FIELD_NAME_ID = "_id"
+        const val FIELD_NAME_TALK_ID = "talk_id"
+        const val FIELD_NAME_SCHEDULE_ID = "schedule_id"
+        const val FIELD_NAME_SCORE = "score"
+        const val FIELD_NAME_DATE = "date"
     }
 }

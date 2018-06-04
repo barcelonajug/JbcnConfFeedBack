@@ -57,11 +57,6 @@ import java.util.concurrent.TimeUnit
 private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
 private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/talks.json"
 
-private const val FIREBASE_COLLECTION = "Scoring"
-private const val FIREBASE_COLLECTION_FIELD_1 = "id_talk"
-private const val FIREBASE_COLLECTION_FIELD_2 = "score"
-private const val FIREBASE_COLLECTION_FIELD_3 = "date"
-
 private val TAG = MainActivity::class.java.name
 
 /*
@@ -705,9 +700,9 @@ class MainActivity :
 
                 scoreDao.queryForAll().forEach {
                     val id = it.id
-                    val scoringDoc = mapOf(FIREBASE_COLLECTION_FIELD_1 to it.id_talk,
-                            FIREBASE_COLLECTION_FIELD_2 to it.score,
-                            FIREBASE_COLLECTION_FIELD_3 to it.date)
+                    val scoringDoc = mapOf(FIREBASE_COLLECTION_FIELD_TALK_ID to it.talk_id,
+                            FIREBASE_COLLECTION_FIELD_SCHEDULE_ID to it.score,
+                            FIREBASE_COLLECTION_FIELD_SCORE to it.date)
                     firestore
                             .collection(FIREBASE_COLLECTION)
                             .add(scoringDoc)
@@ -784,13 +779,13 @@ class MainActivity :
         dialog.show()
 
         FirebaseFirestore.getInstance()
-                .collection("Scoring")
+                .collection(FIREBASE_COLLECTION)
                 .get()
                 .addOnCompleteListener {
 
                     if (it.isSuccessful) {
                         dataFromFirestore = it.result.groupBy {
-                            it.getLong("id_talk")
+                            it.getLong(FIREBASE_COLLECTION_FIELD_TALK_ID)
                         }
                         dialog.dismiss()
                         createCVSFromStatistics(DEFAULT_STATISTICS_FILE_NAME)
@@ -817,23 +812,24 @@ class MainActivity :
                 CSVWriter.DEFAULT_ESCAPE_CHARACTER,
                 CSVWriter.DEFAULT_LINE_END)
 
-        csvWriter.writeNext(arrayOf("id_talk", "title", "score", "date"))
+        csvWriter.writeNext(arrayOf(FIREBASE_COLLECTION_FIELD_SCHEDULE_ID, FIREBASE_COLLECTION_FIELD_SCORE, FIREBASE_COLLECTION_FIELD_DATE))
 
         dataFromFirestore
                 ?.asSequence()
                 ?.forEach {
-                    val idTalk = it.key
-                    var title = databaseHelper.getTalkDao().queryForId(idTalk?.toInt()).title
-                    title = title.replace(",", " ")
-                    if (title.length > 30)
-                        title = title.substring(0, 30) + " ..."
+//                    val idTalk = it.key
+//                    var title = databaseHelper.getTalkDao().queryForId(idTalk?.toInt()).title
+//                    title = title.replace(",", " ")
+//                    if (title.length > 30)
+//                        title = title.substring(0, 30) + " ..."
                     dataFromFirestore?.get(it.key)
                             ?.asSequence()
                             ?.forEach { doc: QueryDocumentSnapshot ->
-                                val score = doc.get("score")
-                                val date = doc.getDate("date")
-                                Log.d(TAG, "$idTalk $title $score $date")
-                                csvWriter.writeNext(arrayOf(idTalk.toString(), title, score.toString(), date.toString()))
+                                val scheduleId = doc.get(FIREBASE_COLLECTION_FIELD_SCHEDULE_ID) as String
+                                val score = doc.get(FIREBASE_COLLECTION_FIELD_SCORE)
+                                val date = doc.getDate(FIREBASE_COLLECTION_FIELD_DATE)
+                                //csvWriter.writeNext(arrayOf(idTalk.toString(), title, score.toString(), date.toString()))
+                                csvWriter.writeNext(arrayOf(scheduleId, score.toString(), date.toString()))
                             }
                 }
 
@@ -898,17 +894,21 @@ class MainActivity :
     * Scoring: id_talk, score, date
     *
     * */
-    override fun onVoteFragment(id_talk: Int, score: Int) {
+    override fun onVoteFragment(talkId: Int, score: Int) {
 
         val scoreDao: Dao<Score, Int> = databaseHelper.getScoreDao()
+        val talkDao: Dao<Talk, Int> = databaseHelper.getTalkDao()
+
+        val scheduleId = talkDao.queryForId(talkId).scheduleId
 
         if (isDeviceConnectedToWifiOrData().first) {
 
             val firestore = FirebaseFirestore.getInstance()
 
-            val scoringDoc = mapOf(FIREBASE_COLLECTION_FIELD_1 to id_talk,
-                    FIREBASE_COLLECTION_FIELD_2 to score,
-                    FIREBASE_COLLECTION_FIELD_3 to java.util.Date())
+            val scoringDoc = mapOf(FIREBASE_COLLECTION_FIELD_TALK_ID to talkId,
+                    FIREBASE_COLLECTION_FIELD_SCHEDULE_ID to scheduleId,
+                    FIREBASE_COLLECTION_FIELD_SCORE to score,
+                    FIREBASE_COLLECTION_FIELD_DATE to java.util.Date())
 
             firestore
                     .collection(FIREBASE_COLLECTION)
@@ -917,12 +917,11 @@ class MainActivity :
                         // Log.d(TAG, "$scoringDoc added")
                     }
                     .addOnFailureListener {
-                        scoreDao.create(Score(0, id_talk, score, Date()))
+                        scoreDao.create(Score(0, talkId, scheduleId, score, Date()))
                         // Log.d(TAG, it.message)
                     }
         } else {
-
-            val scoreObj = Score(0, id_talk, score, Date())
+            val scoreObj = Score(0, talkId, scheduleId, score, Date())
             scoreDao.create(scoreObj)
             Log.d(TAG, scoreObj.toString())
 
@@ -1054,6 +1053,12 @@ class MainActivity :
         const val LICENSE_DIALOG_FRAGMENT = "LicenseDialogFragment"
         const val SCHEDULE_FRAGMENT = "DatePickerDialogFragment"
         const val DATE_PICKER_FRAGMENT = "DatePickerFragment"
+
+        const val FIREBASE_COLLECTION = "Scoring"
+        const val FIREBASE_COLLECTION_FIELD_TALK_ID = "talk_id"
+        const val FIREBASE_COLLECTION_FIELD_SCHEDULE_ID = "schedule_id"
+        const val FIREBASE_COLLECTION_FIELD_SCORE = "score"
+        const val FIREBASE_COLLECTION_FIELD_DATE = "date"
 
     }
 

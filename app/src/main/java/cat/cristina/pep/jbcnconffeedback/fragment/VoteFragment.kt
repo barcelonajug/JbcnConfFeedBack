@@ -62,6 +62,8 @@ class VoteFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (talkTitle.length > 60)
+            talkTitle = talkTitle.substring(0, 60) + "..."
         tvTalkTitle.text = talkTitle
         tvSpeakerName.text = "By $speakerName"
         val onTouchAnimation = AnimationUtils.loadAnimation(activity, R.anim.click_animation)
@@ -89,48 +91,9 @@ class VoteFragment : Fragment() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        super.onCreateOptionsMenu(menu, inflater)
-//        inflater?.inflate(R.menu.vote_fragment, menu)
-    }
-
-    /* TODO("retore ChooseTalkFragment")  */
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-
-        when (item?.itemId) {
-            R.id.action_exit -> {
-
-//                val dialogFragment = CredentialsDialogFragment.newInstance("VoteFragment", "")
-//                dialogFragment.show(activity?.supportFragmentManager, "CredentialDialogFragment")
-
-//                val alertDialogBuilder = AlertDialog.Builder(context!!, R.style.Base_V7_Theme_AppCompat_Dialog)
-//                alertDialogBuilder.setTitle(R.string.alert_title)
-//                alertDialogBuilder.setMessage(R.string.alert_message)
-//                // TODO ("What of backstack empty as in automode")
-//                alertDialogBuilder.setPositiveButton(R.string.alert_positive_button) {
-//                    _, _ ->  fragmentManager?.popBackStack()
-//                }
-//                alertDialogBuilder.setNegativeButton(R.string.alert_negative_button) {
-//                    _, _ ->
-//                }
-//                alertDialogBuilder.create().show()
-
-//                return true
-
-            }
-        }
-        return true
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu?) {
-        super.onPrepareOptionsMenu(menu)
-//        val menuExit = menu?.findItem(R.id.action_exit)
-//        menuExit?.isEnabled = !sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false)
-    }
-
     /*  */
-    fun onButtonPressed(id_talk: Int, score: Int) {
-        listener?.onVoteFragment(id_talk, score)
+    fun onButtonPressed(talkId: Int, score: Int) {
+        listener?.onVoteFragment(talkId, score)
     }
 
     override fun onAttach(context: Context) {
@@ -153,7 +116,7 @@ class VoteFragment : Fragment() {
      * This method gets called every time a vote is casted
      */
     interface OnVoteFragmentListener {
-        fun onVoteFragment(id_talk: Int, score: Int)
+        fun onVoteFragment(talkId: Int, score: Int)
     }
 
     companion object {

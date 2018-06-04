@@ -115,12 +115,12 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
         dialog.show()
 
         FirebaseFirestore.getInstance()
-                .collection("Scoring")
+                .collection(MainActivity.FIREBASE_COLLECTION)
                 .get()
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
                         dataFromFirestore = it.result.groupBy {
-                            it.getLong("id_talk")
+                            it.getLong(MainActivity.FIREBASE_COLLECTION_FIELD_TALK_ID)
                         }
                         setupGraphTopNTalks(10L)
                     } else {
@@ -212,7 +212,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                     val avg: Double? = dataFromFirestore?.get(it.key)
                             ?.asSequence()
                             ?.map { doc ->
-                                doc.get("score") as Long
+                                doc.get(MainActivity.FIREBASE_COLLECTION_FIELD_SCORE) as Long
                             }?.average()
                     var title: String = talkDao.queryForId(it.key?.toInt()).title
                     var refAuthor = talkDao.queryForId(it.key?.toInt()).speakers?.get(0)
