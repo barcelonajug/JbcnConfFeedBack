@@ -278,7 +278,8 @@ class MainActivity :
 
             } else { // autoMode is false ->  mode manual
 
-                filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
+                // On start filteredTalks must be false to show all talks, no filter
+//                filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
                 val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, SimpleDateFormat("dd/MM/yyyy").format(date))
 
                 switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
