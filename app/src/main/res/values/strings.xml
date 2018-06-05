@@ -83,6 +83,10 @@
     <string name="showing_n_talks">talks in display</string>
 
 
+    <!-- AreYouSureDialgoFragment  -->
+
+    <string name="are_you_sure">Do you really want to quit?</string>
+
     <string name="sorry_working_offline">Sorry, working offline.</string>
 
     <!-- CardView -->

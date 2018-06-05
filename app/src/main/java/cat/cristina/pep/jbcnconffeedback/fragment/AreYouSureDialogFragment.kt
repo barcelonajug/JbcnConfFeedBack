@@ -1,9 +1,12 @@
 package cat.cristina.pep.jbcnconffeedback.fragment
 
+import android.app.Dialog
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
+import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,17 +21,20 @@ private const val ARG_PARAM2 = "param2"
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [AreYouSureFragment.OnFragmentInteractionListener] interface
+ * [AreYouSureDialogFragment.AreYouSureDialogFragmentListener] interface
  * to handle interaction events.
- * Use the [AreYouSureFragment.newInstance] factory method to
+ * Use the [AreYouSureDialogFragment.newInstance] factory method to
  * create an instance of this fragment.
  *
  */
-class AreYouSureFragment : Fragment() {
-    // TODO: Rename and change types of parameters
+
+class AreYouSureDialogFragment : DialogFragment() {
+
+    private val TAG = AreYouSureDialogFragment::class.java.name
+
     private var param1: String? = null
     private var param2: String? = null
-    private var listener: OnFragmentInteractionListener? = null
+    private var listener: AreYouSureDialogFragmentListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,23 +44,41 @@ class AreYouSureFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_are_you_sure, container, false)
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val builder = AlertDialog.Builder(activity!!)
+        // Get the layout inflater
+        val inflater = activity!!.layoutInflater
+
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        val view = inflater.inflate(R.layout.fragment_are_you_sure_dialog, null)
+
+        val dialog = builder.setView(view)
+                // Add action buttons
+                .setPositiveButton(R.string.ok, { dialog, id ->
+                    onButtonPressed(Dialog.BUTTON_POSITIVE)
+                })
+                .setNegativeButton(R.string.cancel, { _, _ ->
+                    onButtonPressed(Dialog.BUTTON_NEGATIVE)
+                }).create()
+
+        dialog.window.setBackgroundDrawableResource(android.R.drawable.dialog_holo_light_frame)
+
+        return dialog
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
+    fun onButtonPressed(resp: Int) {
+        listener?.onAreYouSureDialogFragmentInteraction(resp)
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
+        if (context is AreYouSureDialogFragmentListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException(context.toString() + " must implement AreYouSureDialogFragmentListener")
         }
     }
 
@@ -74,9 +98,8 @@ class AreYouSureFragment : Fragment() {
      * (http://developer.android.com/training/basics/fragments/communicating.html)
      * for more information.
      */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
+    interface AreYouSureDialogFragmentListener {
+        fun onAreYouSureDialogFragmentInteraction(resp: Int)
     }
 
     companion object {
@@ -86,12 +109,12 @@ class AreYouSureFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment AreYouSureFragment.
+         * @return A new instance of fragment AreYouSureDialogFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-                AreYouSureFragment().apply {
+        fun newInstance(param1: String? = null, param2: String? = null) =
+                AreYouSureDialogFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_PARAM1, param1)
                         putString(ARG_PARAM2, param2)

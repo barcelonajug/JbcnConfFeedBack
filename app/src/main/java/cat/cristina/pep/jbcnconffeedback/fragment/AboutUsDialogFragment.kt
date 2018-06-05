@@ -44,7 +44,6 @@ class AboutUsDialogFragment : DialogFragment() {
         }
     }
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        Log.d(TAG, "onCreateDialog")
         val builder = AlertDialog.Builder(activity!!)
         // Get the layout inflater
         val inflater = activity!!.layoutInflater

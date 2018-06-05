@@ -90,7 +90,8 @@ class MainActivity :
         CredentialsDialogFragment.CredentialsDialogFragmentListener,
         AboutUsDialogFragment.AboutUsDialogFragmentListener,
         LicenseDialogFragment.LicenseDialogFragmentListener,
-        DatePickerDialogFragment.DatePickerDialogFragmentListener {
+        DatePickerDialogFragment.DatePickerDialogFragmentListener,
+        AreYouSureDialogFragment.AreYouSureDialogFragmentListener {
 
     private val random = Random()
     private val DEFAULT_STATISTICS_FILE_NAME = "statistics.csv"
@@ -701,7 +702,9 @@ class MainActivity :
                 onUpdateTalks()
             }
             R.id.action_finish -> {
-                finishAndRemoveTask()
+//                finishAndRemoveTask()
+                val fragment = AreYouSureDialogFragment.newInstance()
+                fragment.show(supportFragmentManager, ARE_YOU_SURE_DIALOG_FRAGMENT)
             }
             R.id.action_license -> {
                 val licenseFragment = LicenseDialogFragment.newInstance("", "")
@@ -1046,6 +1049,16 @@ class MainActivity :
         switchFragment(fragment, CHOOSE_TALK_FRAGMENT + msg, false)
     }
 
+    override fun onAreYouSureDialogFragmentInteraction(resp: Int) {
+        when (resp) {
+            Dialog.BUTTON_POSITIVE ->  {
+                finishAndRemoveTask()
+            }
+            Dialog.BUTTON_NEUTRAL ->  {}
+            Dialog.BUTTON_NEGATIVE ->  {}
+        }
+    }
+
     companion object {
 
         const val MAIN_ACTIVITY = "MainActivity"
@@ -1057,8 +1070,8 @@ class MainActivity :
         const val SETTINGS_FRAGMENT = "SettingsFragment"
         const val ABOUT_US_FRAGMENT = "AboutUsFragment"
         const val LICENSE_DIALOG_FRAGMENT = "LicenseDialogFragment"
-        const val SCHEDULE_FRAGMENT = "DatePickerDialogFragment"
         const val DATE_PICKER_FRAGMENT = "DatePickerFragment"
+        const val ARE_YOU_SURE_DIALOG_FRAGMENT = "AreYouSureDialogFragment"
 
         const val FIREBASE_COLLECTION = "Scoring"
         const val FIREBASE_COLLECTION_FIELD_TALK_ID = "talk_id"
