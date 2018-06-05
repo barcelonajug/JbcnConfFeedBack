@@ -62,8 +62,6 @@ class TalkContent(val context: Context, val date: Date) {
         val today = GregorianCalendar()
         today.time = date
 
-        Log.d(TAG, today.time.toString())
-
         val scheduleId = item.talk.scheduleId
         val session = SessionsTimes.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}")
         val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")

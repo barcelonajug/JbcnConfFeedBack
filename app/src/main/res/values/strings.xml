@@ -8,6 +8,7 @@
     <string name="action_settings">Settings</string>
     <string name="action_update">Update</string>
     <string name="action_filter">Filter</string>
+    <string name="action_unfilter">Unfilter</string>
     <string name="action_exit">Exit</string>
 
     <!-- Main Activity -->
@@ -21,12 +22,13 @@
     <string name="sorry_no_scoring_avaiable">Sorry, no scoring available.</string>
     <string name="sorry_no_room_set">Sorry, room is not set.</string>
     <string name="sorry_no_app_to_attend_this_request">There is no application installed in this device to handle this request.</string>
+    <string name="sorry_could_not_insert_talk">Could not insert talk ${talk.id} ${error.message}</string>
     <string name="success_data_updated">All data updated successfully.</string>
     <string name="wrong_credentials">Wrong credentials, try again.</string>
     <string name="blank_credentials">Credentials can not be empty, try again.</string>
     <string name="turn_auto_mode_off">Mode is auto, switch to manual.</string>
     <string name="back_button_disabled">Back button is disabled.</string>
-    <string name="choose_finish_to_exit">Select \'finish\' from the lateral menu to end.</string>
+    <string name="choose_finish_to_exit">Select \'Finish\' from the lateral menu to end.</string>
     <string name="setting_timers">Setting timers ....</string>
     <string name="action_login">Login</string>
     <string name="action_logout">Logout</string>

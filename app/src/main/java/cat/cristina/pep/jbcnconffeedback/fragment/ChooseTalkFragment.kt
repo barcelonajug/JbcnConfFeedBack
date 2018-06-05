@@ -12,30 +12,26 @@ import android.view.*
 import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.activity.MainActivity
+import cat.cristina.pep.jbcnconffeedback.activity.MainActivity.Companion.simpleDateFormat
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent.TalkItem
 import cat.cristina.pep.jbcnconffeedback.utils.PreferenceKeys
-import java.text.SimpleDateFormat
 import java.util.*
 
 /**
  * A fragment representing a list of Items.
- * Activities containing this fragment MUST implement the
- * [ChooseTalkFragment.OnChooseTalkListener] interface.
  */
 class ChooseTalkFragment : Fragment() {
 
     private val TAG = ChooseTalkFragment::class.java.name
 
     private lateinit var talkContent: TalkContent
-    //private lateinit var databaseHelper: DatabaseHelper
-    //private lateinit var utilDAOImpl: UtilDAOImpl
     private var columnCount = 1
     private var isFiltered = false
     private lateinit var sharedPreferences: SharedPreferences
     private var listener: OnChooseTalkListener? = null
     private var dateStr: String? = null
-
+    private var isLogIn: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,9 +40,8 @@ class ChooseTalkFragment : Fragment() {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
             isFiltered = it.getBoolean(ARG_FILTER_BY_DATE)
             dateStr = it.getString(ARG_DATE)
+            isLogIn = it.getBoolean(ARG_IS_LOG_IN)
         }
-        //            val date = SimpleDateFormat("dd/MM/yyyy").parse(dateStr)
-        val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
         val date = simpleDateFormat.parse(dateStr)
         val hour = GregorianCalendar().get(Calendar.HOUR_OF_DAY)
         val minutes = GregorianCalendar().get(Calendar.MINUTE)
@@ -135,11 +130,32 @@ class ChooseTalkFragment : Fragment() {
 
     override fun onPrepareOptionsMenu(menu: Menu?) {
         super.onPrepareOptionsMenu(menu)
+
         val itemFilter = menu?.findItem(R.id.action_filter)
+        val itemPicker = menu?.findItem(R.id.action_pick_date)
+
         itemFilter?.title =
                 resources.getString(if (isFiltered) R.string.filter_all else R.string.filter_apply)
-        val itemPicker = menu?.findItem(R.id.action_pick_date)
-        itemPicker?.isVisible = isFiltered
+
+        itemFilter?.isVisible = isLogIn
+        itemFilter?.isEnabled = isLogIn
+        itemPicker?.isVisible = isLogIn and isFiltered
+        itemPicker?.isEnabled = isLogIn and isFiltered
+
+        if (isFiltered) {
+            itemFilter?.icon = resources.getDrawable(R.drawable.menu_unfilter, resources.newTheme())
+        } else {
+            itemFilter?.icon = resources.getDrawable(R.drawable.menu_filter, resources.newTheme())
+        }
+
+//        if (isLogIn) {
+//            itemFilter?.icon?.alpha = 255
+//            itemPicker?.icon?.alpha = 255
+//        }
+//        else {
+//            itemFilter?.icon?.alpha = 85
+//            itemPicker?.icon?.alpha = 85
+//        }
     }
 
 
@@ -148,33 +164,29 @@ class ChooseTalkFragment : Fragment() {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     *
-     *
-     * See the Android Training lesson
-     * [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
      */
     interface OnChooseTalkListener {
         fun onChooseTalk(item: TalkItem?)
+        fun onLongChooseTalk(item: TalkItem?)
         fun onUpdateTalks()
         fun onFilterTalks(filtered: Boolean)
     }
 
     companion object {
 
-        // TODO: Customize parameter argument names
         const val ARG_COLUMN_COUNT = "column-count"
         const val ARG_FILTER_BY_DATE = "filter-by-day"
         const val ARG_DATE = "date"
+        const val ARG_IS_LOG_IN = "is-log-in"
 
-        // TODO: Customize parameter initialization
         @JvmStatic
-        fun newInstance(columnCount: Int = 1, filterByDayAndRoomName: Boolean = false, dateStr: String = SimpleDateFormat("dd/MM/yyyy").format(Date())) =
+        fun newInstance(columnCount: Int = 1, filterByDayAndRoomName: Boolean = false, dateStr: String = simpleDateFormat.format(Date()), isLogIn: Boolean = false) =
                 ChooseTalkFragment().apply {
                     arguments = Bundle().apply {
                         putInt(ARG_COLUMN_COUNT, columnCount)
                         putBoolean(ARG_FILTER_BY_DATE, filterByDayAndRoomName)
                         putString(ARG_DATE, dateStr)
+                        putBoolean(ARG_IS_LOG_IN, isLogIn)
                     }
                 }
     }

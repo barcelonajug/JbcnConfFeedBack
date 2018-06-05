@@ -4,17 +4,29 @@
 
     <item
         android:id="@+id/action_pick_date"
-        android:orderInCategory="100"
+        android:orderInCategory="200"
         android:icon="@drawable/menu_calendar"
+        android:enabled="false"
+        android:visible="false"
         android:title="@string/menu_pick_date"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/action_filter"
-        android:orderInCategory="110"
+        android:orderInCategory="210"
         android:icon="@drawable/menu_filter"
+        android:enabled="false"
+        android:visible="false"
         android:title="@string/action_filter"
         app:showAsAction="ifRoom" />
 
+    <!-- item
+        android:id="@+id/action_unfilter"
+        android:orderInCategory="220"
+        android:icon="@drawable/menu_unfilter"
+        android:enabled="false"
+        android:visible="false"
+        android:title="@string/action_unfilter"
+        app:showAsAction="ifRoom" /  -->
 
 </menu>

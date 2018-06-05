@@ -15,8 +15,8 @@ data class Speaker(
 //        @DatabaseField(columnName = DESCRIPTION_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
 //        var description: String = "",
 
-//        @DatabaseField(columnName = BIOGRAPHY_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
-//        var biogaphy: String = "",
+        @DatabaseField(columnName = BIOGRAPHY_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
+        var biography: String = "",
 
         @DatabaseField(columnName = IMAGE_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
         var image: String = "",

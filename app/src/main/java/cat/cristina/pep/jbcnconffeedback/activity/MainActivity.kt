@@ -10,7 +10,6 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.net.Uri
 import android.os.*
-import android.support.annotation.CallSuper
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
@@ -103,15 +102,11 @@ class MainActivity :
     // private val scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
     private var scheduledExecutorService: ScheduledExecutorService? = null
     private var scheduledFutures: MutableList<ScheduledFuture<*>?>? = null
-    //private var timer: Timer? = null
     private lateinit var roomName: String
     private var autoMode: Boolean = false
     private val talkSchedules = HashMap<Talk, Pair<SessionsTimes, TalksLocations>>()
-    // TODO("Delete in production")
-    //private val setOfScheduleIds: MutableSet<String> = mutableSetOf()
     private lateinit var sharedPreferences: SharedPreferences
     private var filteredTalks = false
-    //private lateinit var dialogFragment: DialogFragment
     private var dataFromFirestore: Map<Long?, List<QueryDocumentSnapshot>>? = null
     private var date = Date()
     private var isLogIn = false
@@ -120,7 +115,6 @@ class MainActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate()")
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
@@ -168,40 +162,16 @@ class MainActivity :
                     for (i in 1..stackSize) {
                         supportFragmentManager.popBackStack()
                     }
-                    filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
-                    val fragment = ChooseTalkFragment.newInstance(1, filteredTalks)
-                    switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
-                    closeLateralMenu()
+//                    filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
+                    setChooseTalkFragment(CHOOSE_TALK_FRAGMENT)
+//                    val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString(), isLogIn)
+//                    switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
+                   closeLateralMenu()
                 }
             }
         })
-    }
 
-    override fun onStart() {
-        super.onStart()
-        Log.d(TAG, "onStart()")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d(TAG, "onResume()")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d(TAG, "onPause()")
-    }
-
-    @CallSuper
-    override fun onStop() {
-        super.onStop()
-        Log.d(TAG, "onStop()")
-
-    }
-
-    override fun onRestart() {
-        Log.d(TAG, "onRestart()")
-        super.onRestart()
+        sharedPreferences.edit().putBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false).commit()
     }
 
     override fun onDestroy() {
@@ -247,8 +217,9 @@ class MainActivity :
 
                     sharedPreferences.edit().putBoolean(PreferenceKeys.AUTO_MODE_KEY, false).commit()
                     Toast.makeText(this, resources.getString(R.string.pref_default_room_name), Toast.LENGTH_SHORT).show()
-                    val fragment = ChooseTalkFragment.newInstance(1)
-                    switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
+                    setChooseTalkFragment(CHOOSE_TALK_FRAGMENT)
+//                    val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString(), isLogIn)
+//                    switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
 
                 } else { // autoMode and roomName set
 
@@ -280,9 +251,9 @@ class MainActivity :
 
                 // On start filteredTalks must be false to show all talks, no filter
 //                filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
-                val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString())
-
-                switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
+                setChooseTalkFragment(CHOOSE_TALK_FRAGMENT)
+//                val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString(), isLogIn)
+//                switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
 
             }
         }
@@ -455,7 +426,7 @@ class MainActivity :
         downloadTalks()
 
         val json = JSONObject(speakersJson)
-        val items = json.getJSONArray("items")
+        val items = json.getJSONArray(JBCNCONF_JSON_COLLECTION_NAME)
         val speakerDao: Dao<Speaker, Int> = databaseHelper.getSpeakerDao()
         val gson = Gson()
 
@@ -512,7 +483,7 @@ class MainActivity :
     private fun parseAndStoreTalks(talksJson: String) {
 
         val json = JSONObject(talksJson)
-        val items = json.getJSONArray("items")
+        val items = json.getJSONArray(JBCNCONF_JSON_COLLECTION_NAME)
         val talkDao: Dao<Talk, Int> = databaseHelper.getTalkDao()
         val speakerTalkDao: Dao<SpeakerTalk, Int> = databaseHelper.getSpeakerTalkDao()
         val gson = Gson()
@@ -523,9 +494,7 @@ class MainActivity :
             val talk: Talk = gson.fromJson(talkObject.toString(), Talk::class.java)
 
             try {
-                /* Guardamos cada talk */
                 talkDao.create(talk)
-                // Log.d(TAG, "Talk ${talk} created")
             } catch (error: Exception) {
                 if (dialog.isShowing)
                     dialog.dismiss()
@@ -614,10 +583,6 @@ class MainActivity :
                 return
             }
 
-//            if (supportFragmentManager.backStackEntryCount == 1) {
-//                return
-//            }
-
             /* per sortir de l'app hi ha un menu finish  */
             super.onBackPressed()
 
@@ -634,6 +599,8 @@ class MainActivity :
 
 
     /*
+    *
+    *
     * */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
@@ -645,12 +612,23 @@ class MainActivity :
                 dialogFragment.show(supportFragmentManager, CREDENTIALS_DIALOG_FRAGMENT)
                 return true
             }
+
             R.id.action_logout -> {
                 Toast.makeText(this, R.string.action_logout, Toast.LENGTH_SHORT).show()
                 isLogIn = false
                 invalidateOptionsMenu()
+                if (!autoMode) {
+                    val actualFragment = supportFragmentManager.findFragmentById(R.id.contentFragment)
+                    if (actualFragment?.tag != VOTE_FRAGMENT) {
+                        sharedPreferences.edit().putBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
+                        setChooseTalkFragment(CHOOSE_TALK_FRAGMENT)
+//                        val fragment = ChooseTalkFragment.newInstance(1, false)
+//                        switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
+                    }
+                }
                 return true
             }
+
         }
 
         return super.onOptionsItemSelected(item)
@@ -686,37 +664,51 @@ class MainActivity :
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
+
             R.id.action_statistics -> {
                 val fragment = StatisticsFragment.newInstance()
                 switchFragment(fragment, STATISTICS_FRAGMENT)
             }
+
             R.id.action_settings -> {
                 //startActivity(Intent(this, SettingsActivity::class.java))
                 val fragment = AppPreferenceFragment()
                 switchFragment(fragment, SETTINGS_FRAGMENT)
             }
+
             R.id.action_send_statistics -> {
                 downloadScoring()
             }
+
             R.id.action_update -> {
                 onUpdateTalks()
             }
+
             R.id.action_finish -> {
 //                finishAndRemoveTask()
                 val fragment = AreYouSureDialogFragment.newInstance()
                 fragment.show(supportFragmentManager, ARE_YOU_SURE_DIALOG_FRAGMENT)
             }
+
             R.id.action_license -> {
                 val licenseFragment = LicenseDialogFragment.newInstance("", "")
                 licenseFragment.show(supportFragmentManager, LICENSE_DIALOG_FRAGMENT)
             }
+
             R.id.action_about_us -> {
                 val aboutUsFragment = AboutUsDialogFragment.newInstance("", "")
                 aboutUsFragment.show(supportFragmentManager, ABOUT_US_FRAGMENT)
             }
+
         }
         drawer_layout.closeDrawer(GravityCompat.START)
         return false
+    }
+
+    private fun setChooseTalkFragment(tag: String): Unit {
+        val isFilter = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
+        val fragment = ChooseTalkFragment.newInstance(1, isFilter, fromDateToString(), isLogIn)
+        switchFragment(fragment, tag, false)
     }
 
 
@@ -824,14 +816,24 @@ class MainActivity :
     }
 
     /*
- * This method is called from onChooseTalkFragment when a talk es selected in manual mode
- *
- * */
+    * This method is called from onChooseTalkFragment when a talk es selected in manual mode
+    *
+    * */
     override fun onChooseTalk(item: TalkContent.TalkItem?) {
 
         if (isLogIn) {
             val voteFragment = VoteFragment.newInstance(item?.talk?.id.toString(), item?.talk?.title!!, item.speaker.name)
             switchFragment(voteFragment, VOTE_FRAGMENT)
+        }
+    }
+
+    /*
+    * This method is called from onChooseTalkFragment when a talk es long clicked in manual mode
+    *
+    * */
+    override fun onLongChooseTalk(item: TalkContent.TalkItem?) {
+        if (isLogIn) {
+            Toast.makeText(this, item?.speaker?.biography, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -882,14 +884,11 @@ class MainActivity :
         sharedPreferences.edit().putBoolean(PreferenceKeys.FILTERED_TALKS_KEY, filtered).commit()
         filteredTalks = filtered
 
-        filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
-        val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString())
+        setChooseTalkFragment("$CHOOSE_TALK_FRAGMENT$filtered")
 
-        switchFragment(fragment, "$CHOOSE_TALK_FRAGMENT$filtered$date", false)
+//        val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString(), isLogIn)
+//        switchFragment(fragment, "$CHOOSE_TALK_FRAGMENT$filtered$date", false)
 
-
-//        val fragment = ChooseTalkFragment.newInstance(1, filtered)
-//        switchFragment(fragment, "$CHOOSE_TALK_FRAGMENT$filtered", false)
     }
 
     /*
@@ -983,9 +982,10 @@ class MainActivity :
             setup(false)
         } else {
             cancelTimer()
-            filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
-            val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString())
-            switchFragment(fragment, "$CHOOSE_TALK_FRAGMENT$roomName", false)
+            setChooseTalkFragment("$CHOOSE_TALK_FRAGMENT$roomName")
+//            filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
+//            val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString(), isLogIn)
+//            switchFragment(fragment, "$CHOOSE_TALK_FRAGMENT$roomName", false)
         }
 
     }
@@ -1007,6 +1007,12 @@ class MainActivity :
                 Toast.makeText(this, R.string.action_login, Toast.LENGTH_SHORT).show()
                 isLogIn = true
                 invalidateOptionsMenu()
+                if (!autoMode) {
+                    setChooseTalkFragment("$CHOOSE_TALK_FRAGMENT$answer")
+
+//                    val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString(), isLogIn)
+//                    switchFragment(fragment, "$CHOOSE_TALK_FRAGMENT$isLogIn", false)
+                }
             }
             Dialog.BUTTON_NEGATIVE -> {
                 closeLateralMenu()
@@ -1036,30 +1042,36 @@ class MainActivity :
     * This method set de date/time to filter talks
     *
     * */
-    override fun onDatePikerDialogFragmentInteraction(msg: String) {
-        val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
-        date = simpleDateFormat.parse(msg)
+    override fun onDatePikerDialogFragmentInteraction(newDate: String) {
+
+        date = simpleDateFormat.parse(newDate)
         val hour = GregorianCalendar().get(Calendar.HOUR_OF_DAY)
         val minutes = GregorianCalendar().get(Calendar.MINUTE)
         date.time = date.time + ((hour * 60 + minutes) * 60 * 1_000)
 
-        filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
-        val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString())
+        setChooseTalkFragment("$CHOOSE_TALK_FRAGMENT$newDate")
 
-        switchFragment(fragment, CHOOSE_TALK_FRAGMENT + msg, false)
+//        filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
+//        val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString(), isLogIn)
+//        switchFragment(fragment, CHOOSE_TALK_FRAGMENT + newDate, false)
+
     }
 
     override fun onAreYouSureDialogFragmentInteraction(resp: Int) {
         when (resp) {
-            Dialog.BUTTON_POSITIVE ->  {
+            Dialog.BUTTON_POSITIVE -> {
                 finishAndRemoveTask()
             }
-            Dialog.BUTTON_NEUTRAL ->  {}
-            Dialog.BUTTON_NEGATIVE ->  {}
+            Dialog.BUTTON_NEUTRAL -> {
+            }
+            Dialog.BUTTON_NEGATIVE -> {
+            }
         }
     }
 
     companion object {
+
+        const val URL_SPEAKERS_IMAGES = "http://www.jbcnconf.com/2018/"
 
         const val MAIN_ACTIVITY = "MainActivity"
         const val CHOOSE_TALK_FRAGMENT = "ChooseTalkFragment"
@@ -1073,11 +1085,15 @@ class MainActivity :
         const val DATE_PICKER_FRAGMENT = "DatePickerFragment"
         const val ARE_YOU_SURE_DIALOG_FRAGMENT = "AreYouSureDialogFragment"
 
+        const val JBCNCONF_JSON_COLLECTION_NAME = "items"
+
         const val FIREBASE_COLLECTION = "Scoring"
         const val FIREBASE_COLLECTION_FIELD_TALK_ID = "talk_id"
         const val FIREBASE_COLLECTION_FIELD_SCHEDULE_ID = "schedule_id"
         const val FIREBASE_COLLECTION_FIELD_SCORE = "score"
         const val FIREBASE_COLLECTION_FIELD_DATE = "date"
+
+        val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
 
     }
 

@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import cat.cristina.pep.jbcnconffeedback.R
+import cat.cristina.pep.jbcnconffeedback.activity.MainActivity.Companion.URL_SPEAKERS_IMAGES
 import cat.cristina.pep.jbcnconffeedback.fragment.ChooseTalkFragment.OnChooseTalkListener
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent.TalkItem
 import cat.cristina.pep.jbcnconffeedback.utils.SessionsTimes
@@ -22,20 +23,15 @@ import com.bumptech.glide.request.target.Target
 import kotlinx.android.synthetic.main.fragment_choose_talk.view.*
 import java.lang.Exception
 import java.text.SimpleDateFormat
-import java.util.*
 
 
 /**
- * [RecyclerView.Adapter] that can display a [TalkItem] and makes a call to the
- * specified [OnListFragmentInteractionListener].
+ * Adapters provide a binding from an app-specific data set to views that are displayed within a
+ * RecyclerView
+ *
  */
 
 private val TAG = MyTalkRecyclerViewAdapter::class.java.name
-
-//const val URL_SPEAKERS_IMAGES = "https://github.com/barcelonajug/jbcnconf_web/blob/master/2018/"
-
-//const val URL_SPEAKERS_IMAGES = "http://www.jbcnconf.com/2018/assets/img/speakers/"
-const val URL_SPEAKERS_IMAGES = "http://www.jbcnconf.com/2018/"
 
 class MyTalkRecyclerViewAdapter(
         private val mValues: List<TalkItem>,
@@ -44,6 +40,7 @@ class MyTalkRecyclerViewAdapter(
     : RecyclerView.Adapter<MyTalkRecyclerViewAdapter.ViewHolder>() {
 
     private val mOnClickListener: View.OnClickListener
+    private val mOnLongClickListener: View.OnLongClickListener
 
     init {
         mOnClickListener = View.OnClickListener { v ->
@@ -52,14 +49,31 @@ class MyTalkRecyclerViewAdapter(
             // one) that an item has been selected.
             mListener?.onChooseTalk(item)
         }
+
+        mOnLongClickListener = View.OnLongClickListener { v ->
+            val item = v.tag as TalkItem
+            mListener?.onLongChooseTalk(item)
+            true
+        }
     }
 
+    /*
+    * Called when RecyclerView needs a new RecyclerView.ViewHolder of the given type to
+    * represent an item.
+    *
+    * */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.fragment_choose_talk, parent, false)
         return ViewHolder(view)
     }
 
+    /*
+    * Called by RecyclerView to display the data at the specified position.
+    * This method should update the contents of the itemView to reflect the item at the
+    * given position.
+    *
+    * */
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = mValues[position]
         holder.mIdView.text = item.id
@@ -197,11 +211,10 @@ class MyTalkRecyclerViewAdapter(
         val session = SessionsTimes.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}")
         val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")
 
-//        val simpleDateFormat = SimpleDateFormat("dd/MM/yyy hh:mm:ss")
         val simpleDateFormat = SimpleDateFormat("hh:mm")
         val startTime = simpleDateFormat.format(session.getStartTime().time)
         val endTime = simpleDateFormat.format(session.getEndTime().time)
-//        simpleDateFormat.applyPattern("EEEE d MMM yyyy")
+        // eg. Monday 11 March
         simpleDateFormat.applyPattern("EEEE dd MMMM")
         val due = simpleDateFormat.format(session.getStartTime().time)
 //        holder.mScheduleId.text = "Code: ${item.talk.scheduleId}. Starting: ${startTime}. Ending: ${endTime}. Location: ${location.getRoomName()}"
@@ -209,12 +222,22 @@ class MyTalkRecyclerViewAdapter(
         with(holder.mView) {
             tag = item
             setOnClickListener(mOnClickListener)
+            setOnLongClickListener(mOnLongClickListener)
         }
     }
 
+    /*
+    * Returns the total number of items in the data set held by the adapter.
+    *
+    * */
     override fun getItemCount(): Int = mValues.size
 
+    /*
+    * This is the content of every card in the ChooseTalkFragment
+    *
+    * */
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
+
         val mIdView: TextView = mView.cardViewItemNumber
         val mSpeakerImageView: ImageView = mView.cardviewSpeakerImage
         val mTitleView: TextView = mView.cardviewTalkTitle

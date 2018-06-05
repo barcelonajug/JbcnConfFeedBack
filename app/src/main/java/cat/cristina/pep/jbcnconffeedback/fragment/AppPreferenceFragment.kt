@@ -72,10 +72,6 @@ class AppPreferenceFragment :
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         if (sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name)) != previousRoomName
@@ -97,14 +93,6 @@ class AppPreferenceFragment :
     /**
      * Called when a shared preference is changed, added, or removed. This
      * may be called even if a preference is set to its existing value.
-     *
-     *
-     * This callback will be run on your main thread.
-     *
-     * @param sharedPreferences The [SharedPreferences] that received
-     * the change.
-     * @param key The key of the preference that was changed, added, or
-     * removed.
      */
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
 
