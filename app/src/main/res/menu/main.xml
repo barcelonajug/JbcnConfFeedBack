@@ -3,11 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_login"
+        android:orderInCategory="100"
+        android:icon="@drawable/menu_login"
+        android:title="@string/action_login"
+        android:enabled="true"
+        android:visible="true"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_logout"
         android:orderInCategory="110"
         android:icon="@drawable/menu_logout"
         android:title="@string/action_logout"
         android:enabled="false"
+        android:visible="false"
         app:showAsAction="ifRoom" />
 
 </menu>

@@ -205,7 +205,7 @@ class MyTalkRecyclerViewAdapter(
         simpleDateFormat.applyPattern("EEEE dd MMMM")
         val due = simpleDateFormat.format(session.getStartTime().time)
 //        holder.mScheduleId.text = "Code: ${item.talk.scheduleId}. Starting: ${startTime}. Ending: ${endTime}. Location: ${location.getRoomName()}"
-        holder.mScheduleId.text = "Due on $due from $startTime to $endTime in ${location.getRoomName()}"
+        holder.mScheduleId.text = "Due on $due from $startTime to $endTime in '${location.getRoomName()}'"
         with(holder.mView) {
             tag = item
             setOnClickListener(mOnClickListener)

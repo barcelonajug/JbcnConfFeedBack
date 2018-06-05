@@ -30,7 +30,6 @@ class ChooseTalkFragment : Fragment() {
     private lateinit var talkContent: TalkContent
     //private lateinit var databaseHelper: DatabaseHelper
     //private lateinit var utilDAOImpl: UtilDAOImpl
-    // TODO: Customize parameters
     private var columnCount = 1
     private var isFiltered = false
     private lateinit var sharedPreferences: SharedPreferences

@@ -137,14 +137,13 @@ class MainActivity :
         *
         * */
 
-        /* TODO("Uncomment in production")  */
         drawer_layout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
 
             override fun onDrawerOpened(drawerView: View) {
                 if (!isLogIn) {
                     super.onDrawerOpened(drawerView)
                     val dialogFragment = CredentialsDialogFragment.newInstance(MAIN_ACTIVITY, autoMode)
-                    dialogFragment.show(supportFragmentManager, "CredentialsDialogFragment")
+                    dialogFragment.show(supportFragmentManager, CREDENTIALS_DIALOG_FRAGMENT)
                 }
             }
         })
@@ -607,8 +606,7 @@ class MainActivity :
             if (actualFragment?.tag == VOTE_FRAGMENT) {
                 if (isLogIn) {
                     super.onBackPressed()
-                }
-                else {
+                } else {
                     val dialogFragment = CredentialsDialogFragment.newInstance(VOTE_FRAGMENT, autoMode)
                     dialogFragment.show(supportFragmentManager, CREDENTIALS_DIALOG_FRAGMENT)
                 }
@@ -639,6 +637,13 @@ class MainActivity :
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         when (item.itemId) {
+
+            R.id.action_login -> {
+                //Toast.makeText(this, R.string.action_logout, Toast.LENGTH_SHORT).show()
+                val dialogFragment = CredentialsDialogFragment.newInstance(MAIN_ACTIVITY, autoMode)
+                dialogFragment.show(supportFragmentManager, CREDENTIALS_DIALOG_FRAGMENT)
+                return true
+            }
             R.id.action_logout -> {
                 Toast.makeText(this, R.string.action_logout, Toast.LENGTH_SHORT).show()
                 isLogIn = false
@@ -662,70 +667,21 @@ class MainActivity :
         val itemUpdate = drawerMenu.findItem(R.id.action_update)
         itemUpdate?.isEnabled = databaseHelper.getScoreDao().queryForAll().size > 0
 
+        val itemLogIn = menu?.findItem(R.id.action_login)
+        itemLogIn?.isEnabled = !isLogIn
+        itemLogIn?.isVisible = !isLogIn
+
         val itemLogOut = menu?.findItem(R.id.action_logout)
         itemLogOut?.isEnabled = isLogIn
-        if (isLogIn) {
-            itemLogOut?.icon?.alpha = 255
-        } else {
-            itemLogOut?.icon?.alpha = 85
-        }
+        itemLogOut?.isVisible = isLogIn
 
         return true
     }
 
-
     /*
-    * This method is called from onChooseTalkFragment when a talk es selected in manual mode
-    *
-    * */
-    override fun onChooseTalk(item: TalkContent.TalkItem?) {
-
-        val voteFragment = VoteFragment.newInstance(item?.talk?.id.toString(), item?.talk?.title!!, item.speaker.name)
-        switchFragment(voteFragment, VOTE_FRAGMENT)
-    }
-
-    /*
-    * This method is called from
-    *
-    * */
-    override fun onUpdateTalks() {
-
-        val scoreDao: Dao<Score, Int> = databaseHelper.getScoreDao()
-
-        if (scoreDao.countOf() > 0) {
-            if (isDeviceConnectedToWifiOrData().first) {
-
-                Toast.makeText(this, R.string.success_data_updated, Toast.LENGTH_SHORT).show()
-                val firestore = FirebaseFirestore.getInstance()
-
-                scoreDao.queryForAll().forEach {
-                    val id = it.id
-                    val scoringDoc = mapOf(FIREBASE_COLLECTION_FIELD_TALK_ID to it.talk_id,
-                            FIREBASE_COLLECTION_FIELD_SCHEDULE_ID to it.score,
-                            FIREBASE_COLLECTION_FIELD_SCORE to it.date)
-                    firestore
-                            .collection(FIREBASE_COLLECTION)
-                            .add(scoringDoc)
-                            .addOnSuccessListener {
-                                scoreDao.deleteById(id)
-                                Log.d(TAG, "$scoringDoc updated and removed")
-                            }
-                            .addOnFailureListener {
-                                Log.d(TAG, it.message)
-                            }
-                }
-            } else { // no connection
-                Toast.makeText(this, R.string.sorry_not_connected, Toast.LENGTH_SHORT).show()
-            }
-        } else { // no records
-            Toast.makeText(this, R.string.sorry_no_local_data, Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    /*
-    * Returns true to display the item as the selected item
-    *
-    * */
+   * Returns true to display the item as the selected item
+   *
+   * */
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
@@ -760,42 +716,6 @@ class MainActivity :
         return false
     }
 
-    /*
-    * This method downloads the Scoring collection made up of documents(id_talk, score, date)
-    *
-    * */
-    private fun downloadScoring(): Unit {
-
-        if (!isDeviceConnectedToWifiOrData().first) {
-            Toast.makeText(this, R.string.sorry_not_connected, Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        dialog = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT)
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
-        dialog.setMessage(resources.getString(R.string.loading))
-        dialog.isIndeterminate = true
-        dialog.setCanceledOnTouchOutside(false)
-        dialog.show()
-
-        FirebaseFirestore.getInstance()
-                .collection(FIREBASE_COLLECTION)
-                .get()
-                .addOnCompleteListener {
-
-                    if (it.isSuccessful) {
-                        dataFromFirestore = it.result.groupBy {
-                            it.getLong(FIREBASE_COLLECTION_FIELD_TALK_ID)
-                        }
-                        dialog.dismiss()
-                        createCVSFromStatistics(DEFAULT_STATISTICS_FILE_NAME)
-                    } else {
-                        dialog.dismiss()
-                        Toast.makeText(this, R.string.sorry_no_scoring_avaiable, Toast.LENGTH_SHORT).show()
-                        //Log.d(TAG, "*** Error *** ${it.exception?.message}")
-                    }
-                }
-    }
 
     /*
    * /storage/emulated/0/Android/data/cat.cristina.pep.jbcnconffeedback/files/Documents/statistics.csv
@@ -817,7 +737,7 @@ class MainActivity :
         dataFromFirestore
                 ?.asSequence()
                 ?.forEach {
-//                    val idTalk = it.key
+                    //                    val idTalk = it.key
 //                    var title = databaseHelper.getTalkDao().queryForId(idTalk?.toInt()).title
 //                    title = title.replace(",", " ")
 //                    if (title.length > 30)
@@ -863,6 +783,92 @@ class MainActivity :
 
     }
 
+    /*
+* This method downloads the Scoring collection made up of documents(id_talk, score, date)
+*
+* */
+    private fun downloadScoring(): Unit {
+
+        if (!isDeviceConnectedToWifiOrData().first) {
+            Toast.makeText(this, R.string.sorry_not_connected, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        dialog = ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT)
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
+        dialog.setMessage(resources.getString(R.string.loading))
+        dialog.isIndeterminate = true
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
+
+        FirebaseFirestore.getInstance()
+                .collection(FIREBASE_COLLECTION)
+                .get()
+                .addOnCompleteListener {
+
+                    if (it.isSuccessful) {
+                        dataFromFirestore = it.result.groupBy {
+                            it.getLong(FIREBASE_COLLECTION_FIELD_TALK_ID)
+                        }
+                        dialog.dismiss()
+                        createCVSFromStatistics(DEFAULT_STATISTICS_FILE_NAME)
+                    } else {
+                        dialog.dismiss()
+                        Toast.makeText(this, R.string.sorry_no_scoring_avaiable, Toast.LENGTH_SHORT).show()
+                        //Log.d(TAG, "*** Error *** ${it.exception?.message}")
+                    }
+                }
+    }
+
+    /*
+ * This method is called from onChooseTalkFragment when a talk es selected in manual mode
+ *
+ * */
+    override fun onChooseTalk(item: TalkContent.TalkItem?) {
+
+        if (isLogIn) {
+            val voteFragment = VoteFragment.newInstance(item?.talk?.id.toString(), item?.talk?.title!!, item.speaker.name)
+            switchFragment(voteFragment, VOTE_FRAGMENT)
+        }
+    }
+
+    /*
+    * This method is called from
+    *
+    * */
+    override fun onUpdateTalks() {
+
+        val scoreDao: Dao<Score, Int> = databaseHelper.getScoreDao()
+
+        if (scoreDao.countOf() > 0) {
+            if (isDeviceConnectedToWifiOrData().first) {
+
+                Toast.makeText(this, R.string.success_data_updated, Toast.LENGTH_SHORT).show()
+                val firestore = FirebaseFirestore.getInstance()
+
+                scoreDao.queryForAll().forEach {
+                    val id = it.id
+                    val scoringDoc = mapOf(FIREBASE_COLLECTION_FIELD_TALK_ID to it.talk_id,
+                            FIREBASE_COLLECTION_FIELD_SCHEDULE_ID to it.score,
+                            FIREBASE_COLLECTION_FIELD_SCORE to it.date)
+                    firestore
+                            .collection(FIREBASE_COLLECTION)
+                            .add(scoringDoc)
+                            .addOnSuccessListener {
+                                scoreDao.deleteById(id)
+                                Log.d(TAG, "$scoringDoc updated and removed")
+                            }
+                            .addOnFailureListener {
+                                Log.d(TAG, it.message)
+                            }
+                }
+            } else { // no connection
+                Toast.makeText(this, R.string.sorry_not_connected, Toast.LENGTH_SHORT).show()
+            }
+        } else { // no records
+            Toast.makeText(this, R.string.sorry_no_local_data, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     /*
     *
