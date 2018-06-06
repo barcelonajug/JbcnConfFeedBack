@@ -72,8 +72,7 @@ class ChooseTalkFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        var numTalks = 0
-        numTalks = if (isFiltered) {
+        var numTalks = if (isFiltered) {
             talkContent.ITEMS_FILTERED_BY_DATE_AND_ROOM_NAME.size
         } else {
             talkContent.ITEMS.size

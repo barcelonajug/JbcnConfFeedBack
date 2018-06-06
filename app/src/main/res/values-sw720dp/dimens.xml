@@ -20,6 +20,7 @@
     <dimen name="logo_margin">10dp</dimen>
 
     <!-- Text sizes -->
+    <dimen name="text_normal">14sp</dimen>
     <dimen name="text_thirty">30sp</dimen>
 
     <!-- Smilies -->
@@ -30,7 +31,7 @@
 
     <dimen name="talk_title">36sp</dimen>
     <dimen name="speaker_name">30sp</dimen>
-    <dimen name="text_margin">16dp</dimen>
+    <dimen name="text_margin">8dp</dimen>
 
     <!-- Choose Talk -->
     <dimen name="cardview_elevation">10dp</dimen>
@@ -42,6 +43,7 @@
     <dimen name="cardview_talk_title">30sp</dimen>
     <dimen name="cardview_speaker_name">25sp</dimen>
     <dimen name="cardview_scheduleId">18sp</dimen>
+    <dimen name="cardview_order">12sp</dimen>
 
     <!-- Welcome Fragment -->
     <dimen name="welcome_padding">150dp</dimen>

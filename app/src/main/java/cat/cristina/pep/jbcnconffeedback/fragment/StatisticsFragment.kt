@@ -193,97 +193,105 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
     }
 
     private fun setupGraphTopNTalks(limit: Long) {
-        dialog.setMessage(resources.getString(R.string.processing))
-        // Pair<title, avg>
-        val titleAndAvg = ArrayList<Pair<String, Double>>()
-        val labels = ArrayList<String>()
-        val entries = ArrayList<BarEntry>()
-        var index = 0.0F
-        val talkDao: Dao<Talk, Int> = databaseHelper.getTalkDao()
-        val utilDAOImpl = UtilDAOImpl(context!!, databaseHelper)
 
-        dataFromFirestore
-                ?.asSequence()
-                ?.sortedBy {
-                    it.key
-                }
-                ?.forEach {
-                    val votes = it.value.size
-                    val avg: Double? = dataFromFirestore?.get(it.key)
-                            ?.asSequence()
-                            ?.map { doc ->
-                                doc.get(MainActivity.FIREBASE_COLLECTION_FIELD_SCORE) as Long
-                            }?.average()
-                    var title: String = talkDao.queryForId(it.key?.toInt()).title
-                    var refAuthor = talkDao.queryForId(it.key?.toInt()).speakers?.get(0)
-                    var author = utilDAOImpl.lookupSpeakerByRef(refAuthor!!).name
-                    /* Si el nombre es demasiado largo se saldra de la barra  */
-                    author = author.substring(0, 1) + "." + author.substring(author.indexOf(" "))
-                    title = if (title.length > 35) "'${StringBuilder(title.substring(0, 35)).toString()}...' by $author. ($votes votes)"
-                    else "'$title' by $author. ($votes votes)"
-                    titleAndAvg.add(Pair(title, avg!!))
-                    // Log.d(TAG, "************************************ $title $avg")
-                }
+        try {
+            dialog.setMessage(resources.getString(R.string.processing))
+            // Pair<title, avg>
+            val titleAndAvg = ArrayList<Pair<String, Double>>()
+            val labels = ArrayList<String>()
+            val entries = ArrayList<BarEntry>()
+            var index = 0.0F
+            val talkDao: Dao<Talk, Int> = databaseHelper.getTalkDao()
+            val utilDAOImpl = UtilDAOImpl(context!!, databaseHelper)
 
-        val firstTen = titleAndAvg
-                .stream()
-                .sorted { pair1, pair2 -> if (pair1.second < pair2.second) 1 else if (pair1.second == pair2.second) 0 else -1 }
-                .limit(limit)
-                .collect(Collectors.toList())
+            dataFromFirestore
+                    ?.asSequence()
+                    ?.sortedBy {
+                        it.key
+                    }
+                    ?.forEach {
+                        val votes = it.value.size
+                        val avg: Double? = dataFromFirestore?.get(it.key)
+                                ?.asSequence()
+                                ?.map { doc ->
+                                    doc.get(MainActivity.FIREBASE_COLLECTION_FIELD_SCORE) as Long
+                                }?.average()
+                        var title: String = talkDao.queryForId(it.key?.toInt()).title
+                        var refAuthor = talkDao.queryForId(it.key?.toInt()).speakers?.get(0)
+                        var author = utilDAOImpl.lookupSpeakerByRef(refAuthor!!).name
+                        /* Si el nombre es demasiado largo se saldra de la barra  */
+                        author = author.substring(0, 1) + "." + author.substring(author.indexOf(" "))
+                        title = if (title.length > 35) "'${StringBuilder(title.substring(0, 35)).toString()}...' by $author. ($votes votes)"
+                        else "'$title' by $author. ($votes votes)"
+                        titleAndAvg.add(Pair(title, avg!!))
+                        // Log.d(TAG, "************************************ $title $avg")
+                    }
 
-        for (pair: Pair<String, Double> in firstTen) {
-            entries.add(BarEntry(index++, pair.second.toFloat()))
-            var title: String = pair.first
-            //title = StringBuilder(title).append(" (${String.format("%.2f", pair.second)})").toString()
-            labels.add(title)
-        }
+            val firstTen = titleAndAvg
+                    .stream()
+                    .sorted { pair1, pair2 -> if (pair1.second < pair2.second) 1 else if (pair1.second == pair2.second) 0 else -1 }
+                    .limit(limit)
+                    .collect(Collectors.toList())
 
-        val barDataSet: BarDataSet = BarDataSet(entries, "Score")
+            for (pair: Pair<String, Double> in firstTen) {
+                entries.add(BarEntry(index++, pair.second.toFloat()))
+                var title: String = pair.first
+                //title = StringBuilder(title).append(" (${String.format("%.2f", pair.second)})").toString()
+                labels.add(title)
+            }
 
-        with(barDataSet) {
-            colors = ColorTemplate.COLORFUL_COLORS.asList()
-            barBorderColor = Color.BLACK
-        }
+            val barDataSet: BarDataSet = BarDataSet(entries, "Score")
 
-        val barData = BarData(barDataSet)
-        barData.setDrawValues(true)
-        barData.setValueTextColor(Color.BLACK)
-        barData.setValueTextSize(24.0F)
+            with(barDataSet) {
+                colors = ColorTemplate.COLORFUL_COLORS.asList()
+                barBorderColor = Color.BLACK
+            }
 
-        with(barChart) {
-            data = barData
-            xAxis.valueFormatter = IndexAxisValueFormatter(labels) as IAxisValueFormatter?
-            xAxis.textSize = 20.0F
-            xAxis.setDrawLabels(true)
-            xAxis.position = XAxis.XAxisPosition.BOTTOM_INSIDE
-            xAxis.xOffset = 650.0F
-            xAxis.yOffset = 100.0F
-            xAxis.setLabelCount(firstTen!!.size, false)
-            axisLeft.axisMinimum = 0.0F
-            axisLeft.axisMaximum = 5.25F
-            axisLeft.setDrawLabels(false)
-            axisRight.setDrawLabels(false)
-            fitScreen()
-            description.isEnabled = false
-            //description.text = resources.getString(R.string.chart_description)
-            setNoDataText(resources.getString(R.string.sorry_no_graphic_available))
-            setDrawBarShadow(true)
-            //setDrawValueAboveBar(true)
-            //setFitBars(true)
-            setDrawBorders(true)
-            setBorderColor(Color.BLACK)
-            setTouchEnabled(true)
-            // onChartGestureListener = this@StatisticsFragment
-            animateXY(2_500, 5_000)
-            legend.isEnabled = false
+            val barData = BarData(barDataSet)
+            barData.setDrawValues(true)
+            barData.setValueTextColor(Color.BLACK)
+            barData.setValueTextSize(24.0F)
+
+
+            with(barChart) {
+                data = barData
+                xAxis.valueFormatter = IndexAxisValueFormatter(labels) as IAxisValueFormatter?
+                xAxis.textSize = 20.0F
+                xAxis.setDrawLabels(true)
+                xAxis.position = XAxis.XAxisPosition.BOTTOM_INSIDE
+                xAxis.xOffset = 650.0F
+                xAxis.yOffset = 100.0F
+                xAxis.setLabelCount(firstTen!!.size, false)
+                axisLeft.axisMinimum = 0.0F
+                axisLeft.axisMaximum = 5.25F
+                axisLeft.setDrawLabels(false)
+                axisRight.setDrawLabels(false)
+                fitScreen()
+                description.isEnabled = false
+                //description.text = resources.getString(R.string.chart_description)
+                setNoDataText(resources.getString(R.string.sorry_no_graphic_available))
+                setDrawBarShadow(true)
+                //setDrawValueAboveBar(true)
+                //setFitBars(true)
+                setDrawBorders(true)
+                setBorderColor(Color.BLACK)
+                setTouchEnabled(true)
+                // onChartGestureListener = this@StatisticsFragment
+                animateXY(2_500, 5_000)
+                legend.isEnabled = false
 //            legend.textColor = Color.GRAY
 //            legend.textSize = 15F
 
-            notifyDataSetChanged()
-            invalidate()
+                notifyDataSetChanged()
+                invalidate()
+            }
+
+        } catch (error: Exception) {
+            //Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
+        } finally {
+            dialog.dismiss()
         }
 
-        dialog.dismiss()
     }
 
     /*

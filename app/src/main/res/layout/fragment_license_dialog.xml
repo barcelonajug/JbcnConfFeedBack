@@ -33,7 +33,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1.0"
             android:padding="@dimen/twenty_four"
-            android:textSize="@dimen/text_margin"
+            android:textSize="@dimen/text_normal"
             android:text="@string/license_text"/>
 
     </ScrollView>

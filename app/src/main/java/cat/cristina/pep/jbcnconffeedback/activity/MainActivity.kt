@@ -1,7 +1,6 @@
 package cat.cristina.pep.jbcnconffeedback.activity
 
 import android.app.Dialog
-import android.app.FragmentTransaction
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
@@ -162,11 +161,8 @@ class MainActivity :
                     for (i in 1..stackSize) {
                         supportFragmentManager.popBackStack()
                     }
-//                    filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
                     setChooseTalkFragment(CHOOSE_TALK_FRAGMENT)
-//                    val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString(), isLogIn)
-//                    switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
-                   closeLateralMenu()
+                    closeLateralMenu()
                 }
             }
         })
@@ -218,8 +214,6 @@ class MainActivity :
                     sharedPreferences.edit().putBoolean(PreferenceKeys.AUTO_MODE_KEY, false).commit()
                     Toast.makeText(this, resources.getString(R.string.pref_default_room_name), Toast.LENGTH_SHORT).show()
                     setChooseTalkFragment(CHOOSE_TALK_FRAGMENT)
-//                    val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString(), isLogIn)
-//                    switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
 
                 } else { // autoMode and roomName set
 
@@ -248,13 +242,7 @@ class MainActivity :
                 }
 
             } else { // autoMode is false ->  mode manual
-
-                // On start filteredTalks must be false to show all talks, no filter
-//                filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
                 setChooseTalkFragment(CHOOSE_TALK_FRAGMENT)
-//                val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString(), isLogIn)
-//                switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
-
             }
         }
     }
@@ -357,36 +345,6 @@ class MainActivity :
 
         scheduledExecutorService?.shutdown()
     }
-
-
-    /*
-    * This method changes de actual fragment for another fragment unless both have the samen tag
-    * name. It will also add the fragment to the back stack or not, depending on the addToStack
-    * parameter.
-    *
-    * */
-    private fun switchFragment(fragment: Fragment, tag: String, addToStack: Boolean = true): Unit {
-
-        val actualFragment = supportFragmentManager.findFragmentByTag(tag)
-
-        actualFragment?.tag.run {
-
-            if (this != tag) {
-
-                val transaction = supportFragmentManager.beginTransaction()
-                transaction.replace(R.id.contentFragment, fragment, tag)
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-
-                if (addToStack)
-                    transaction.addToBackStack(tag)
-
-                transaction.commit()
-            }
-        }
-    }
-
-
-    private fun fromDateToString() = SimpleDateFormat("dd/MM/yyyy").format(date)
 
     /*
     * This method downloads de JSON with all speaker. It uses an asynch call so I have
@@ -541,10 +499,57 @@ class MainActivity :
                 ?: resources.getString(R.string.sorry_not_connected))
     }
 
+    /*
+   * This method changes de actual fragment for another fragment unless both have the same tag
+   * name.
+   *
+   * It will also add the fragment to the back stack or not, depending on the addToStack
+   * parameter.
+   *
+   * */
+    private fun switchFragment(fragment: Fragment, tag: String, addToStack: Boolean): Unit {
+
+        // Permitir solo un elemento en la pila
+        if (supportFragmentManager.backStackEntryCount == 1)
+            return
+
+        val actualFragment = supportFragmentManager.findFragmentByTag(tag)
+
+        actualFragment?.tag.run {
+
+            if (this != tag) {
+                val transaction = supportFragmentManager.beginTransaction()
+                transaction.replace(R.id.contentFragment, fragment, tag)
+                if (addToStack)
+                    transaction.addToBackStack(tag)
+
+                transaction.commit()
+            }
+        }
+    }
+
+
+    private fun fromDateToString() = SimpleDateFormat("dd/MM/yyyy").format(date)
+
+
     private fun closeLateralMenu(): Unit {
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
             drawer_layout.closeDrawer(GravityCompat.START)
         }
+    }
+
+    private fun clearBackStack() {
+
+        while (supportFragmentManager.popBackStackImmediate());
+
+//        if (supportFragmentManager.backStackEntryCount > 1) {
+//            supportFragmentManager.popBackStack(VOTE_FRAGMENT, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+//            supportFragmentManager.popBackStackImmediate(CHOOSE_TALK_FRAGMENT, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+//        }
+    }
+
+    private fun saveFilteredKey(isFiltered: Boolean): Unit {
+        sharedPreferences.edit().putBoolean(PreferenceKeys.FILTERED_TALKS_KEY, isFiltered).commit()
     }
 
     /*
@@ -564,16 +569,17 @@ class MainActivity :
             drawer_layout.closeDrawer(GravityCompat.START)
         } else {
 
-            val actualFragment = supportFragmentManager.findFragmentById(R.id.contentFragment)
-
             /* aixo evita sortir de l'app amb el back button  */
             if (supportFragmentManager.backStackEntryCount == 0) {
                 Toast.makeText(this, R.string.choose_finish_to_exit, Toast.LENGTH_SHORT).show()
                 return
             }
 
+            val actualFragment = supportFragmentManager.findFragmentById(R.id.contentFragment)
+
             /* quan es mostra el votefragment backStackEntryCount es 1. VoteFragment te el su boto de sortir  */
             if (actualFragment?.tag == VOTE_FRAGMENT) {
+
                 if (isLogIn) {
                     super.onBackPressed()
                 } else {
@@ -583,7 +589,7 @@ class MainActivity :
                 return
             }
 
-            /* per sortir de l'app hi ha un menu finish  */
+            // Som a Statistics, Settings
             super.onBackPressed()
 
         }
@@ -597,11 +603,6 @@ class MainActivity :
         return super.onCreateOptionsMenu(menu)
     }
 
-
-    /*
-    *
-    *
-    * */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         when (item.itemId) {
@@ -616,16 +617,20 @@ class MainActivity :
             R.id.action_logout -> {
                 Toast.makeText(this, R.string.action_logout, Toast.LENGTH_SHORT).show()
                 isLogIn = false
+                saveFilteredKey(false)
                 invalidateOptionsMenu()
+
                 if (!autoMode) {
                     val actualFragment = supportFragmentManager.findFragmentById(R.id.contentFragment)
                     if (actualFragment?.tag != VOTE_FRAGMENT) {
-                        sharedPreferences.edit().putBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
+                        clearBackStack()
                         setChooseTalkFragment(CHOOSE_TALK_FRAGMENT)
-//                        val fragment = ChooseTalkFragment.newInstance(1, false)
-//                        switchFragment(fragment, CHOOSE_TALK_FRAGMENT, false)
+                    } else { // Estan votando: do nothing
                     }
+                } else { // In auto Mode
+
                 }
+
                 return true
             }
 
@@ -667,13 +672,13 @@ class MainActivity :
 
             R.id.action_statistics -> {
                 val fragment = StatisticsFragment.newInstance()
-                switchFragment(fragment, STATISTICS_FRAGMENT)
+                switchFragment(fragment, STATISTICS_FRAGMENT, true)
             }
 
             R.id.action_settings -> {
                 //startActivity(Intent(this, SettingsActivity::class.java))
                 val fragment = AppPreferenceFragment()
-                switchFragment(fragment, SETTINGS_FRAGMENT)
+                switchFragment(fragment, SETTINGS_FRAGMENT, true)
             }
 
             R.id.action_send_statistics -> {
@@ -823,7 +828,7 @@ class MainActivity :
 
         if (isLogIn) {
             val voteFragment = VoteFragment.newInstance(item?.talk?.id.toString(), item?.talk?.title!!, item.speaker.name)
-            switchFragment(voteFragment, VOTE_FRAGMENT)
+            switchFragment(voteFragment, VOTE_FRAGMENT, true)
         }
     }
 
@@ -885,9 +890,6 @@ class MainActivity :
         filteredTalks = filtered
 
         setChooseTalkFragment("$CHOOSE_TALK_FRAGMENT$filtered")
-
-//        val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString(), isLogIn)
-//        switchFragment(fragment, "$CHOOSE_TALK_FRAGMENT$filtered$date", false)
 
     }
 
@@ -983,9 +985,6 @@ class MainActivity :
         } else {
             cancelTimer()
             setChooseTalkFragment("$CHOOSE_TALK_FRAGMENT$roomName")
-//            filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
-//            val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString(), isLogIn)
-//            switchFragment(fragment, "$CHOOSE_TALK_FRAGMENT$roomName", false)
         }
 
     }
@@ -1009,9 +1008,6 @@ class MainActivity :
                 invalidateOptionsMenu()
                 if (!autoMode) {
                     setChooseTalkFragment("$CHOOSE_TALK_FRAGMENT$answer")
-
-//                    val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString(), isLogIn)
-//                    switchFragment(fragment, "$CHOOSE_TALK_FRAGMENT$isLogIn", false)
                 }
             }
             Dialog.BUTTON_NEGATIVE -> {
@@ -1050,10 +1046,6 @@ class MainActivity :
         date.time = date.time + ((hour * 60 + minutes) * 60 * 1_000)
 
         setChooseTalkFragment("$CHOOSE_TALK_FRAGMENT$newDate")
-
-//        filteredTalks = sharedPreferences.getBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false)
-//        val fragment = ChooseTalkFragment.newInstance(1, filteredTalks, fromDateToString(), isLogIn)
-//        switchFragment(fragment, CHOOSE_TALK_FRAGMENT + newDate, false)
 
     }
 

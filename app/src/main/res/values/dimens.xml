@@ -20,6 +20,7 @@
     <dimen name="logo_margin">10dp</dimen>
 
     <!-- Text sizes -->
+    <dimen name="text_normal">14sp</dimen>
     <dimen name="text_thirty">30sp</dimen>
 
     <!-- Smilies -->
@@ -30,12 +31,12 @@
 
     <dimen name="talk_title">15sp</dimen>
     <dimen name="speaker_name">15sp</dimen>
-    <dimen name="text_margin">10dp</dimen>
+    <dimen name="text_margin">5dp</dimen>
 
     <!-- Choose Talk -->
     <dimen name="cardview_elevation">10dp</dimen>
     <dimen name="cardview_width">0dp</dimen>
-    <dimen name="cardview_height">150dp</dimen>
+    <dimen name="cardview_height">250dp</dimen>
     <dimen name="cardview_corner_radius">4dp</dimen>
     <dimen name="inner_cardview_radius">20dp</dimen>
     <dimen name="cardview_image_size">70dp</dimen>
