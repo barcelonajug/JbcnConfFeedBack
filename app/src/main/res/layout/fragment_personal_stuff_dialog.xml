@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:contentDescription="@string/app_name"
+        android:padding="@dimen/logo_margin"
+        android:scaleType="center"
+        android:src="@drawable/logo_jbcnconf_dialog" />
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" />
+
+
+    <TextView
+        android:id="@+id/tv_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/text_margin"
+        android:paddingRight="@dimen/text_margin"
+        android:paddingTop="@dimen/two"
+        android:paddingBottom="@dimen/two"
+        android:text="n/a"
+        android:textSize="@dimen/text_big" />
+
+    <TextView
+        android:id="@+id/tv_biography"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/text_margin"
+        android:paddingRight="@dimen/text_margin"
+        android:paddingBottom="@dimen/two"
+        android:text="n/a"
+        android:textSize="@dimen/text_big" />
+
+    <TextView
+        android:id="@+id/tv_twitter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/text_margin"
+        android:paddingRight="@dimen/text_margin"
+        android:paddingBottom="@dimen/two"
+        android:text="n/a"
+        android:textSize="@dimen/text_big" />
+
+    <TextView
+        android:id="@+id/tv_homepage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/text_margin"
+        android:paddingRight="@dimen/text_margin"
+        android:paddingBottom="@dimen/two"
+        android:text="n/a"
+        android:textSize="@dimen/text_big" />
+
+
+</LinearLayout>

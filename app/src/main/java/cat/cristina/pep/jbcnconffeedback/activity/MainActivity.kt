@@ -89,7 +89,8 @@ class MainActivity :
         AboutUsDialogFragment.AboutUsDialogFragmentListener,
         LicenseDialogFragment.LicenseDialogFragmentListener,
         DatePickerDialogFragment.DatePickerDialogFragmentListener,
-        AreYouSureDialogFragment.AreYouSureDialogFragmentListener {
+        AreYouSureDialogFragment.AreYouSureDialogFragmentListener,
+        PersonalStuffDialogFragment.OnPersonalStuffDialogFragmentListener {
 
     private val random = Random()
     private val DEFAULT_STATISTICS_FILE_NAME = "statistics.csv"
@@ -833,12 +834,15 @@ class MainActivity :
     }
 
     /*
-    * This method is called from onChooseTalkFragment when a talk es long clicked in manual mode
+    * This method is called from onChooseTalkFragment when a talk is long clicked in manual mode
     *
     * */
     override fun onLongChooseTalk(item: TalkContent.TalkItem?) {
         if (isLogIn) {
-            Toast.makeText(this, item?.speaker?.biography, Toast.LENGTH_LONG).show()
+            //Toast.makeText(this, item?.speaker?.biography, Toast.LENGTH_LONG).show()
+            val personalStuffDialogFragment =
+                    PersonalStuffDialogFragment.newInstance(item?.speaker?.description ?: "n/a", item?.speaker?.biography ?: "n/a",item?.speaker?.twitter ?: "n/a",item?.speaker?.homepage ?: "n/a")
+            personalStuffDialogFragment.show(supportFragmentManager, PERSONAL_STUFF_DIALOG_FRAGMENT)
         }
     }
 
@@ -1019,7 +1023,6 @@ class MainActivity :
     }
 
     /*
-    * This method might get called from AboutUsDialogFragment eventually
     *
     * */
     override fun onAboutUsDialogFragmentInteraction(msg: String) {
@@ -1027,7 +1030,6 @@ class MainActivity :
     }
 
     /*
-    * This method might get called from LicenseDialogFragment eventually
     *
     * */
     override fun onLicenseDialogFragmentInteraction(msg: String) {
@@ -1061,6 +1063,14 @@ class MainActivity :
         }
     }
 
+    /*
+    * This method might get called from PersonalStuffDialogFragment eventually
+    *
+    * */
+    override fun onPersonalStuffDialogFragmentInteraction(msg: String) {
+
+    }
+
     companion object {
 
         const val URL_SPEAKERS_IMAGES = "http://www.jbcnconf.com/2018/"
@@ -1076,6 +1086,7 @@ class MainActivity :
         const val LICENSE_DIALOG_FRAGMENT = "LicenseDialogFragment"
         const val DATE_PICKER_FRAGMENT = "DatePickerFragment"
         const val ARE_YOU_SURE_DIALOG_FRAGMENT = "AreYouSureDialogFragment"
+        const val PERSONAL_STUFF_DIALOG_FRAGMENT = "PersonalStuffDialogFragment"
 
         const val JBCNCONF_JSON_COLLECTION_NAME = "items"
 

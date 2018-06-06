@@ -8,6 +8,7 @@
 
     <!-- Spacings -->
     <dimen name="zero">0dp</dimen>
+    <dimen name="two">2dp</dimen>
     <dimen name="eight">8dp</dimen>
     <dimen name="ten">10dp</dimen>
     <dimen name="twelve">12dp</dimen>
@@ -21,6 +22,7 @@
 
     <!-- Text sizes -->
     <dimen name="text_normal">14sp</dimen>
+    <dimen name="text_big">18sp</dimen>
     <dimen name="text_thirty">30sp</dimen>
 
     <!-- Smilies -->
