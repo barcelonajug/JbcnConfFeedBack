@@ -750,7 +750,7 @@ class MainActivity :
                                 val score = doc.get(FIREBASE_COLLECTION_FIELD_SCORE)
                                 val date = doc.getDate(FIREBASE_COLLECTION_FIELD_DATE)
                                 //csvWriter.writeNext(arrayOf(idTalk.toString(), title, score.toString(), date.toString()))
-                                csvWriter.writeNext(arrayOf(scheduleId, score.toString(), date.toString()))
+                                csvWriter.writeNext(arrayOf(scheduleId, score.toString(), simpleDateFormatCSV.format(date)))
                             }
                 }
 
@@ -1097,6 +1097,7 @@ class MainActivity :
         const val FIREBASE_COLLECTION_FIELD_DATE = "date"
 
         val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
+        val simpleDateFormatCSV = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
 
     }
 
