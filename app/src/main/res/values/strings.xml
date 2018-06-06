@@ -154,10 +154,10 @@
         <item>Fantastic 4</item>
         <item>Jane 11 Ives</item>
         <item>Android 16</item>
-        <item>Sitges</item>
-        <item>Llivia</item>
-        <item>Llavorsi</item>
-        <item>Cadaques</item>
+        <item>Sitges (Workshop)</item>
+        <item>Llivia (Workshop)</item>
+        <item>Llavorsí (Workshop)</item>
+        <item>Cadaqués (Workshop)</item>
     </string-array>
 
     <string-array name="pref_room_names_values">
@@ -169,8 +169,8 @@
         <item>Android 16</item>
         <item>Sitges</item>
         <item>Llivia</item>
-        <item>Llavorsi</item>
-        <item>Cadaques</item>
+        <item>Llavorsí</item>
+        <item>Cadaqués</item>
     </string-array>
 
     <string name="pref_title_auto_mode">Auto Mode</string>

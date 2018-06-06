@@ -25,8 +25,8 @@ enum class TalksLocations {
     TUE_TC6 { override fun getRoomName() = "Android 16" },
     WED_TC1 { override fun getRoomName() = "Sitges" },
     WED_TC2 { override fun getRoomName() = "Llivia" },
-    WED_TC3 { override fun getRoomName() = "Llavorsi" },
-    WED_TC4 { override fun getRoomName() = "Cadaques" },
+    WED_TC3 { override fun getRoomName() = "Llavorsí" },
+    WED_TC4 { override fun getRoomName() = "Cadaqués" },
     WED_TC5 { override fun getRoomName() = "Not used" },
     WED_TC6 { override fun getRoomName() = "Not used" };
 
