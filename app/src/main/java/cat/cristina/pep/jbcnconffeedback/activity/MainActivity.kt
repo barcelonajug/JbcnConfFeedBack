@@ -76,6 +76,15 @@ private val TAG = MainActivity::class.java.name
 -alias androiddebugkey -keystore ~/.android/debug.keystore
 *
 * androiddebugkey/android
+*
+* Before going into production:
+*
+* - Delete all data from firebase
+*
+* - Delete password text in credential
+*
+* - Let now be the system time and not 11/06/18 90:00
+*
 * */
 class MainActivity :
         AppCompatActivity(),
@@ -92,8 +101,7 @@ class MainActivity :
         AreYouSureDialogFragment.AreYouSureDialogFragmentListener,
         PersonalStuffDialogFragment.OnPersonalStuffDialogFragmentListener {
 
-    private val random = Random()
-    private val DEFAULT_STATISTICS_FILE_NAME = "statistics.csv"
+    private val DEFAULT_STATISTICS_FILE_NAME = "scoring.csv"
     private lateinit var databaseHelper: DatabaseHelper
     private lateinit var utilDAOImpl: UtilDAOImpl
     private var requestQueue: RequestQueue? = null
@@ -234,7 +242,7 @@ class MainActivity :
                         val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")
                         // Log.d(TAG, "$it $scheduleId $session $location")
                         // crea una mapa de Talk y Pair<SessionsTimes, TalksLocation>
-                        talkSchedules.put(it, session to location)
+                        talkSchedules[it] = session to location
 
                     }
 
@@ -265,11 +273,11 @@ class MainActivity :
         scheduledExecutorService = Executors.newScheduledThreadPool(5)
         scheduledFutures = mutableListOf()
 
-        // val today = GregorianCalendar.getInstance()
+        val today = GregorianCalendar.getInstance()
 
         /* TODO("REMOVE in production") */
 
-        val today = GregorianCalendar(2018, Calendar.JUNE, 11, 9, 0)
+//        val today = GregorianCalendar(2018, Calendar.JUNE, 11, 9, 0)
 
         Log.d(TAG, "****** ${simpleDateFormatCSV.format(today.time)} ******")
 
@@ -279,30 +287,23 @@ class MainActivity :
 
             if (roomName == pair.second.getRoomName()) {
 
-                /* Aixo evita schedules amb initialDelays negatius que faria iniciar els thread inmediatament  */
-
-                if (today.before(pair.first.getStartTalkDateTime())) {
+                /* Aixo evita timers que ja ha passar el temps de votació */
+                if (today.before(pair.first.getEndScheduleDateTime())) {
 
                     if (today.get(Calendar.YEAR) == pair.first.getStartTalkDateTime().get(Calendar.YEAR)
                             && today.get(Calendar.MONTH) == pair.first.getStartTalkDateTime().get(Calendar.MONTH)
                             && today.get(Calendar.DATE) == pair.first.getStartTalkDateTime().get(Calendar.DATE)) {
 
-                        // compare today amb les dates de cada talk pero nomes dia, mes i any
+                        /* compare today amb les dates de cada talk pero nomes dia, mes i any */
+
                         val talkId = talk.id
                         val talkTitle = talk.title
                         val talkAuthorRef = talk.speakers?.get(0) ?: "Unknown"
                         val talkAuthor = utilDAOImpl.lookupSpeakerByRef(talkAuthorRef)
                         val talkAuthorName = talkAuthor.name
 
-                        /* TODO("Uncomment in production")  */
-
-//                        val startTime = pair.first.getStartScheduleDateTime().time - System.currentTimeMillis()
-//                        val endTime = pair.first.getEndScheduleDateTime().time - System.currentTimeMillis()
-
-                        /* TODO("Remove in production")  */
-
-                        val startTime = pair.first.getStartScheduleDateTime().time - today.time.time
-                        val endTime = pair.first.getEndScheduleDateTime().time - today.time.time
+                        val startTime = pair.first.getStartScheduleDateTime().time.time - System.currentTimeMillis()
+                        val endTime = pair.first.getEndScheduleDateTime().time.time - System.currentTimeMillis()
 
                         /* Aixo calcula el temps que queda a que comenci i acabi l'event actual considerant un offset de 15 minuts  */
 
@@ -323,7 +324,7 @@ class MainActivity :
 
                         val timerTaskOff = Runnable {
                             Log.d(TAG, "WelcomeFragment.........")
-                            switchFragment(WelcomeFragment.newInstance(roomName, "used"), WELCOME_FRAGMENT, false)
+                            switchFragment(WelcomeFragment.newInstance(roomName, "not used"), WELCOME_FRAGMENT, false)
                         }
 
                         /* Finalment posem en marxa el scheduler  */

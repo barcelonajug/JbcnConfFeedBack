@@ -98,16 +98,16 @@ enum class SessionsTimes {
     abstract fun getStartTalkDateTime(): Calendar
     abstract fun getEndTalkDateTime(): Calendar
 
-    fun getStartScheduleDateTime(): Date {
+    fun getStartScheduleDateTime(): Calendar {
         val calendar = getEndTalkDateTime()
         calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) - OFFSET)
-        return calendar.time
+        return calendar
     }
 
-    fun getEndScheduleDateTime(): Date {
+    fun getEndScheduleDateTime(): Calendar {
         val calendar = getEndTalkDateTime()
         calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) + OFFSET)
-        return calendar.time
+        return calendar
     }
 
 }
