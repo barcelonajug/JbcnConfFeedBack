@@ -269,9 +269,9 @@ class MainActivity :
 
         /* TODO("REMOVE in production") */
 
-        val today = GregorianCalendar(2018, 6, 11, 9, 0)
+        val today = GregorianCalendar(2018, Calendar.JUNE, 11, 9, 0)
 
-        Log.d(TAG, "****** ${today.toString()} ******")
+        Log.d(TAG, "****** ${simpleDateFormatCSV.format(today.time)} ******")
 
         talkSchedules.forEach { talk: Talk, pair: Pair<SessionsTimes, TalksLocations> ->
 
@@ -281,11 +281,11 @@ class MainActivity :
 
                 /* Aixo evita schedules amb initialDelays negatius que faria iniciar els thread inmediatament  */
 
-                if (today.before(pair.first.getStartTime())) {
+                if (today.before(pair.first.getStartTalkDateTime())) {
 
-                    if (today.get(Calendar.YEAR) == pair.first.getStartTime().get(Calendar.YEAR)
-                            && today.get(Calendar.MONTH) == pair.first.getStartTime().get(Calendar.MONTH)
-                            && today.get(Calendar.DATE) == pair.first.getStartTime().get(Calendar.DATE)) {
+                    if (today.get(Calendar.YEAR) == pair.first.getStartTalkDateTime().get(Calendar.YEAR)
+                            && today.get(Calendar.MONTH) == pair.first.getStartTalkDateTime().get(Calendar.MONTH)
+                            && today.get(Calendar.DATE) == pair.first.getStartTalkDateTime().get(Calendar.DATE)) {
 
                         // compare today amb les dates de cada talk pero nomes dia, mes i any
                         val talkId = talk.id
@@ -296,13 +296,13 @@ class MainActivity :
 
                         /* TODO("Uncomment in production")  */
 
-//                        val startTime = pair.first.getStartTimeMinusOffset().time - System.currentTimeMillis()
-//                        val endTime = pair.first.getEndTimePlusOffset().time - System.currentTimeMillis()
+//                        val startTime = pair.first.getStartScheduleDateTime().time - System.currentTimeMillis()
+//                        val endTime = pair.first.getEndScheduleDateTime().time - System.currentTimeMillis()
 
                         /* TODO("Remove in production")  */
 
-                        val startTime = pair.first.getStartTimeMinusOffset().time - today.time.time
-                        val endTime = pair.first.getEndTimePlusOffset().time - today.time.time
+                        val startTime = pair.first.getStartScheduleDateTime().time - today.time.time
+                        val endTime = pair.first.getEndScheduleDateTime().time - today.time.time
 
                         /* Aixo calcula el temps que queda a que comenci i acabi l'event actual considerant un offset de 15 minuts  */
 

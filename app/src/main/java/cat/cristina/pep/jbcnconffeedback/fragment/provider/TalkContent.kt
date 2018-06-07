@@ -2,7 +2,6 @@ package cat.cristina.pep.jbcnconffeedback.fragment.provider
 
 import android.content.Context
 import android.support.v7.preference.PreferenceManager
-import android.util.Log
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.model.*
 import cat.cristina.pep.jbcnconffeedback.utils.PreferenceKeys
@@ -69,9 +68,9 @@ class TalkContent(val context: Context, val date: Date) {
 
         val roomName =
                 sharedPreferences?.getString(PreferenceKeys.ROOM_KEY, context.resources.getString(R.string.pref_default_room_name))
-        if (today.get(Calendar.DATE) == session.getStartTime().get(Calendar.DATE)
-                && today.get(Calendar.MONTH) == session.getStartTime().get(Calendar.MONTH)
-                && today.get(Calendar.YEAR) == session.getStartTime().get(Calendar.YEAR)
+        if (today.get(Calendar.DATE) == session.getStartTalkDateTime().get(Calendar.DATE)
+                && today.get(Calendar.MONTH) == session.getStartTalkDateTime().get(Calendar.MONTH)
+                && today.get(Calendar.YEAR) == session.getStartTalkDateTime().get(Calendar.YEAR)
                 && roomName == location.getRoomName()) {
             ITEMS_FILTERED_BY_DATE_AND_ROOM_NAME.add(item)
         }

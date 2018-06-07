@@ -212,11 +212,11 @@ class MyTalkRecyclerViewAdapter(
         val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")
 
         val simpleTimeFormat = SimpleDateFormat("HH:mm")
-        val startTime = simpleTimeFormat.format(session.getStartTime().time)
-        val endTime = simpleTimeFormat.format(session.getEndTime().time)
+        val startTime = simpleTimeFormat.format(session.getStartTalkDateTime().time)
+        val endTime = simpleTimeFormat.format(session.getEndTalkDateTime().time)
         // eg. Monday 11 March
         simpleTimeFormat.applyPattern("EEEE dd MMMM")
-        val due = simpleTimeFormat.format(session.getStartTime().time)
+        val due = simpleTimeFormat.format(session.getStartTalkDateTime().time)
 //        holder.mScheduleId.text = "Code: ${item.talk.scheduleId}. Starting: ${startTime}. Ending: ${endTime}. Location: ${location.getRoomName()}"
         holder.mScheduleId.text = "Due on $due from $startTime to $endTime in '${location.getRoomName()}'"
         with(holder.mView) {
