@@ -146,7 +146,7 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
 
     companion object DatabaseHelperData {
         private const val DATABASE_NAME = "db_feedback.sql"
-        private const val DATABASE_VERSION = 100
+        private const val DATABASE_VERSION = 101
     }
 
 }
