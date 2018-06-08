@@ -308,6 +308,7 @@ class MainActivity :
             return
         }
 
+        /* Observable to detect no more eschedules to display  */
         val timersCount = talksToSchedule.size
 
         var timerCounter: AtomicInteger by Delegates.observable(AtomicInteger(timersCount)) { property, oldValue, newValue ->
@@ -324,8 +325,10 @@ class MainActivity :
         /* Show initial screen with first talk title  */
         val sortedOnlyTalksList = talksToSchedule.keys.stream().sorted().collect(Collectors.toList())
         var nextTalkTitle = sortedOnlyTalksList[0].title
-        nextTalkTitle = if (nextTalkTitle.length > 100) nextTalkTitle.substring(0, 100) + "..." else nextTalkTitle
-        nextTalkTitle = "Next talk: '$nextTalkTitle'"
+        nextTalkTitle = if (nextTalkTitle.length > 75) nextTalkTitle.substring(0, 75) + "..." else nextTalkTitle
+        val speakerRef = sortedOnlyTalksList[0].speakers?.get(0)
+        val speakerName = utilDAOImpl.lookupSpeakerByRef(speakerRef!!).name
+        nextTalkTitle = "Next talk: '$nextTalkTitle' By $speakerName"
         switchFragment(WelcomeFragment.newInstance(roomName, nextTalkTitle), WELCOME_FRAGMENT, false)
 
         // from 0 to timersCount - 1
@@ -362,21 +365,28 @@ class MainActivity :
 
             /* If not last timer  */
             val timerTaskOff = if (index < timersCount - 1) {
+
                 val nextTalk = sortedOnlyTalksList[index + 1]
                 var nextTalkTitle = nextTalk.title
-                nextTalkTitle = if (nextTalkTitle.length > 100) nextTalkTitle.substring(0, 100) + "..." else nextTalkTitle
+                nextTalkTitle = if (nextTalkTitle.length > 75) nextTalkTitle.substring(0, 75) + "..." else nextTalkTitle
+                val speakerRef = nextTalk.speakers?.get(0)
+                val speakerName = utilDAOImpl.lookupSpeakerByRef(speakerRef!!).name
+                nextTalkTitle = "Next talk: '$nextTalkTitle' By $speakerName"
                 nextTalkTitle = "Next talk: '$nextTalkTitle'"
                 Runnable {
                     Log.d(TAG, "WelcomeFragment.........")
                     switchFragment(WelcomeFragment.newInstance(roomName, nextTalkTitle), WELCOME_FRAGMENT, false)
                     timerCounter = AtomicInteger(timerCounter.decrementAndGet())
                 }
+
             } else {
+
                 Runnable {
                     Log.d(TAG, "WelcomeFragment.........")
                     switchFragment(WelcomeFragment.newInstance(roomName, resources.getString(R.string.all_talks_processed)), WELCOME_FRAGMENT, false)
                     timerCounter = AtomicInteger(timerCounter.decrementAndGet())
                 }
+
             }
 
             /* Finalment posem en marxa el scheduler  */
