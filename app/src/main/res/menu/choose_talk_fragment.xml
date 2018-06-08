@@ -20,13 +20,14 @@
         android:title="@string/action_filter"
         app:showAsAction="ifRoom" />
 
-    <!-- item
-        android:id="@+id/action_unfilter"
-        android:orderInCategory="220"
-        android:icon="@drawable/menu_unfilter"
-        android:enabled="false"
-        android:visible="false"
-        android:title="@string/action_unfilter"
-        app:showAsAction="ifRoom" /  -->
+    <item
+        android:id="@+id/action_search"
+        android:orderInCategory="300"
+        android:icon="@drawable/menu_search"
+        android:enabled="true"
+        android:visible="true"
+        android:title="@string/action_search"
+        app:showAsAction="always|collapseActionView"
+        app:actionViewClass="android.support.v7.widget.SearchView" />
 
 </menu>

@@ -8,6 +8,7 @@ import android.support.v7.preference.PreferenceManager
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.SearchView
 import android.view.*
 import android.widget.Toast
 import cat.cristina.pep.jbcnconffeedback.R
@@ -17,6 +18,7 @@ import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent.TalkItem
 import cat.cristina.pep.jbcnconffeedback.utils.PreferenceKeys
 import java.util.*
+import java.util.stream.Collectors
 
 /**
  * A fragment representing a list of Items.
@@ -103,6 +105,55 @@ class ChooseTalkFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater?.inflate(R.menu.choose_talk_fragment, menu)
+        val searchItem = menu?.findItem(R.id.action_search)
+        val searchView = searchItem?.actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                searchItem.collapseActionView()
+                return true
+
+            }
+
+            override fun onQueryTextChange(query: String?): Boolean {
+
+                if (view is RecyclerView) {
+                    with(view as RecyclerView) {
+
+                        layoutManager = when {
+                            columnCount <= 1 -> LinearLayoutManager(context)
+                            else -> GridLayoutManager(context, columnCount)
+                        }
+
+                        val filteredTalkContent: List<TalkItem> =
+
+                                if (isFiltered) {
+
+                                    talkContent
+                                            .ITEMS_FILTERED_BY_DATE_AND_ROOM_NAME
+                                            .stream()
+                                            .filter {
+                                                it.speaker.name.toLowerCase().contains(query!!.toLowerCase()) || it.talk.title.toLowerCase().contains(query!!.toLowerCase())
+                                            }
+                                            .collect(Collectors.toList())
+
+                                } else {
+
+                                    talkContent
+                                            .ITEMS
+                                            .stream()
+                                            .filter {
+                                                it.speaker.name.toLowerCase().contains(query!!.toLowerCase()) || it.talk.title.toLowerCase().contains(query!!.toLowerCase())
+                                            }
+                                            .collect(Collectors.toList())
+
+                                }
+                        adapter = MyTalkRecyclerViewAdapter(filteredTalkContent, listener, context)
+                    }
+                }
+                return true
+            }
+
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {

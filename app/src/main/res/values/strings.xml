@@ -9,6 +9,7 @@
     <string name="action_update">Update</string>
     <string name="action_filter">Filter</string>
     <string name="action_unfilter">Unfilter</string>
+    <string name="action_search">Search</string>
     <string name="action_exit">Exit</string>
 
     <!-- Main Activity -->
