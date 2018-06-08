@@ -211,14 +211,30 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                     }
                     ?.forEach {
                         val votes = it.value.size
-                        val avg: Double? = dataFromFirestore?.get(it.key)
+
+                        val avg: Double? = dataFromFirestore
+                                ?.get(it.key)
                                 ?.asSequence()
                                 ?.map { doc ->
                                     doc.get(MainActivity.FIREBASE_COLLECTION_FIELD_SCORE) as Long
                                 }?.average()
+
+//                        val summary = dataFromFirestore
+//                                ?.get(it.key)
+//                                ?.stream()
+//                                ?.map { doc ->
+//                                    doc.get(MainActivity.FIREBASE_COLLECTION_FIELD_SCORE) as Long
+//                                }
+//                                ?.collect(Collectors.toList())
+//                                ?.stream()
+//                                ?.collect(Collectors.summarizingLong {
+//                                    it
+//                                })
+
                         var title: String = talkDao.queryForId(it.key?.toInt()).title
                         var refAuthor = talkDao.queryForId(it.key?.toInt()).speakers?.get(0)
                         var author = utilDAOImpl.lookupSpeakerByRef(refAuthor!!).name
+
                         /* Si el nombre es demasiado largo se saldra de la barra  */
                         author = author.substring(0, 1) + "." + author.substring(author.indexOf(" "))
                         title = if (title.length > 35) "'${StringBuilder(title.substring(0, 35)).toString()}...' by $author. ($votes votes)"
