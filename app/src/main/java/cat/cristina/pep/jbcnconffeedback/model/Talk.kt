@@ -29,13 +29,13 @@ data class Talk (
 
         @DatabaseField(columnName = SPEAKERS_FIELD_NAME, dataType = DataType.SERIALIZABLE, canBeNull = false)
         var speakers: Array<String>? = null) : Comparable<Talk> {
-    /**
-     * Compares this object with the specified object for order. Returns zero if this object is equal
-     * to the specified [other] object, a negative number if it's less than [other], or a positive number
-     * if it's greater than [other].
-     */
+
     override fun compareTo(other: Talk): Int =
         this.scheduleId.compareTo(other.scheduleId)
+
+    override fun hashCode(): Int {
+        return scheduleId.hashCode()
+    }
 
     companion object TalkData {
         const val TABLE_NAME = "talks"

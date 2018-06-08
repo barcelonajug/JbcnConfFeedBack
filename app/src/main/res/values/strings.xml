@@ -23,6 +23,8 @@
     <string name="sorry_no_room_set">Sorry, room is not set.</string>
     <string name="sorry_no_app_to_attend_this_request">There is no application installed in this device to handle this request.</string>
     <string name="sorry_could_not_insert_talk">Could not insert talk ${talk.id} ${error.message}</string>
+    <string name="sorry_no_timers_to_schedule">Sorry, there are no talks today</string>
+    <string name="all_talks_processed">All talks have been processed succesfully</string>
     <string name="success_data_updated">All data updated successfully.</string>
     <string name="wrong_credentials">Wrong credentials, try again.</string>
     <string name="blank_credentials">Credentials can not be empty, try again.</string>
@@ -32,6 +34,10 @@
     <string name="setting_timers">Setting timers ....</string>
     <string name="action_login">Login</string>
     <string name="action_logout">Logout</string>
+
+    <!-- WelcomeFragment  -->
+
+    <string name="next_talk">Setting schedules...</string>
 
     <!-- LicenseDialogFragment  -->
 
@@ -88,6 +94,7 @@
     <!-- AreYouSureDialgoFragment  -->
 
     <string name="are_you_sure">Do you really want to quit?</string>
+    <string name="tasks_finished">All tasks complete. Do you want to quit?</string>
 
     <string name="sorry_working_offline">Sorry, working offline.</string>
 

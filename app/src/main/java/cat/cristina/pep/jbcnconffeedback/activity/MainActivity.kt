@@ -50,6 +50,9 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.stream.Collectors
+import kotlin.properties.Delegates
 
 
 private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
@@ -118,7 +121,6 @@ class MainActivity :
     private var dataFromFirestore: Map<Long?, List<QueryDocumentSnapshot>>? = null
     private var date = Date()
     private var isLogIn = false
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -267,76 +269,118 @@ class MainActivity :
      * */
     private fun setupTimer() {
 
-        val fragment = WelcomeFragment.newInstance(roomName, "")
-        switchFragment(fragment, "$WELCOME_FRAGMENT$roomName", false)
-
         scheduledExecutorService = Executors.newScheduledThreadPool(5)
         scheduledFutures = mutableListOf()
 
         val today = GregorianCalendar.getInstance()
 
-        /* TODO("REMOVE in production") */
-
-//        val today = GregorianCalendar(2018, Calendar.JUNE, 11, 9, 0)
-
         Log.d(TAG, "****** ${simpleDateFormatCSV.format(today.time)} ******")
 
-        talkSchedules.forEach { talk: Talk, pair: Pair<SessionsTimes, TalksLocations> ->
+        val talksToSchedule: MutableMap<Talk, Pair<SessionsTimes, TalksLocations>> = mutableMapOf()
+
+        /* Which list are candidates to schedule?  */
+
+        talkSchedules.forEach { talk: Talk, pairOfTimesAndLocations: Pair<SessionsTimes, TalksLocations> ->
 
             /* roomName es el nom de la room que gestionas aquesta tablet */
 
-            if (roomName == pair.second.getRoomName()) {
+            if (roomName == pairOfTimesAndLocations.second.getRoomName()) {
 
                 /* Aixo evita timers que ja ha passar el temps de votació */
-                if (today.before(pair.first.getEndScheduleDateTime())) {
+                if (today.before(pairOfTimesAndLocations.first.getEndScheduleDateTime())) {
 
-                    if (today.get(Calendar.YEAR) == pair.first.getStartTalkDateTime().get(Calendar.YEAR)
-                            && today.get(Calendar.MONTH) == pair.first.getStartTalkDateTime().get(Calendar.MONTH)
-                            && today.get(Calendar.DATE) == pair.first.getStartTalkDateTime().get(Calendar.DATE)) {
+                    /* compare today amb les dates de cada talk pero nomes dia, mes i any YEAR/MONTH/DATE is the same for start/end talk date  */
 
-                        /* compare today amb les dates de cada talk pero nomes dia, mes i any */
+                    if (today.get(Calendar.YEAR) == pairOfTimesAndLocations.first.getStartTalkDateTime().get(Calendar.YEAR)
+                            && today.get(Calendar.MONTH) == pairOfTimesAndLocations.first.getStartTalkDateTime().get(Calendar.MONTH)
+                            && today.get(Calendar.DATE) == pairOfTimesAndLocations.first.getStartTalkDateTime().get(Calendar.DATE)) {
 
-                        val talkId = talk.id
-                        val talkTitle = talk.title
-                        val talkAuthorRef = talk.speakers?.get(0) ?: "Unknown"
-                        val talkAuthor = utilDAOImpl.lookupSpeakerByRef(talkAuthorRef)
-                        val talkAuthorName = talkAuthor.name
-
-                        val startTime = pair.first.getStartScheduleDateTime().time.time - System.currentTimeMillis()
-                        val endTime = pair.first.getEndScheduleDateTime().time.time - System.currentTimeMillis()
-
-                        /* Aixo calcula el temps que queda a que comenci i acabi l'event actual considerant un offset de 15 minuts  */
-
-                        val remainingStartTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(startTime),
-                                TimeUnit.MILLISECONDS.toMinutes(startTime) % TimeUnit.HOURS.toMinutes(1),
-                                TimeUnit.MILLISECONDS.toSeconds(startTime) % TimeUnit.MINUTES.toSeconds(1))
-
-                        val remainingStopTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(endTime),
-                                TimeUnit.MILLISECONDS.toMinutes(endTime) % TimeUnit.HOURS.toMinutes(1),
-                                TimeUnit.MILLISECONDS.toSeconds(endTime) % TimeUnit.MINUTES.toSeconds(1))
-
-                        /* Dos runnable, un que posara el fragment de votar i un altre que el treura  */
-
-                        val timerTaskIn = Runnable {
-                            Log.d(TAG, "VoteFragment... $talkId $talkTitle $talkAuthorName")
-                            switchFragment(VoteFragment.newInstance("$talkId", talkTitle, talkAuthorName), VOTE_FRAGMENT, false)
-                        }
-
-                        val timerTaskOff = Runnable {
-                            Log.d(TAG, "WelcomeFragment.........")
-                            switchFragment(WelcomeFragment.newInstance(roomName, "not used"), WELCOME_FRAGMENT, false)
-                        }
-
-                        /* Finalment posem en marxa el scheduler  */
-
-                        scheduledFutures?.add(scheduledExecutorService?.schedule(timerTaskIn, startTime, TimeUnit.MILLISECONDS))
-                        scheduledFutures?.add(scheduledExecutorService?.schedule(timerTaskOff, endTime, TimeUnit.MILLISECONDS))
-
-                        Log.d(TAG, "Setting schedule for talk $talk starts in $remainingStartTime ends in $remainingStopTime")
+                        talksToSchedule[talk] = pairOfTimesAndLocations
 
                     }
                 }
             }
+        }
+
+        if (talksToSchedule.isEmpty()) {
+            val fragment = WelcomeFragment.newInstance(roomName, resources.getString(R.string.sorry_no_timers_to_schedule))
+            switchFragment(fragment, "$WELCOME_FRAGMENT$roomName", false)
+            return
+        }
+
+        val timersCount = talksToSchedule.size
+
+        var timerCounter: AtomicInteger by Delegates.observable(AtomicInteger(timersCount)) { property, oldValue, newValue ->
+
+            Log.d(TAG, "${oldValue.get()} ${newValue.get()}")
+
+            if (newValue.get() == 0) {
+                val fragment = AreYouSureDialogFragment.newInstance(resources.getString(R.string.tasks_finished))
+                fragment.show(supportFragmentManager, ARE_YOU_SURE_DIALOG_FRAGMENT)
+            }
+
+        }
+
+        val sortedOnlyTalksList = talksToSchedule.keys.stream().sorted().collect(Collectors.toList())
+
+        switchFragment(WelcomeFragment.newInstance(roomName, sortedOnlyTalksList[0].title), WELCOME_FRAGMENT, false)
+
+        // from 0 to timersCount - 1
+        for (index in 0 until timersCount) {
+
+            val thisTalk = sortedOnlyTalksList[index]
+
+            val talkId = thisTalk.id
+            val talkTitle = thisTalk.title
+            val talkAuthorRef = thisTalk.speakers?.get(0) ?: "Unknown"
+            val talkAuthor = utilDAOImpl.lookupSpeakerByRef(talkAuthorRef)
+            val talkAuthorName = talkAuthor.name
+
+            val value = talksToSchedule[thisTalk]
+
+            val startTime = value?.first!!.getStartScheduleDateTime().time.time - System.currentTimeMillis()
+            val endTime = value?.first!!.getEndScheduleDateTime().time.time - System.currentTimeMillis()
+
+            /* Aixo calcula el temps que queda perque comenci i acabi l'event actual considerant un offset de 15 minuts  */
+
+            val remainingStartTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(startTime),
+                    TimeUnit.MILLISECONDS.toMinutes(startTime) % TimeUnit.HOURS.toMinutes(1),
+                    TimeUnit.MILLISECONDS.toSeconds(startTime) % TimeUnit.MINUTES.toSeconds(1))
+
+            val remainingStopTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(endTime),
+                    TimeUnit.MILLISECONDS.toMinutes(endTime) % TimeUnit.HOURS.toMinutes(1),
+                    TimeUnit.MILLISECONDS.toSeconds(endTime) % TimeUnit.MINUTES.toSeconds(1))
+
+            /* Dos runnables, un que posara el fragment VoteFragment i un altre que posarà el fragment WelcomeFragment  */
+
+            val timerTaskIn = Runnable {
+                Log.d(TAG, "VoteFragment... $talkId $talkTitle $talkAuthorName")
+                switchFragment(VoteFragment.newInstance("$talkId", talkTitle, talkAuthorName), VOTE_FRAGMENT, false)
+            }
+
+            /* If not last timer  */
+            val timerTaskOff = if (index < timersCount - 1) {
+                val nextTalk = sortedOnlyTalksList[index + 1]
+                Runnable {
+                    Log.d(TAG, "WelcomeFragment.........")
+                    switchFragment(WelcomeFragment.newInstance(roomName, nextTalk.title), WELCOME_FRAGMENT, false)
+                    timerCounter = AtomicInteger(timerCounter.decrementAndGet())
+                }
+            } else {
+                Runnable {
+                    Log.d(TAG, "WelcomeFragment.........")
+                    switchFragment(WelcomeFragment.newInstance(roomName, resources.getString(R.string.all_talks_processed)), WELCOME_FRAGMENT, false)
+                    timerCounter = AtomicInteger(timerCounter.decrementAndGet())
+                }
+            }
+
+            /* Finalment posem en marxa el scheduler  */
+
+            scheduledFutures?.add(scheduledExecutorService?.schedule(timerTaskIn, startTime, TimeUnit.MILLISECONDS))
+            scheduledFutures?.add(scheduledExecutorService?.schedule(timerTaskOff, endTime, TimeUnit.MILLISECONDS))
+
+            Log.d(TAG, "Setting schedule for talk $thisTalk starts in $remainingStartTime ends in $remainingStopTime")
+
         }
 
         //Toast.makeText(this, R.string.setting_timers, Toast.LENGTH_LONG).show()
@@ -693,7 +737,7 @@ class MainActivity :
 
             R.id.action_finish -> {
 //                finishAndRemoveTask()
-                val fragment = AreYouSureDialogFragment.newInstance()
+                val fragment = AreYouSureDialogFragment.newInstance(resources.getString(R.string.are_you_sure))
                 fragment.show(supportFragmentManager, ARE_YOU_SURE_DIALOG_FRAGMENT)
             }
 
@@ -842,7 +886,9 @@ class MainActivity :
         if (isLogIn) {
             //Toast.makeText(this, item?.speaker?.biography, Toast.LENGTH_LONG).show()
             val personalStuffDialogFragment =
-                    PersonalStuffDialogFragment.newInstance(item?.speaker?.description ?: "n/a", item?.speaker?.biography ?: "n/a",item?.speaker?.twitter ?: "n/a",item?.speaker?.homepage ?: "n/a")
+                    PersonalStuffDialogFragment.newInstance(item?.speaker?.description
+                            ?: "n/a", item?.speaker?.biography ?: "n/a", item?.speaker?.twitter
+                            ?: "n/a", item?.speaker?.homepage ?: "n/a")
             personalStuffDialogFragment.show(supportFragmentManager, PERSONAL_STUFF_DIALOG_FRAGMENT)
         }
     }

@@ -113,7 +113,7 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
 
     @Throws()
     override fun onUpgrade(database: SQLiteDatabase?, connectionSource: ConnectionSource?, oldVersion: Int, newVersion: Int) {
-        super.onUpgrade(database, oldVersion, newVersion)
+        //super.onUpgrade(database, oldVersion, newVersion)
         try {
             Log.i(TAG, "onUpgrade")
 
