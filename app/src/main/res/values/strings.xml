@@ -23,7 +23,7 @@
     <string name="sorry_no_room_set">Sorry, room is not set.</string>
     <string name="sorry_no_app_to_attend_this_request">There is no application installed in this device to handle this request.</string>
     <string name="sorry_could_not_insert_talk">Could not insert talk ${talk.id} ${error.message}</string>
-    <string name="sorry_no_timers_to_schedule">Sorry, there are no talks today</string>
+    <string name="sorry_no_timers_to_schedule">Sorry, there are no talks scheduled for today</string>
     <string name="all_talks_processed">All talks have been processed succesfully</string>
     <string name="success_data_updated">All data updated successfully.</string>
     <string name="wrong_credentials">Wrong credentials, try again.</string>

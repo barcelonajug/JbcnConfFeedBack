@@ -321,8 +321,8 @@ class MainActivity :
 
         }
 
+        /* Show initial screen with first talk title  */
         val sortedOnlyTalksList = talksToSchedule.keys.stream().sorted().collect(Collectors.toList())
-
         switchFragment(WelcomeFragment.newInstance(roomName, sortedOnlyTalksList[0].title), WELCOME_FRAGMENT, false)
 
         // from 0 to timersCount - 1
@@ -336,13 +336,13 @@ class MainActivity :
             val talkAuthor = utilDAOImpl.lookupSpeakerByRef(talkAuthorRef)
             val talkAuthorName = talkAuthor.name
 
-            val value = talksToSchedule[thisTalk]
+            val timesAndLocations = talksToSchedule[thisTalk]
 
-            val startTime = value?.first!!.getStartScheduleDateTime().time.time - System.currentTimeMillis()
-            val endTime = value?.first!!.getEndScheduleDateTime().time.time - System.currentTimeMillis()
+            /* Aquest calcul determina el temps que resta en milliseconds!!  */
+            val startTime = timesAndLocations?.first!!.getStartScheduleDateTime().time.time - System.currentTimeMillis()
+            val endTime = timesAndLocations?.first!!.getEndScheduleDateTime().time.time - System.currentTimeMillis()
 
-            /* Aixo calcula el temps que queda perque comenci i acabi l'event actual considerant un offset de 15 minuts  */
-
+            /* Aixo formata el temps que queda perque comenci i acabi l'event actual*/
             val remainingStartTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(startTime),
                     TimeUnit.MILLISECONDS.toMinutes(startTime) % TimeUnit.HOURS.toMinutes(1),
                     TimeUnit.MILLISECONDS.toSeconds(startTime) % TimeUnit.MINUTES.toSeconds(1))
@@ -352,7 +352,6 @@ class MainActivity :
                     TimeUnit.MILLISECONDS.toSeconds(endTime) % TimeUnit.MINUTES.toSeconds(1))
 
             /* Dos runnables, un que posara el fragment VoteFragment i un altre que posarà el fragment WelcomeFragment  */
-
             val timerTaskIn = Runnable {
                 Log.d(TAG, "VoteFragment... $talkId $talkTitle $talkAuthorName")
                 switchFragment(VoteFragment.newInstance("$talkId", talkTitle, talkAuthorName), VOTE_FRAGMENT, false)
