@@ -372,7 +372,6 @@ class MainActivity :
                 val speakerRef = nextTalk.speakers?.get(0)
                 val speakerName = utilDAOImpl.lookupSpeakerByRef(speakerRef!!).name
                 nextTalkTitle = "Next talk: '$nextTalkTitle' By $speakerName"
-                nextTalkTitle = "Next talk: '$nextTalkTitle'"
                 Runnable {
                     Log.d(TAG, "WelcomeFragment.........")
                     switchFragment(WelcomeFragment.newInstance(roomName, nextTalkTitle), WELCOME_FRAGMENT, false)
