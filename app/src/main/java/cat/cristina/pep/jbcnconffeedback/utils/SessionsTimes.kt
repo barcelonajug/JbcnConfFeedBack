@@ -23,19 +23,19 @@ enum class SessionsTimes {
     MON_SE2 {
         //        override fun getStartTalkDateTime(): Calendar = GregorianCalendar(2018, Calendar.JUNE, 8, 11, 10)
 //        override fun getEndTalkDateTime(): Calendar  = GregorianCalendar(2018, Calendar.JUNE, 8, 12, 0)
-        override fun getStartTalkDateTime(): Calendar = GregorianCalendar(2018, Calendar.JUNE, 8, 14, 26)
-        override fun getEndTalkDateTime(): Calendar = GregorianCalendar(2018, Calendar.JUNE, 8, 14, 28)
+        override fun getStartTalkDateTime(): Calendar = GregorianCalendar(2018, Calendar.JUNE, 8, 15, 15)
+        override fun getEndTalkDateTime(): Calendar = GregorianCalendar(2018, Calendar.JUNE, 8, 15, 17)
     },
 
     MON_SE3 {
         //        override fun getStartTalkDateTime(): Calendar = GregorianCalendar(2018, Calendar.JUNE, 8, 12, 10)
 //        override fun getEndTalkDateTime(): Calendar  = GregorianCalendar(2018, Calendar.JUNE, 8, 13, 0)
-        override fun getStartTalkDateTime(): Calendar = GregorianCalendar(2018, Calendar.JUNE, 8, 14, 29)
-        override fun getEndTalkDateTime(): Calendar = GregorianCalendar(2018, Calendar.JUNE, 8, 14, 31)
+        override fun getStartTalkDateTime(): Calendar = GregorianCalendar(2018, Calendar.JUNE, 8, 15, 18)
+        override fun getEndTalkDateTime(): Calendar = GregorianCalendar(2018, Calendar.JUNE, 8, 15, 21)
     },
 
     MON_SE4 {
-        override fun getStartTalkDateTime(): Calendar = GregorianCalendar(2018, Calendar.JUNE, 11, 14, 30)
+        override fun getStartTalkDateTime(): Calendar = GregorianCalendar(2018, Calendar.JUNE, 11, 15, 30)
         override fun getEndTalkDateTime(): Calendar = GregorianCalendar(2018, Calendar.JUNE, 11, 15, 20)
     },
 

@@ -323,7 +323,10 @@ class MainActivity :
 
         /* Show initial screen with first talk title  */
         val sortedOnlyTalksList = talksToSchedule.keys.stream().sorted().collect(Collectors.toList())
-        switchFragment(WelcomeFragment.newInstance(roomName, sortedOnlyTalksList[0].title), WELCOME_FRAGMENT, false)
+        var nextTalkTitle = sortedOnlyTalksList[0].title
+        nextTalkTitle = if (nextTalkTitle.length > 100) nextTalkTitle.substring(0, 100) + "..." else nextTalkTitle
+        nextTalkTitle = "Next talk: '$nextTalkTitle'"
+        switchFragment(WelcomeFragment.newInstance(roomName, nextTalkTitle), WELCOME_FRAGMENT, false)
 
         // from 0 to timersCount - 1
         for (index in 0 until timersCount) {
@@ -360,9 +363,12 @@ class MainActivity :
             /* If not last timer  */
             val timerTaskOff = if (index < timersCount - 1) {
                 val nextTalk = sortedOnlyTalksList[index + 1]
+                var nextTalkTitle = nextTalk.title
+                nextTalkTitle = if (nextTalkTitle.length > 100) nextTalkTitle.substring(0, 100) + "..." else nextTalkTitle
+                nextTalkTitle = "Next talk: '$nextTalkTitle'"
                 Runnable {
                     Log.d(TAG, "WelcomeFragment.........")
-                    switchFragment(WelcomeFragment.newInstance(roomName, nextTalk.title), WELCOME_FRAGMENT, false)
+                    switchFragment(WelcomeFragment.newInstance(roomName, nextTalkTitle), WELCOME_FRAGMENT, false)
                     timerCounter = AtomicInteger(timerCounter.decrementAndGet())
                 }
             } else {
