@@ -338,7 +338,7 @@ class MainActivity :
 
             val timesAndLocations = talksToSchedule[thisTalk]
 
-            /* Aquest calcul determina el temps que resta en milliseconds!!  */
+            /* Aquest calcul determina el temps que resta en milliseconds fins a cada final de talk cosiderant el offset!!  */
             val startTime = timesAndLocations?.first!!.getStartScheduleDateTime().time.time - System.currentTimeMillis()
             val endTime = timesAndLocations?.first!!.getEndScheduleDateTime().time.time - System.currentTimeMillis()
 
