@@ -1,0 +1,152 @@
+{
+  "items": {
+    "schedules": [
+      {
+        "id": "#MON-SE1",
+        "starts": "11/06/2018 09:40",
+        "ends": "11/06/2018 10:30"
+      },
+      {
+        "id": "#MON-SE2",
+        "starts": "11/06/2018 11:10",
+        "ends": "11/06/2018 12:00"
+      },
+      {
+        "id": "#MON-SE3",
+        "starts": "11/06/2018 12:10",
+        "ends": "11/06/2018 13:00"
+      },
+      {
+        "id": "#MON-SE4",
+        "starts": "11/06/2018 14:30",
+        "ends": "11/06/2018 15:20"
+      },
+      {
+        "id": "#MON-SE5",
+        "starts": "11/06/2018 15:35",
+        "ends": "11/06/2018 16:25"
+      },
+      {
+        "id": "#MON-SE6",
+        "starts": "11/06/2018 17:05",
+        "ends": "11/06/2018 17:55"
+      },
+      {
+        "id": "#TUE-SE1",
+        "starts": "12/06/2018 09:00",
+        "ends": "12/06/2018 09:50"
+      },
+      {
+        "id": "#TUE-SE2",
+        "starts": "12/06/2018 10:05",
+        "ends": "12/06/2018 10:55"
+      },
+      {
+        "id": "#TUE-SE3",
+        "starts": "12/06/2018 11:35",
+        "ends": "12/06/2018 12:25"
+      },
+      {
+        "id": "#TUE-SE4",
+        "starts": "12/06/2018 12:40",
+        "ends": "12/06/2018 13:30"
+      },
+      {
+        "id": "#TUE-SE5",
+        "starts": "12/06/2018 14:55",
+        "ends": "12/06/2018 15:45"
+      },
+      {
+        "id": "#TUE-SE6",
+        "starts": "12/06/2018 16:25",
+        "ends": "12/06/2018 17:15"
+      },
+      {
+        "id": "#WED-SE1",
+        "starts": "13/06/2018 09:00",
+        "ends": "13/06/2018 10:50"
+      },
+      {
+        "id": "#WED-SE2",
+        "starts": "13/06/2018 11:35",
+        "ends": "13/06/2018 13:30"
+      },
+      {
+        "id": "#WED-SE3",
+        "starts": "13/06/2018 14:45",
+        "ends": "13/06/2018 16:40"
+      },
+      {
+        "id": "#WED-SE4",
+        "starts": "13/06/2018 17:20",
+        "ends": "13/06/2018 19:15"
+      }
+    ],
+    "venues": [
+      {
+        "id": "#MON-TC1",
+        "room": "Fatal 5"
+      },
+      {
+        "id": "#MON-TC2",
+        "room": "Traci 13"
+      },
+      {
+        "id": "#MON-TC3",
+        "room": "Warriors 3"
+      },
+      {
+        "id": "#MON-TC4",
+        "room": "Fantastic 4"
+      },
+      {
+        "id": "#MON-TC5",
+        "room": "Jane 11 Ives"
+      },
+      {
+        "id": "#MON-TC6",
+        "room": "Android 16"
+      },
+      {
+        "id": "#TUE-TC1",
+        "room": "Fatal 5"
+      },
+      {
+        "id": "#TUE-TC2",
+        "room": "Traci 13"
+      },
+      {
+        "id": "#TUE-TC3",
+        "room": "Warriors 3"
+      },
+      {
+        "id": "#TUE-TC4",
+        "room": "Fantastic 4"
+      },
+      {
+        "id": "#TUE-TC5",
+        "room": "Jane 11 Ives"
+      },
+      {
+        "id": "#TUE-TC6",
+        "room": "Android 16"
+      },
+      {
+        "id": "#WED-TC1",
+        "room": "Sitges"
+      },
+      {
+        "id": "#WED-TC2",
+        "room": "Llivia"
+      },
+      {
+        "id": "#WED-TC3",
+        "room": "Llavorsí"
+      },
+      {
+        "id": "#WED-TC4",
+        "room": "Cadaqués"
+      }
+    ]
+  }
+}
