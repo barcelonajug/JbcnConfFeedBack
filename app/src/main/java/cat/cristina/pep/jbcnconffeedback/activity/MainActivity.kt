@@ -25,9 +25,7 @@ import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.fragment.*
 import cat.cristina.pep.jbcnconffeedback.fragment.provider.TalkContent
 import cat.cristina.pep.jbcnconffeedback.model.*
-import cat.cristina.pep.jbcnconffeedback.utils.PreferenceKeys
-import cat.cristina.pep.jbcnconffeedback.utils.SessionsTimes
-import cat.cristina.pep.jbcnconffeedback.utils.TalksLocations
+import cat.cristina.pep.jbcnconffeedback.utils.*
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -121,6 +119,8 @@ class MainActivity :
     private var dataFromFirestore: Map<Long?, List<QueryDocumentSnapshot>>? = null
     private var date = Date()
     private var isLogIn = false
+    private lateinit var scheduleContentProvider: ScheduleContentProvider
+    private lateinit var venueContentProvider: VenueContentProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -179,6 +179,10 @@ class MainActivity :
         })
 
         sharedPreferences.edit().putBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false).commit()
+
+        scheduleContentProvider = ScheduleContentProvider(this, "schedules.json")
+        venueContentProvider = VenueContentProvider(this, "venues.json")
+
     }
 
     override fun onDestroy() {
@@ -581,15 +585,19 @@ class MainActivity :
 
         val actualFragment = supportFragmentManager.findFragmentByTag(tag)
 
-        actualFragment?.tag.run {
+        if(!isFinishing) {
 
-            if (this != tag) {
-                val transaction = supportFragmentManager.beginTransaction()
-                transaction.replace(R.id.contentFragment, fragment, tag)
-                if (addToStack)
-                    transaction.addToBackStack(tag)
+            actualFragment?.tag.run {
 
-                transaction.commit()
+                if (this != tag) {
+                    val transaction = supportFragmentManager.beginTransaction()
+                    transaction.replace(R.id.contentFragment, fragment, tag)
+                    if (addToStack)
+                        transaction.addToBackStack(tag)
+
+//                    transaction.commit()
+                    transaction.commitAllowingStateLoss()
+                }
             }
         }
     }

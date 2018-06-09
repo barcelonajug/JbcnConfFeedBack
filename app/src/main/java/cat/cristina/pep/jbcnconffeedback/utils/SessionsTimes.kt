@@ -11,7 +11,7 @@ import java.util.*
 * */
 
 /* Offset in minutes  */
-private const val OFFSET = 1
+private const val OFFSET = 15
 
 enum class SessionsTimes {
 

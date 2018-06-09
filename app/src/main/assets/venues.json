@@ -1,0 +1,68 @@
+{
+  "venues": [
+    {
+      "id": "MON-TC1",
+      "room": "Fatal 5"
+    },
+    {
+      "id": "MON-TC2",
+      "room": "Traci 13"
+    },
+    {
+      "id": "MON-TC3",
+      "room": "Warriors 3"
+    },
+    {
+      "id": "MON-TC4",
+      "room": "Fantastic 4"
+    },
+    {
+      "id": "MON-TC5",
+      "room": "Jane 11 Ives"
+    },
+    {
+      "id": "MON-TC6",
+      "room": "Android 16"
+    },
+    {
+      "id": "TUE-TC1",
+      "room": "Fatal 5"
+    },
+    {
+      "id": "TUE-TC2",
+      "room": "Traci 13"
+    },
+    {
+      "id": "TUE-TC3",
+      "room": "Warriors 3"
+    },
+    {
+      "id": "TUE-TC4",
+      "room": "Fantastic 4"
+    },
+    {
+      "id": "TUE-TC5",
+      "room": "Jane 11 Ives"
+    },
+    {
+      "id": "TUE-TC6",
+      "room": "Android 16"
+    },
+    {
+      "id": "WED-TC1",
+      "room": "Sitges"
+    },
+    {
+      "id": "WED-TC2",
+      "room": "Llivia"
+    },
+    {
+      "id": "WED-TC3",
+      "room": "Llavorsí"
+    },
+    {
+      "id": "WED-TC4",
+      "room": "Cadaqués"
+    }
+  ]
+}
