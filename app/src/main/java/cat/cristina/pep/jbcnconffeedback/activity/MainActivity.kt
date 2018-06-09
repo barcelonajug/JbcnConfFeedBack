@@ -235,8 +235,11 @@ class MainActivity :
                     *
                     * */
 
+                    talkSchedules.clear()
                     val talkDao: Dao<Talk, Int> = databaseHelper.getTalkDao()
+
                     talkDao.queryForAll().forEach {
+
                         val scheduleId = it.scheduleId
                         //                   0123456789012
                         // scheduleId format #MON-TC1-SE1
@@ -269,7 +272,7 @@ class MainActivity :
      * */
     private fun setupTimer() {
 
-        scheduledExecutorService = Executors.newScheduledThreadPool(5)
+        scheduledExecutorService = Executors.newScheduledThreadPool(1)
         scheduledFutures = mutableListOf()
 
         val today = GregorianCalendar.getInstance()
@@ -372,10 +375,12 @@ class MainActivity :
                 val speakerRef = nextTalk.speakers?.get(0)
                 val speakerName = utilDAOImpl.lookupSpeakerByRef(speakerRef!!).name
                 nextTalkTitle = "Next talk: '$nextTalkTitle' By $speakerName"
+
                 Runnable {
                     Log.d(TAG, "WelcomeFragment.........")
                     switchFragment(WelcomeFragment.newInstance(roomName, nextTalkTitle), WELCOME_FRAGMENT, false)
                     timerCounter = AtomicInteger(timerCounter.decrementAndGet())
+
                 }
 
             } else {
@@ -384,6 +389,7 @@ class MainActivity :
                     Log.d(TAG, "WelcomeFragment.........")
                     switchFragment(WelcomeFragment.newInstance(roomName, resources.getString(R.string.all_talks_processed)), WELCOME_FRAGMENT, false)
                     timerCounter = AtomicInteger(timerCounter.decrementAndGet())
+
                 }
 
             }
@@ -923,9 +929,11 @@ class MainActivity :
 
                 scoreDao.queryForAll().forEach {
                     val id = it.id
-                    val scoringDoc = mapOf(FIREBASE_COLLECTION_FIELD_TALK_ID to it.talk_id,
-                            FIREBASE_COLLECTION_FIELD_SCHEDULE_ID to it.score,
-                            FIREBASE_COLLECTION_FIELD_SCORE to it.date)
+                    val scoringDoc = mapOf(
+                            FIREBASE_COLLECTION_FIELD_TALK_ID to it.talk_id,
+                            FIREBASE_COLLECTION_FIELD_SCHEDULE_ID to it.schedule_id,
+                            FIREBASE_COLLECTION_FIELD_SCORE to it.score,
+                            FIREBASE_COLLECTION_FIELD_DATE to it.date)
                     firestore
                             .collection(FIREBASE_COLLECTION)
                             .add(scoringDoc)

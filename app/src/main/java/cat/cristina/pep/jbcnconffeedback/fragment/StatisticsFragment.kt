@@ -204,6 +204,8 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
             val talkDao: Dao<Talk, Int> = databaseHelper.getTalkDao()
             val utilDAOImpl = UtilDAOImpl(context!!, databaseHelper)
 
+
+
             dataFromFirestore
                     ?.asSequence()
                     ?.sortedBy {
@@ -249,6 +251,12 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                     .limit(limit)
                     .collect(Collectors.toList())
 
+//            val minimAvg =
+//                    firstTen.stream().sorted { pair1, pair2 ->if (pair1.second < pair2.second) -1 else if (pair1.second == pair2.second) 0 else 1  }.findFirst()
+
+            val maxAvg =
+                    firstTen.stream().sorted { pair1, pair2 ->if (pair1.second > pair2.second) -1 else if (pair1.second == pair2.second) 0 else 1  }.findFirst()
+
             for (pair: Pair<String, Double> in firstTen) {
                 entries.add(BarEntry(index++, pair.second.toFloat()))
                 var title: String = pair.first
@@ -272,14 +280,14 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
             with(barChart) {
                 data = barData
                 xAxis.valueFormatter = IndexAxisValueFormatter(labels) as IAxisValueFormatter?
-                xAxis.textSize = 20.0F
+                xAxis.textSize = 18.0F
                 xAxis.setDrawLabels(true)
                 xAxis.position = XAxis.XAxisPosition.BOTTOM_INSIDE
-                xAxis.xOffset = 650.0F
+                xAxis.xOffset = 600.0F
                 xAxis.yOffset = 100.0F
                 xAxis.setLabelCount(firstTen!!.size, false)
                 axisLeft.axisMinimum = 0.0F
-                axisLeft.axisMaximum = 5.25F
+                axisLeft.axisMaximum = if (maxAvg.isPresent) maxAvg.get().second.toFloat() + .25F else 5.25F
                 axisLeft.setDrawLabels(false)
                 axisRight.setDrawLabels(false)
                 fitScreen()
