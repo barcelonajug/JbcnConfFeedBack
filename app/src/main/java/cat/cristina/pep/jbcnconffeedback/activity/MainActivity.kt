@@ -113,7 +113,8 @@ class MainActivity :
     private var scheduledFutures: MutableList<ScheduledFuture<*>?>? = null
     private lateinit var roomName: String
     private var autoMode: Boolean = false
-    private val talkSchedules = HashMap<Talk, Pair<SessionsTimes, TalksLocations>>()
+//    private val talkSchedules = HashMap<Talk, Pair<SessionsTimes, TalksLocations>>()
+    private val talkSchedules = HashMap<Talk, Pair<SessionTimes, String>>()
     private lateinit var sharedPreferences: SharedPreferences
     private var filteredTalks = false
     private var dataFromFirestore: Map<Long?, List<QueryDocumentSnapshot>>? = null
@@ -249,15 +250,21 @@ class MainActivity :
                         //                   0123456789012
                         // scheduleId format #MON-TC1-SE1
 
+                        val scheduleContentProviderId = "${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}"
+                        val venueContentProviderId = "${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}"
+
+                        val sessionTimes = scheduleContentProvider.getSessionTimes(scheduleContentProviderId)
+                        val venue = venueContentProvider.getRoom(venueContentProviderId)
 
 
-                        val session = SessionsTimes.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}")
-                        val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")
+                        talkSchedules[it] = sessionTimes to venue
+//                        val session = SessionsTimes.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}")
+//                        val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")
 
 
                         // Log.d(TAG, "$it $scheduleId $session $location")
                         // crea una mapa de Talk y Pair<SessionsTimes, TalksLocation>
-                        talkSchedules[it] = session to location
+//                        talkSchedules[it] = session to location
 
                     }
 
@@ -289,24 +296,24 @@ class MainActivity :
 
         Log.d(TAG, "****** ${simpleDateFormatCSV.format(today.time)} ******")
 
-        val talksToSchedule: MutableMap<Talk, Pair<SessionsTimes, TalksLocations>> = mutableMapOf()
+        val talksToSchedule: MutableMap<Talk, Pair<SessionTimes, String>> = mutableMapOf()
 
         /* Which list are candidates to schedule?  */
 
-        talkSchedules.forEach { talk: Talk, pairOfTimesAndLocations: Pair<SessionsTimes, TalksLocations> ->
+        talkSchedules.forEach { talk: Talk, pairOfTimesAndLocations: Pair<SessionTimes, String> ->
 
             /* roomName es el nom de la room que gestionas aquesta tablet */
 
-            if (roomName == pairOfTimesAndLocations.second.getRoomName()) {
+            if (roomName == pairOfTimesAndLocations.second) {
 
                 /* Aixo evita timers que ja ha passar el temps de votació */
-                if (today.before(pairOfTimesAndLocations.first.getEndScheduleDateTime())) {
+                if (today.before(pairOfTimesAndLocations.first.endScheduleDdateTime)) {
 
                     /* compare today amb les dates de cada talk pero nomes dia, mes i any YEAR/MONTH/DATE is the same for start/end talk date  */
 
-                    if (today.get(Calendar.YEAR) == pairOfTimesAndLocations.first.getStartTalkDateTime().get(Calendar.YEAR)
-                            && today.get(Calendar.MONTH) == pairOfTimesAndLocations.first.getStartTalkDateTime().get(Calendar.MONTH)
-                            && today.get(Calendar.DATE) == pairOfTimesAndLocations.first.getStartTalkDateTime().get(Calendar.DATE)) {
+                    if (today.get(Calendar.YEAR) == pairOfTimesAndLocations.first.startScheduleDdateTime.get(Calendar.YEAR)
+                            && today.get(Calendar.MONTH) == pairOfTimesAndLocations.first.startScheduleDdateTime.get(Calendar.MONTH)
+                            && today.get(Calendar.DATE) == pairOfTimesAndLocations.first.startScheduleDdateTime.get(Calendar.DATE)) {
 
                         talksToSchedule[talk] = pairOfTimesAndLocations
 
@@ -358,8 +365,8 @@ class MainActivity :
             val timesAndLocations = talksToSchedule[thisTalk]
 
             /* Aquest calcul determina el temps que resta en milliseconds fins a cada final de talk cosiderant el offset!!  */
-            val startTime = timesAndLocations?.first!!.getStartScheduleDateTime().time.time - System.currentTimeMillis()
-            val endTime = timesAndLocations?.first!!.getEndScheduleDateTime().time.time - System.currentTimeMillis()
+            val startTime = timesAndLocations?.first!!.startScheduleDdateTime.time.time - System.currentTimeMillis()
+            val endTime = timesAndLocations?.first!!.endScheduleDdateTime.time.time - System.currentTimeMillis()
 
             /* Aixo formata el temps que queda perque comenci i acabi l'event actual*/
             val remainingStartTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(startTime),
