@@ -19,25 +19,28 @@ class ScheduleContentProvider(val context: Context, val fileName: String) {
         processData(readData(fileName))
     }
 
+    public fun getSessionTimes(id: String): SessionTimes =
+            SessionTimes(getStartTalkDateTime(id), getEndTalkDateTime(id), OFFSET)
+
     /*
-    * scheduleId format is 'MON-SE1'
+    * id format is 'MON-SE1'
     * */
-    public fun getStartTalkDateTime(scheduleId: String): Calendar {
-        return scheduleMap[scheduleId]!!.first
+    private fun getStartTalkDateTime(id: String): Calendar {
+        return scheduleMap[id]!!.first
     }
 
-    public fun getEndTalkDateTime(scheduleId: String): Calendar {
-        return scheduleMap[scheduleId]!!.second
+    private fun getEndTalkDateTime(id: String): Calendar {
+        return scheduleMap[id]!!.second
     }
 
-    public fun getStartScheduleDateTime(scheduleId: String): Calendar {
-        val calendar = getEndTalkDateTime(scheduleId)
+    private fun getStartScheduleDateTime(id: String): Calendar {
+        val calendar = getEndTalkDateTime(id)
         calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) - OFFSET)
         return calendar
     }
 
-    public fun getEndScheduleDateTime(scheduleId: String): Calendar {
-        val calendar = getEndTalkDateTime(scheduleId)
+    private fun getEndScheduleDateTime(id: String): Calendar {
+        val calendar = getEndTalkDateTime(id)
         calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) + OFFSET)
         return calendar
     }
@@ -62,7 +65,7 @@ class ScheduleContentProvider(val context: Context, val fileName: String) {
         for (index in 0 until (schedules.length())) {
             val scheduleObject = schedules.getJSONObject(index)
             val schedule: Schedule = gson.fromJson(scheduleObject.toString(), Schedule::class.java)
-            val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm")
+            val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
             val start = simpleDateFormat.parse(schedule.start)
             val calendarStart = GregorianCalendar()
             calendarStart.time = start

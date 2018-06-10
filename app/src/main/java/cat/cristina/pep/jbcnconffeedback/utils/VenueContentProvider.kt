@@ -15,7 +15,11 @@ class VenueContentProvider(val context: Context, val fileName: String) {
         processData(readData(fileName))
     }
 
-    public fun getRoom(id: String): String {
+    /*
+    * id has format: MO
+    *
+    * */
+    fun getRoom(id: String): String {
         return venuesMap[id]!!
     }
 

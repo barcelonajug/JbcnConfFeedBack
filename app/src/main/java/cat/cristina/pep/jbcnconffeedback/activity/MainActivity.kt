@@ -119,6 +119,7 @@ class MainActivity :
     private var dataFromFirestore: Map<Long?, List<QueryDocumentSnapshot>>? = null
     private var date = Date()
     private var isLogIn = false
+
     private lateinit var scheduleContentProvider: ScheduleContentProvider
     private lateinit var venueContentProvider: VenueContentProvider
 
@@ -180,7 +181,7 @@ class MainActivity :
 
         sharedPreferences.edit().putBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false).commit()
 
-        scheduleContentProvider = ScheduleContentProvider(this, "schedules.json")
+        scheduleContentProvider = ScheduleContentProvider(this, "schedules_fake.json")
         venueContentProvider = VenueContentProvider(this, "venues.json")
 
     }
@@ -247,8 +248,13 @@ class MainActivity :
                         val scheduleId = it.scheduleId
                         //                   0123456789012
                         // scheduleId format #MON-TC1-SE1
+
+
+
                         val session = SessionsTimes.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}")
                         val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")
+
+
                         // Log.d(TAG, "$it $scheduleId $session $location")
                         // crea una mapa de Talk y Pair<SessionsTimes, TalksLocation>
                         talkSchedules[it] = session to location
@@ -585,7 +591,7 @@ class MainActivity :
 
         val actualFragment = supportFragmentManager.findFragmentByTag(tag)
 
-        if(!isFinishing) {
+        if (!isFinishing) {
 
             actualFragment?.tag.run {
 
@@ -1173,8 +1179,8 @@ class MainActivity :
         const val FIREBASE_COLLECTION_FIELD_SCORE = "score"
         const val FIREBASE_COLLECTION_FIELD_DATE = "date"
 
-        val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
-        val simpleDateFormatCSV = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+        val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val simpleDateFormatCSV = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
 
     }
 
