@@ -120,8 +120,8 @@ class MainActivity :
     private var date = Date()
     private var isLogIn = false
 
-    private lateinit var scheduleContentProvider: ScheduleContentProvider
-    private lateinit var venueContentProvider: VenueContentProvider
+//    private lateinit var scheduleContentProvider: ScheduleContentProvider
+//    private lateinit var venueContentProvider: VenueContentProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -181,8 +181,8 @@ class MainActivity :
 
         sharedPreferences.edit().putBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false).commit()
 
-        scheduleContentProvider = ScheduleContentProvider(this, "schedules_fake.json")
-        venueContentProvider = VenueContentProvider(this, "venues.json")
+//        scheduleContentProvider = ScheduleContentProvider(this, "schedules_fake.json")
+//        venueContentProvider = VenueContentProvider(this, "venues.json")
 
     }
 
