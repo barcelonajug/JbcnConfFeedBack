@@ -186,6 +186,11 @@ class MainActivity :
 
     }
 
+    /*
+    * This method cancel pending firebase request if any and cancel what ever timers there are
+    * schedules in auto mode
+    *
+    * */
     override fun onDestroy() {
         Log.d(TAG, "onDestroy()")
         super.onDestroy()
@@ -587,13 +592,13 @@ class MainActivity :
     }
 
     /*
-   * This method changes de actual fragment for another fragment unless both have the same tag
-   * name.
-   *
-   * It will also add the fragment to the back stack or not, depending on the addToStack
-   * parameter.
-   *
-   * */
+    * This method changes de actual fragment for another fragment unless both have the same tag
+    * name.
+    *
+    * It will also add the fragment to the back stack or not, depending on the addToStack
+    * parameter.
+    *
+    * */
     private fun switchFragment(fragment: Fragment, tag: String, addToStack: Boolean): Unit {
 
         // Permitir solo un elemento en la pila
@@ -602,6 +607,48 @@ class MainActivity :
 
         val actualFragment = supportFragmentManager.findFragmentByTag(tag)
 
+        /*
+        * This will prevent state loss exception:
+        *
+        * java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
+        *
+        * A condition that arises when trying to to commit a FragmentTransaction after the
+        * activity's transaction has been saved: Activity.onSaveInstanceState(Bundle).
+        *
+        * The Android system has the power to terminate processes at any time to free up memory,
+        * and background activities may be killed with little to no warning as a result.
+        *
+        * To ensure that this sometimes erratic behavior remains hidden from the user,
+        * the framework gives each Activity a chance to save its state by calling its
+        * onSaveInstanceState() method before making the Activity vulnerable to destruction.
+        *
+        * When the saved state is later restored, the user will be given the perception that
+        * they are seamlessly switching between foreground and background activities,
+        * regardless of whether or not the Activity had been killed by the system.
+        *
+        * When the framework calls onSaveInstanceState(), it passes the method a Bundle object
+        * for the Activity to use to save its state, and the Activity records in it the state
+        * of its dialogs, fragments, and views.
+        *
+        * When the method returns, the system parcels the Bundle object across a Binder interface
+        * to the System Server process, where it is safely stored away.
+        *
+        * When the system later decides to recreate the Activity, it sends this same Bundle object
+        * back to the application, for it to use to restore the Activity’s old state.
+        *
+        * The problem stems from the fact that these Bundle objects represent a snapshot of an
+        * Activity at the moment onSaveInstanceState() was called, and nothing more.
+        *
+        * That means when you call FragmentTransaction#commit() after onSaveInstanceState()
+        * is called, the transaction won’t be remembered because it was never recorded as part of
+        * the Activity’s state in the first place.
+        *
+        * In order to protect the user experience, Android avoids state loss at all costs,
+        * and simply throws an IllegalStateException whenever it occurs.
+        *
+        * https://www.androiddesignpatterns.com/2013/08/fragment-transaction-commit-state-loss.html
+        *
+        * */
         if (!isFinishing) {
 
             actualFragment?.tag.run {
@@ -613,6 +660,7 @@ class MainActivity :
                         transaction.addToBackStack(tag)
 
 //                    transaction.commit()
+                    // It prevents the IllegalStateException due to state loss.
                     transaction.commitAllowingStateLoss()
                 }
             }
@@ -620,6 +668,7 @@ class MainActivity :
     }
 
 
+    /*   */
     private fun fromDateToString() = SimpleDateFormat("dd/MM/yyyy").format(date)
 
 
@@ -754,9 +803,11 @@ class MainActivity :
     }
 
     /*
-   * Returns true to display the item as the selected item
-   *
-   * */
+    * This method handles lateral menu requests.
+    *
+    * Returns true to display the item as the selected item
+    *
+    * */
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
@@ -1063,7 +1114,8 @@ class MainActivity :
 
 
     /*
-    * This method might be called from the StatisticsFragment
+    * This method might be called from the StatisticsFragment eventually
+    *
     * */
     override fun onStatisticsFragment(msg: String) {
     }
@@ -1117,6 +1169,7 @@ class MainActivity :
     }
 
     /*
+    * This method is called from AboutUsDialogFragment
     *
     * */
     override fun onAboutUsDialogFragmentInteraction(msg: String) {
@@ -1124,6 +1177,7 @@ class MainActivity :
     }
 
     /*
+    * This method is called from LicenseDialogFragment
     *
     * */
     override fun onLicenseDialogFragmentInteraction(msg: String) {
