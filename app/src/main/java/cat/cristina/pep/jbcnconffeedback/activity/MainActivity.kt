@@ -52,8 +52,8 @@ import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
 
-private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
-private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/talks.json"
+private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2019/_data/speakers.json"
+private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2019/_data/talks.json"
 
 private val TAG = MainActivity::class.java.name
 
@@ -273,11 +273,11 @@ class MainActivity :
         scheduledExecutorService = Executors.newScheduledThreadPool(5)
         scheduledFutures = mutableListOf()
 
-        val today = GregorianCalendar.getInstance()
+        //val today = GregorianCalendar.getInstance()
 
         /* TODO("REMOVE in production") */
 
-//        val today = GregorianCalendar(2018, Calendar.JUNE, 11, 9, 0)
+        val today = GregorianCalendar(2019, Calendar.MAY, 27, 9, 0)
 
         Log.d(TAG, "****** ${simpleDateFormatCSV.format(today.time)} ******")
 
@@ -1074,7 +1074,7 @@ class MainActivity :
 
     companion object {
 
-        const val URL_SPEAKERS_IMAGES = "http://www.jbcnconf.com/2018/"
+        const val URL_SPEAKERS_IMAGES = "http://www.jbcnconf.com/2019/"
 
         const val MAIN_ACTIVITY = "MainActivity"
         const val CHOOSE_TALK_FRAGMENT = "ChooseTalkFragment"

@@ -3,7 +3,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Java Conference</string>
-    <string name="nav_header_subtitle">Barcelona 2018</string>
+    <string name="nav_header_subtitle">Barcelona 2019</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="action_update">Update</string>
@@ -35,7 +35,7 @@
 
     <!-- LicenseDialogFragment  -->
 
-    <string name="license_text"><strong>Copyright &#169; 2018 JBCNConf</strong>\
+    <string name="license_text"><strong>Copyright &#169; 2019 JBCNConf</strong>\
 
 \
         This source, every third party library and all external resources files\
@@ -75,7 +75,7 @@
 
     <string name="email_subject">Statistics Report</string>
     <string name="email_message">Please, double click the CSV file to download. Tested with LibreOffice.</string>
-    <string name="chart_description">JBCNConf 2018.</string>
+    <string name="chart_description">JBCNConf 2019.</string>
 
     <!-- ChooseFragment -->
 
