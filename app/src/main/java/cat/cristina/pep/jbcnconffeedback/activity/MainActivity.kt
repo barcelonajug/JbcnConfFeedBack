@@ -162,7 +162,7 @@ class MainActivity :
             Toast.makeText(applicationContext, "${resources.getString(R.string.sorry_working_offline)}: $reason", Toast.LENGTH_SHORT).show()
         setup(connected)
 
-        nav_view.getHeaderView(0).setOnClickListener({
+        nav_view.getHeaderView(0).setOnClickListener {
             if (autoMode == false) {
 
                 val stackSize = supportFragmentManager.backStackEntryCount
@@ -174,9 +174,9 @@ class MainActivity :
                     closeLateralMenu()
                 }
             }
-        })
+        }
 
-        sharedPreferences.edit().putBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false).commit()
+        sharedPreferences.edit().putBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false).apply()
     }
 
     override fun onDestroy() {
