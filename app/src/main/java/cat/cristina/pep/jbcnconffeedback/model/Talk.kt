@@ -5,9 +5,12 @@ import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
 
 @DatabaseTable(tableName = Talk.TABLE_NAME)
-data class Talk (
-        @DatabaseField(generatedId = true, columnName = ID_FIELD_NAME, dataType = DataType.INTEGER)
-        val id: Int = 0,
+data class Talk(
+        @DatabaseField(columnName = ID_FIELD_NAME, dataType = DataType.STRING)
+        val id: String = "",
+
+        @DatabaseField(generatedId = true, columnName = SQL_ID_NAME, dataType = DataType.INTEGER)
+        val oid: Int = 0,
 
         @DatabaseField(columnName = TITLE_FIELD_NAME, dataType = DataType.STRING, canBeNull = false, unique = true)
         var title: String = "",
@@ -35,11 +38,12 @@ data class Talk (
      * if it's greater than [other].
      */
     override fun compareTo(other: Talk): Int =
-        this.scheduleId.compareTo(other.scheduleId)
+            this.scheduleId.compareTo(other.scheduleId)
 
     companion object TalkData {
         const val TABLE_NAME = "talks"
         const val ID_FIELD_NAME = "_id"
+        const val SQL_ID_NAME = "id"
         const val TITLE_FIELD_NAME = "title"
         const val ABSTRACT_FIELD_NAME = "abstract"
         const val TYPE_FIELD_NAME = "type"
