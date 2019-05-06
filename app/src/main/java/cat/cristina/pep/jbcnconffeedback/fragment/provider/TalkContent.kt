@@ -17,7 +17,7 @@ class TalkContent(val context: Context, val date: Date) {
 
     private var databaseHelper: DatabaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper::class.java)
     private var utilDAOImpl: UtilDAOImpl
-    private var speakerDao: Dao<Speaker, Int>
+    private var speakerDao: Dao<Speaker, String>
     private var talkDao: Dao<Talk, Int>
     //private var speakerTalkDao: Dao<SpeakerTalk, Int>
 

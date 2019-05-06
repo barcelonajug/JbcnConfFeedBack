@@ -296,7 +296,7 @@ class MainActivity :
 
                         /* compare today amb les dates de cada talk pero nomes dia, mes i any */
 
-                        val talkId = talk.id
+                        val talkId = talk.oid
                         val talkTitle = talk.title
                         val talkAuthorRef = talk.speakers?.get(0) ?: "Unknown"
                         val talkAuthor = utilDAOImpl.lookupSpeakerByRef(talkAuthorRef)
@@ -387,7 +387,7 @@ class MainActivity :
 
         val json = JSONObject(speakersJson)
         val items = json.getJSONArray(JBCNCONF_JSON_COLLECTION_NAME)
-        val speakerDao: Dao<Speaker, Int> = databaseHelper.getSpeakerDao()
+        val speakerDao: Dao<Speaker, String> = databaseHelper.getSpeakerDao()
         val gson = Gson()
 
         for (i in 0 until (items.length())) {
@@ -458,7 +458,7 @@ class MainActivity :
             } catch (error: Exception) {
                 if (dialog.isShowing)
                     dialog.dismiss()
-                Log.e(TAG, "Could not insert talk ${talk.id} ${error.message}")
+                Log.e(TAG, "Could not insert talk ${talk.oid} ${error.message}")
             }
 
             /* relacionamos cada talk con su speaker/s not necessary because there are no joins */
@@ -829,7 +829,7 @@ class MainActivity :
     override fun onChooseTalk(item: TalkContent.TalkItem?) {
 
         if (isLogIn) {
-            val voteFragment = VoteFragment.newInstance(item?.talk?.id.toString(), item?.talk?.title!!, item.speaker.name)
+            val voteFragment = VoteFragment.newInstance(item?.talk?.oid.toString(), item?.talk?.title!!, item.speaker.name)
             switchFragment(voteFragment, VOTE_FRAGMENT, true)
         }
     }
