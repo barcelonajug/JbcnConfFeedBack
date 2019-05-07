@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:src="@drawable/love"/>
+            android:contentDescription="TODO" android:src="@drawable/love"/>
 
         <ImageButton
             android:id="@+id/ibSmile"
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/smilies_margin_lateral"
             android:background="@android:color/transparent"
-            android:src="@drawable/smile"/>
+            android:contentDescription="TODO" android:src="@drawable/smile"/>
 
         <ImageButton
             android:id="@+id/ibNormal"
@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/smilies_margin_lateral"
             android:background="@android:color/transparent"
-            android:src="@drawable/normal"/>
+            android:contentDescription="TODO" android:src="@drawable/normal"/>
 
     </LinearLayout>
 
@@ -72,7 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:src="@drawable/sleepy" />
+            android:contentDescription="TODO" android:src="@drawable/sleepy" />
 
         <ImageButton
             android:id="@+id/ibCry"
@@ -80,7 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/smilies_margin_lateral"
             android:background="@android:color/transparent"
-            android:src="@drawable/cry" />
+            android:contentDescription="TODO" android:src="@drawable/cry" />
     </LinearLayout>
 
 </LinearLayout>

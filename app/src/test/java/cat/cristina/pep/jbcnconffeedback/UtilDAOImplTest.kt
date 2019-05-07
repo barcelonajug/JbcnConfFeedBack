@@ -8,14 +8,14 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricGradleTestRunner
+import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.junit.After
 
 
-@RunWith(RobolectricGradleTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = intArrayOf(LOLLIPOP), packageName = "cat.cristina.pep.jbcnconffeedback")
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = intArrayOf(LOLLIPOP), packageName = "cat.cristina.pep.jbcnconffeedback")
 class UtilDAOImplTest {
 
     private lateinit var dao: UtilDAOImpl
@@ -82,7 +82,7 @@ class UtilDAOImplTest {
         speakerDao = databaseHelper.getSpeakerDao()
         talkDao = databaseHelper.getTalkDao()
 
-        val speakersOfTalk1 = listOf("TWljaGVsU2NodWRlbG1pY2hlbC5zY2h1ZGVsQGdtYWlsLmNvbQ==")
+        val speakersOfTalk1 = ArrayList<String>(listOf("TWljaGVsU2NodWRlbG1pY2hlbC5zY2h1ZGVsQGdtYWlsLmNvbQ=="))
         val talk1 = Talk(
                 oid = 0,
                 title = "Let's build a blockchain in 50 minutes!",
@@ -107,7 +107,7 @@ class UtilDAOImplTest {
         )
         speakerDao.create(speaker1)
 
-        val speakersOfTalk2 = listOf("TWVyY2VkZXNXeXNzbWVyY2VkZXMud3lzc0Bwb3dlcnd0ZWNobm9sb2d5LmNvbQ==")
+        val speakersOfTalk2 = ArrayList<String>(listOf("TWVyY2VkZXNXeXNzbWVyY2VkZXMud3lzc0Bwb3dlcnd0ZWNobm9sb2d5LmNvbQ=="))
         val talk2 = Talk(
                 oid = 0,
                 title = "Serverless in Deep",

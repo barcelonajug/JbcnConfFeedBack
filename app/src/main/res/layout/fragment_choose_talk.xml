@@ -43,7 +43,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:background="@color/cardview_background"
-                    android:scaleType="centerCrop"
+                    android:contentDescription="TODO" android:scaleType="centerCrop"
                     app:srcCompat="@drawable/love" />
 
             </android.support.v7.widget.CardView>
