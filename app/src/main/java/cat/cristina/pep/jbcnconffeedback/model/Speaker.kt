@@ -3,6 +3,7 @@ package cat.cristina.pep.jbcnconffeedback.model
 import com.j256.ormlite.field.DataType
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
+import java.io.Serializable
 
 @DatabaseTable(tableName = Speaker.TABLE_NAME)
 data class Speaker(
@@ -44,7 +45,7 @@ data class Speaker(
 
 //        @DatabaseField(columnName = GENDER_FIELD_NAME, dataType = DataType.INTEGER, canBeNull = true)
 //        var gender: Int = 0
-) {
+): Serializable {
 
     companion object SpeakerData {
         const val TABLE_NAME = "speakers"

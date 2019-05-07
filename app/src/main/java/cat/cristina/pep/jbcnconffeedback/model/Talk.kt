@@ -31,7 +31,10 @@ data class Talk(
         var scheduleId: String = "",
 
         @DatabaseField(columnName = SPEAKERS_FIELD_NAME, dataType = DataType.SERIALIZABLE, canBeNull = false)
-        var speakers: List<String>) : Comparable<Talk> {
+        var speakers: ArrayList<String> = ArrayList<String>()) : Comparable<Talk> {
+
+
+
     /**
      * Compares this object with the specified object for order. Returns zero if this object is equal
      * to the specified [other] object, a negative number if it's less than [other], or a positive number
