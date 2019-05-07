@@ -44,6 +44,8 @@
     <dimen name="cardview_image_size">70dp</dimen>
     <dimen name="cardview_talk_title">20sp</dimen>
     <dimen name="cardview_speaker_name">15sp</dimen>
+    <dimen name="cardview_scheduleId">18sp</dimen>
+    <dimen name="cardview_order">12sp</dimen>
 
     <!-- Welcome Fragment -->
     <dimen name="welcome_padding">80dp</dimen>
