@@ -26,7 +26,7 @@ android {
         checkReleaseBuilds true
         // Or, if you prefer, you can continue to check for errors in release builds,
         // but continue the build even when errors are found:
-        abortOnError true
+        abortOnError false
     }
 
 }
@@ -37,17 +37,17 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:support-v4:27.1.1'
     implementation 'com.android.support:design:27.1.1'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:cardview-v7:27.1.1'
 
-    implementation 'com.android.support:support-annotations:27.1.1'
+    implementation 'com.android.support:support-annotations:28.0.0'
 
     // Analytics
-    implementation 'com.google.firebase:firebase-core:15.0.0'
+    implementation 'com.google.firebase:firebase-core:16.0.9'
 
     // Cloud Firestore is Firebase's new flagship database for mobile app development
-    implementation 'com.google.firebase:firebase-firestore:15.0.0'
+    implementation 'com.google.firebase:firebase-firestore:19.0.0'
 
     // Images, audio, video storage
 
@@ -58,7 +58,7 @@ dependencies {
     //implementation 'com.google.firebase:firebase-crash:15.0.0'
 
     // Authentication
-    implementation 'com.google.firebase:firebase-auth:15.0.0'
+    implementation 'com.google.firebase:firebase-auth:17.0.0'
 
     // Cloud messaging
 
@@ -85,7 +85,7 @@ dependencies {
     //implementation 'com.google.firebase:firebase-perf:15.0.0'
 
     // Cloud Functions for Firebase Client SDK
-    implementation 'com.google.firebase:firebase-functions:15.0.0'
+    implementation 'com.google.firebase:firebase-functions:17.0.0'
 
     // ML Kit (Vision)
 
@@ -99,15 +99,17 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.j256.ormlite:ormlite-android:5.1'
     implementation 'com.j256.ormlite:ormlite-core:5.1'
-    testImplementation 'org.robolectric:robolectric:3.0'
+    testImplementation "org.robolectric:robolectric:4.2.1"
     implementation 'com.android.volley:volley:1.1.0'
-    implementation 'com.google.code.gson:gson:2.8.4'
+    implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.github.bumptech.glide:glide:3.8.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     implementation 'com.android.support:preference-v7:27.1.1'
     implementation 'com.android.support:preference-v14:27.1.1'
     implementation 'com.opencsv:opencsv:4.1'
     //implementation files('build/libs/openbeans-1.0.jar')
+
+    implementation group: 'javax.persistence', name: 'persistence-api', version: '1.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

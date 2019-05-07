@@ -809,7 +809,7 @@ class MainActivity :
                 .addOnCompleteListener {
 
                     if (it.isSuccessful) {
-                        dataFromFirestore = it.result.groupBy {
+                        dataFromFirestore = it.result!!.groupBy {
                             it.getLong(FIREBASE_COLLECTION_FIELD_TALK_ID)
                         }
                         dialog.dismiss()

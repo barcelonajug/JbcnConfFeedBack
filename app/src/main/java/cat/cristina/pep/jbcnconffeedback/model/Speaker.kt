@@ -49,7 +49,7 @@ data class Speaker(
 
     companion object SpeakerData {
         const val TABLE_NAME = "speakers"
-        const val SQL_ID_NAME = "id";
+        const val SQL_ID_NAME = "oid"
         const val ID_FIELD_NAME = "_id"
         const val NAME_FIELD_NAME = "name"
         const val DESCRIPTION_FIELD_NAME = "description"

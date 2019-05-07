@@ -119,7 +119,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                 .get()
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
-                        dataFromFirestore = it.result.groupBy {
+                        dataFromFirestore = it.result!!.groupBy {
                             it.getLong(MainActivity.FIREBASE_COLLECTION_FIELD_TALK_ID)
                         }
                         setupGraphTopNTalks(10L)

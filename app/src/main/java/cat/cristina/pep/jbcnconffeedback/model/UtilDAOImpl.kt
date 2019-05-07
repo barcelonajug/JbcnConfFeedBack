@@ -25,8 +25,9 @@ data class UtilDAOImpl(val context: Context, private val databaseHelper: Databas
 
         val moduleQueryBuilder: QueryBuilder<Speaker, String> = databaseHelper
                 .getSpeakerDao().queryBuilder()
-        moduleQueryBuilder.where().`in`(Speaker.ID_FIELD_NAME, joinQueryBuilder)
-        moduleQueryBuilder.orderBy(Speaker.ID_FIELD_NAME, true)
+        moduleQueryBuilder.where().`in`(Speaker.SQL_ID_NAME, joinQueryBuilder)
+        moduleQueryBuilder.orderBy(Speaker.SQL_ID_NAME, true)
+
         val preparedQuery: PreparedQuery<Speaker> = moduleQueryBuilder.prepare()
         preparedQuery.setArgumentHolderValue(0, talk)
 
