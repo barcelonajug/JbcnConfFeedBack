@@ -148,29 +148,29 @@
     <string name="pref_default_room_name">Room Not Defined</string>
 
     <string-array name="pref_room_names_titles">
-        <item>Fatal 5</item>
-        <item>Traci 13</item>
-        <item>Warriors 3</item>
-        <item>Fantastic 4</item>
-        <item>Jane 11 Ives</item>
-        <item>Android 16</item>
-        <item>Sitges (Workshop)</item>
-        <item>Llivia (Workshop)</item>
-        <item>Llavorsí (Workshop)</item>
-        <item>Cadaqués (Workshop)</item>
+        <item>Aba English Room</item>
+        <item>Room 2</item>
+        <item>Room 3</item>
+        <item>Room 4</item>
+        <item>Room 5</item>
+        <item>Room 1 (Workshop)</item>
+        <item>Room 2 (Workshop)</item>
+        <item>Room 3 (Workshop)</item>
+        <item>Room 4 (Workshop)</item>
+        <item>Room 5 (Workshop)</item>
     </string-array>
 
     <string-array name="pref_room_names_values">
-        <item>Fatal 5</item>
-        <item>Traci 13</item>
-        <item>Warriors 3</item>
-        <item>Fantastic 4</item>
-        <item>Jane 11 Ives</item>
-        <item>Android 16</item>
-        <item>Sitges</item>
-        <item>Llivia</item>
-        <item>Llavorsí</item>
-        <item>Cadaqués</item>
+        <item>Aba English Room</item>
+        <item>Room 2</item>
+        <item>Room 3</item>
+        <item>Room 4</item>
+        <item>Room 5</item>
+        <item>Room 1</item>
+        <item>Room 2</item>
+        <item>Room 3</item>
+        <item>Room 4</item>
+        <item>Room 5</item>
     </string-array>
 
     <string name="pref_title_auto_mode">Auto Mode</string>
