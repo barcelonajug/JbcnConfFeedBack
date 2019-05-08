@@ -37,23 +37,26 @@
 
         <ImageButton
             android:id="@+id/ibLove"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/smily_size"
+            android:layout_height="@dimen/smily_size"
+            android:scaleType="fitCenter"
             android:background="@android:color/transparent"
             android:contentDescription="TODO" android:src="@drawable/love"/>
 
         <ImageButton
             android:id="@+id/ibSmile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/smily_size"
+            android:layout_height="@dimen/smily_size"
+            android:scaleType="fitCenter"
             android:layout_marginLeft="@dimen/smilies_margin_lateral"
             android:background="@android:color/transparent"
             android:contentDescription="TODO" android:src="@drawable/smile"/>
 
         <ImageButton
             android:id="@+id/ibNormal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/smily_size"
+            android:layout_height="@dimen/smily_size"
+            android:scaleType="fitCenter"
             android:layout_marginLeft="@dimen/smilies_margin_lateral"
             android:background="@android:color/transparent"
             android:contentDescription="TODO" android:src="@drawable/normal"/>
@@ -69,15 +72,17 @@
 
         <ImageButton
             android:id="@+id/ibSleepy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/smily_size"
+            android:layout_height="@dimen/smily_size"
+            android:scaleType="fitCenter"
             android:background="@android:color/transparent"
             android:contentDescription="TODO" android:src="@drawable/sleepy" />
 
         <ImageButton
             android:id="@+id/ibCry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/smily_size"
+            android:layout_height="@dimen/smily_size"
+            android:scaleType="fitCenter"
             android:layout_marginLeft="@dimen/smilies_margin_lateral"
             android:background="@android:color/transparent"
             android:contentDescription="TODO" android:src="@drawable/cry" />
