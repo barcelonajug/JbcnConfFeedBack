@@ -26,7 +26,7 @@
     <dimen name="text_thirty">30sp</dimen>
 
     <!-- Smilies -->
-    <dimen name="smily_size">40dp</dimen>
+    <dimen name="smily_size">180dp</dimen>
     <dimen name="smilies_margin_top">5dp</dimen>
     <dimen name="smilies_separation_from_title">10dp</dimen>
     <dimen name="smilies_margin_lateral">10dp</dimen>
