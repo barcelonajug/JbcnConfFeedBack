@@ -119,6 +119,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                 .get()
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
+                        Log.d(TAG, "Firebase connected")
                         dataFromFirestore = it.result!!.groupBy {
                             it.getLong(MainActivity.FIREBASE_COLLECTION_FIELD_TALK_ID)
                         }
@@ -126,7 +127,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                     } else {
                         dialog.dismiss()
                         Toast.makeText(context, R.string.sorry_no_graphic_available, Toast.LENGTH_LONG).show()
-                        //Log.d(TAG, "*** Error *** ${it.exception?.message}")
+                        Log.d(TAG, "*** Error *** ${it.exception?.message}")
                     }
                 }
     }
