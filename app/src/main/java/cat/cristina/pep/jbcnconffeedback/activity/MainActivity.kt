@@ -864,8 +864,8 @@ class MainActivity :
                 scoreDao.queryForAll().forEach {
                     val id = it.id
                     val scoringDoc = mapOf(FIREBASE_COLLECTION_FIELD_TALK_ID to it.talk_id,
-                            FIREBASE_COLLECTION_FIELD_SCHEDULE_ID to it.score,
-                            FIREBASE_COLLECTION_FIELD_SCORE to it.date)
+                            FIREBASE_COLLECTION_FIELD_SCORE to it.score,
+                            FIREBASE_COLLECTION_FIELD_SCHEDULE_ID to it.schedule_id)
                     firestore
                             .collection(FIREBASE_COLLECTION)
                             .add(scoringDoc)
@@ -929,11 +929,11 @@ class MainActivity :
                     .collection(FIREBASE_COLLECTION)
                     .add(scoringDoc)
                     .addOnSuccessListener {
-                        // Log.d(TAG, "$scoringDoc added")
+                        Log.d(TAG, "$scoringDoc added")
                     }
                     .addOnFailureListener {
                         scoreDao.create(Score(0, talkId, scheduleId, score, Date()))
-                        // Log.d(TAG, it.message)
+                        Log.d(TAG, it.message)
                     }
         } else {
             val scoreObj = Score(0, talkId, scheduleId, score, Date())
