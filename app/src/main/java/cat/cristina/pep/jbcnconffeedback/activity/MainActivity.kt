@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.*
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
+import android.support.v4.content.FileProvider
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
@@ -767,14 +768,19 @@ class MainActivity :
 
         var emailAddress = arrayOf(sharedPreferences.getString(PreferenceKeys.EMAIL_KEY, resources.getString(R.string.pref_default_email)))
         val file = File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
-        val emailIntent = Intent(Intent.ACTION_SEND)
 
+
+        //val uri = Uri.fromFile(file)
+        val uri = FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".fileprovider", file)
+
+        val emailIntent = Intent(Intent.ACTION_SEND)
         emailIntent.type = "text/plain"
         emailIntent.putExtra(Intent.EXTRA_EMAIL, emailAddress)
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.email_subject))
         emailIntent.putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.email_message))
-        val uri = Uri.fromFile(file)
+
         emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
+        emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
         val componentName = emailIntent.resolveActivity(packageManager)
 
@@ -865,6 +871,7 @@ class MainActivity :
                     val id = it.id
                     val scoringDoc = mapOf(FIREBASE_COLLECTION_FIELD_TALK_ID to it.talk_id,
                             FIREBASE_COLLECTION_FIELD_SCORE to it.score,
+                            FIREBASE_COLLECTION_FIELD_DATE to it.date,
                             FIREBASE_COLLECTION_FIELD_SCHEDULE_ID to it.schedule_id)
                     firestore
                             .collection(FIREBASE_COLLECTION)
