@@ -89,6 +89,10 @@ enum class SessionsTimes {
         override fun getStartTalkDateTime(): Calendar = GregorianCalendar(2019, Calendar.MAY, 28, 16, 55)
         override fun getEndTalkDateTime(): Calendar  = GregorianCalendar(2019, Calendar.MAY, 28, 17, 45)
     },
+    TUE_SE8 {
+        override fun getStartTalkDateTime(): Calendar = GregorianCalendar(2019, Calendar.MAY, 28, 18, 0)
+        override fun getEndTalkDateTime(): Calendar  = GregorianCalendar(2019, Calendar.MAY, 28, 18, 40)
+    },
 
     WED_SE1 {
         override fun getStartTalkDateTime(): Calendar = GregorianCalendar(2019, Calendar.MAY, 29, 9, 0)

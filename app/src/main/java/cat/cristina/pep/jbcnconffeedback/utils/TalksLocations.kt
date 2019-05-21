@@ -10,20 +10,20 @@ package cat.cristina.pep.jbcnconffeedback.utils
 enum class TalksLocations {
 
     MON_TC1 { override fun getRoomName() = "Aba English Room" },
-    MON_TC2 { override fun getRoomName() = "Room 2" },
-    MON_TC3 { override fun getRoomName() = "Room 3" },
-    MON_TC4 { override fun getRoomName() = "Room 4" },
-    MON_TC5 { override fun getRoomName() = "Room 5" },
+    MON_TC2 { override fun getRoomName() = "Apollo" },
+    MON_TC3 { override fun getRoomName() = "Mariner" },
+    MON_TC4 { override fun getRoomName() = "Exomars" },
+    MON_TC5 { override fun getRoomName() = "Voyager" },
     TUE_TC1 { override fun getRoomName() = "Aba English Room" },
-    TUE_TC2 { override fun getRoomName() = "Room 2" },
-    TUE_TC3 { override fun getRoomName() = "Room 3" },
-    TUE_TC4 { override fun getRoomName() = "Room 4" },
-    TUE_TC5 { override fun getRoomName() = "Room 5" },
-    WED_TC1 { override fun getRoomName() = "Room 1" },
-    WED_TC2 { override fun getRoomName() = "Room 2" },
-    WED_TC3 { override fun getRoomName() = "Room 3" },
-    WED_TC4 { override fun getRoomName() = "Room 4" },
-    WED_TC5 { override fun getRoomName() = "Room 5" };
+    TUE_TC2 { override fun getRoomName() = "Apollo" },
+    TUE_TC3 { override fun getRoomName() = "Mariner" },
+    TUE_TC4 { override fun getRoomName() = "Exomars" },
+    TUE_TC5 { override fun getRoomName() = "Voyager" },
+    WED_TC1 { override fun getRoomName() = "Aba English Room" },
+    WED_TC2 { override fun getRoomName() = "Apollo" },
+    WED_TC3 { override fun getRoomName() = "Mariner" },
+    WED_TC4 { override fun getRoomName() = "Exomars" },
+    WED_TC5 { override fun getRoomName() = "Voyager" };
 
     abstract fun getRoomName(): String
 }
