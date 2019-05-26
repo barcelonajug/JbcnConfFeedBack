@@ -274,11 +274,11 @@ class MainActivity :
         scheduledExecutorService = Executors.newScheduledThreadPool(5)
         scheduledFutures = mutableListOf()
 
-        //val today = GregorianCalendar.getInstance()
+        val today = GregorianCalendar.getInstance()
 
         /* TODO("REMOVE in production") */
 
-        val today = GregorianCalendar(2019, Calendar.MAY, 27, 9, 0)
+        //val today = GregorianCalendar(2019, Calendar.MAY, 29, 10, 35)
 
         Log.d(TAG, "****** ${simpleDateFormatCSV.format(today.time)} ******")
 
@@ -303,8 +303,8 @@ class MainActivity :
                         val talkAuthor = utilDAOImpl.lookupSpeakerByRef(talkAuthorRef)
                         val talkAuthorName = talkAuthor.name
 
-                        val startTime = pair.first.getStartScheduleDateTime().time.time - System.currentTimeMillis()
-                        val endTime = pair.first.getEndScheduleDateTime().time.time - System.currentTimeMillis()
+                        val startTime = pair.first.getStartScheduleDateTime().time.time - today.timeInMillis
+                        val endTime = pair.first.getEndScheduleDateTime().time.time - today.timeInMillis
 
                         /* Aixo calcula el temps que queda a que comenci i acabi l'event actual considerant un offset de 15 minuts  */
 
@@ -341,8 +341,7 @@ class MainActivity :
         }
 
         //Toast.makeText(this, R.string.setting_timers, Toast.LENGTH_LONG).show()
-        Toast.makeText(this, """${scheduledFutures?.size?.div(2)
-                ?: "0"} timers set""", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, """${scheduledFutures?.size?.div(2) ?: "0"} timers set""", Toast.LENGTH_SHORT).show()
 
         /* Cerramos el executor service para que no se sirvan más tareas, pero las tareas pendientes no se cancelan  */
 
