@@ -149,28 +149,18 @@
 
     <string-array name="pref_room_names_titles">
         <item>Aba English Room</item>
-        <item>Room 2</item>
-        <item>Room 3</item>
-        <item>Room 4</item>
-        <item>Room 5</item>
-        <item>Room 1 (Workshop)</item>
-        <item>Room 2 (Workshop)</item>
-        <item>Room 3 (Workshop)</item>
-        <item>Room 4 (Workshop)</item>
-        <item>Room 5 (Workshop)</item>
+        <item>Apollo Room</item>
+        <item>Mariner Room</item>
+        <item>Exomars Room</item>
+        <item>Voyager Room</item>
     </string-array>
 
     <string-array name="pref_room_names_values">
-        <item>Aba English Room</item>
-        <item>Room 2</item>
-        <item>Room 3</item>
-        <item>Room 4</item>
-        <item>Room 5</item>
-        <item>Room 1</item>
-        <item>Room 2</item>
-        <item>Room 3</item>
-        <item>Room 4</item>
-        <item>Room 5</item>
+        <item>Aba English</item>
+        <item>Apollo Room</item>
+        <item>Mariner Room</item>
+        <item>Exomars Room</item>
+        <item>Voyager Room</item>
     </string-array>
 
     <string name="pref_title_auto_mode">Auto Mode</string>
