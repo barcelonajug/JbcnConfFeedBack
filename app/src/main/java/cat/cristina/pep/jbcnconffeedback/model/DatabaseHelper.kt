@@ -33,7 +33,7 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
             TableUtils.createTableIfNotExists(connectionSource, SpeakerTalk::class.java)
             TableUtils.createTableIfNotExists(connectionSource, Score::class.java)
         } catch (e: Exception) {
-            Log.e(TAG, e.message)
+            e.message?.let { Log.e(TAG, it) }
         }
     }
 
@@ -120,14 +120,14 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
             // Drop older db if existed
             // context.deleteDatabase(DATABASE_NAME)
             TableUtils.dropTable<Speaker, Int>(connectionSource, Speaker::class.java, true)
-            TableUtils.dropTable<Talk, Int>(connectionSource, Talk::class.java, true)
+            TableUtils.dropTable<Talk, String>(connectionSource, Talk::class.java, true)
             TableUtils.dropTable<SpeakerTalk, Int>(connectionSource, SpeakerTalk::class.java, true)
             TableUtils.dropTable<Score, Int>(connectionSource, Score::class.java, true)
 
             setUp(connectionSource)
 
         } catch (e: Exception) {
-            Log.i(TAG, e.message)
+            e.message?.let { Log.i(TAG, it) }
             throw RuntimeException(e)
         }
     }
@@ -138,7 +138,7 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
 
     internal fun getSpeakerDao(): Dao<Speaker, String> = getDao(Speaker::class.java)
 
-    internal fun getTalkDao(): Dao<Talk, Int> = getDao(Talk::class.java)
+    internal fun getTalkDao(): Dao<Talk, String> = getDao(Talk::class.java)
 
     internal fun getSpeakerTalkDao(): Dao<SpeakerTalk, Int> = getDao(SpeakerTalk::class.java)
 
@@ -146,7 +146,7 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
 
     companion object DatabaseHelperData {
         private const val DATABASE_NAME = "db_feedback.sql"
-        private const val DATABASE_VERSION = 101
+        private const val DATABASE_VERSION = 102
     }
 
 }

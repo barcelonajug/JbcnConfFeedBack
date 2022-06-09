@@ -10,8 +10,8 @@ data class Score constructor (
         @DatabaseField(generatedId = true, columnName = FIELD_NAME_ID, dataType = DataType.INTEGER)
         val id: Int = 0,
 
-        @DatabaseField(columnName = FIELD_NAME_TALK_ID, dataType = DataType.INTEGER, canBeNull = false)
-        val talk_id: Int = 0,
+        @DatabaseField(columnName = FIELD_NAME_TALK_ID, dataType = DataType.STRING, canBeNull = false)
+        val talk_id: String = "",
 
         @DatabaseField(columnName = FIELD_NAME_SCHEDULE_ID, dataType = DataType.STRING, canBeNull = false)
         val schedule_id: String = "",

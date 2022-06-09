@@ -50,6 +50,7 @@ data class Talk(
         const val TITLE_FIELD_NAME = "title"
         const val ABSTRACT_FIELD_NAME = "abstract"
         const val TYPE_FIELD_NAME = "type"
+        //const val TAGS_FIELD_NAME = "tags"
         const val LEVEL_FIELD_NAME = "level"
         const val SCHEDULEDID_FIELD_NAME = "scheduleId"
         const val SPEAKERS_FIELD_NAME = "speakers"

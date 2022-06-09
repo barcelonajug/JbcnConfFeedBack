@@ -53,8 +53,8 @@ import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
 
-private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2019/_data/speakers.json"
-private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2019/_data/talks.json"
+private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/main/2022/_data/speakers.json"
+private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/main/2022/_data/talks.json"
 
 private val TAG = MainActivity::class.java.name
 
@@ -187,7 +187,7 @@ class MainActivity :
         cancelTimer()
     }
 
-    fun getAutoModeAndRoomName(): Pair<Boolean, String> =
+    fun getAutoModeAndRoomName(): Pair<Boolean, String?> =
             Pair(sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false), sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name)))
 
     /*
@@ -215,7 +215,7 @@ class MainActivity :
         } else {
             /* configuración del modo de trabajo */
             autoMode = getAutoModeAndRoomName().first
-            roomName = getAutoModeAndRoomName().second
+            roomName = getAutoModeAndRoomName().second.toString()
 
             if (autoMode) {
 
@@ -880,7 +880,7 @@ class MainActivity :
                                 Log.d(TAG, "$scoringDoc updated and removed")
                             }
                             .addOnFailureListener {
-                                Log.d(TAG, it.message)
+                                it.message?.let { it1 -> Log.d(TAG, it1) }
                             }
                 }
             } else { // no connection
@@ -988,7 +988,7 @@ class MainActivity :
     * */
     override fun onAppPreferenceFragmentAutoModeRoomNameChanged(autoMode: Boolean) {
 
-        roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
+        roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name)).toString()
         this.autoMode = autoMode
 
         if (autoMode) {

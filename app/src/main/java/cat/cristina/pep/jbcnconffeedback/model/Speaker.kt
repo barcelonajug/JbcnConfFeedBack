@@ -11,7 +11,6 @@ data class Speaker(
         @DatabaseField(columnName = ID_FIELD_NAME, dataType = DataType.STRING)
         val id: String = "",
 
-
         @DatabaseField(generatedId = true, columnName = SQL_ID_NAME, dataType = DataType.INTEGER)
         val oid: Int = 0,
 
@@ -38,7 +37,6 @@ data class Speaker(
 
         @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true, columnName = TALK_ID_FIELD_NAME, canBeNull = true)
         var talk: Talk? = null,
-
 
         @DatabaseField(columnName = HOMEPAGE_FIELD_NAME, dataType = DataType.STRING, canBeNull = true)
         var homepage: String = ""

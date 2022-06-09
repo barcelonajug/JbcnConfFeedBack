@@ -38,7 +38,7 @@ class UtilDAOImplTest {
     }
 
     @Test
-    fun checkThatTereAreTalks() {
+    fun checkThatThereAreTalks() {
         talks = dao.lookupTalks()
         Assert.assertTrue(talks.size > 0)
     }
