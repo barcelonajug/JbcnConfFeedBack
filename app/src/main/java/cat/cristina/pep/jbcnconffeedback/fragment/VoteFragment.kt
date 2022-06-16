@@ -43,9 +43,9 @@ class VoteFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            talkId = it.getString(ARG_TALK_ID).toString()
-            talkTitle = it.getString(ARG_TALK_TITLE).toString()
-            speakerName = it.getString(ARG_SPEAKER_NAME).toString()
+            talkId = it.getString(ARG_TALK_ID)
+            talkTitle = it.getString(ARG_TALK_TITLE)
+            speakerName = it.getString(ARG_SPEAKER_NAME)
         }
         setHasOptionsMenu(true)
 
@@ -70,29 +70,29 @@ class VoteFragment : Fragment() {
 
         ibLove.setOnClickListener {
             ibLove.startAnimation(onTouchAnimation)
-            onButtonPressed(talkId, VOTE_FIVE)
+            onButtonPressed(talkId.toInt(), VOTE_FIVE)
         }
         ibSmile.setOnClickListener {
             ibSmile.startAnimation(onTouchAnimation)
-            onButtonPressed(talkId, VOTE_FOUR)
+            onButtonPressed(talkId.toInt(), VOTE_FOUR)
         }
         ibNormal.setOnClickListener {
             ibNormal.startAnimation(onTouchAnimation)
-            onButtonPressed(talkId, VOTE_THREE)
+            onButtonPressed(talkId.toInt(), VOTE_THREE)
         }
         ibSleepy.setOnClickListener {
             ibSleepy.startAnimation(onTouchAnimation)
-            onButtonPressed(talkId, VOTE_TWO)
+            onButtonPressed(talkId.toInt(), VOTE_TWO)
         }
         ibCry.setOnClickListener {
             ibCry.startAnimation(onTouchAnimation)
-            onButtonPressed(talkId, VOTE_ONE)
+            onButtonPressed(talkId.toInt(), VOTE_ONE)
         }
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     }
 
     /*  */
-    fun onButtonPressed(talkId: String, score: Int) {
+    fun onButtonPressed(talkId: Int, score: Int) {
         listener?.onVoteFragment(talkId, score)
     }
 
@@ -116,7 +116,7 @@ class VoteFragment : Fragment() {
      * This method gets called every time a vote is casted
      */
     interface OnVoteFragmentListener {
-        fun onVoteFragment(talkId: String, score: Int)
+        fun onVoteFragment(talkId: Int, score: Int)
     }
 
     companion object {

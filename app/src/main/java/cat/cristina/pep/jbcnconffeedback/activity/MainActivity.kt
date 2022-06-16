@@ -53,8 +53,8 @@ import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
 
-private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/main/2022/_data/speakers.json"
-private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/main/2022/_data/talks.json"
+private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2019/_data/speakers.json"
+private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2019/_data/talks.json"
 
 private val TAG = MainActivity::class.java.name
 
@@ -163,7 +163,7 @@ class MainActivity :
             Toast.makeText(applicationContext, "${resources.getString(R.string.sorry_working_offline)}: $reason", Toast.LENGTH_SHORT).show()
         setup(connected)
 
-        nav_view.getHeaderView(0).setOnClickListener {
+        nav_view.getHeaderView(0).setOnClickListener({
             if (autoMode == false) {
 
                 val stackSize = supportFragmentManager.backStackEntryCount
@@ -175,9 +175,9 @@ class MainActivity :
                     closeLateralMenu()
                 }
             }
-        }
+        })
 
-        sharedPreferences.edit().putBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false).apply()
+        sharedPreferences.edit().putBoolean(PreferenceKeys.FILTERED_TALKS_KEY, false).commit()
     }
 
     override fun onDestroy() {
@@ -187,7 +187,7 @@ class MainActivity :
         cancelTimer()
     }
 
-    fun getAutoModeAndRoomName(): Pair<Boolean, String?> =
+    fun getAutoModeAndRoomName(): Pair<Boolean, String> =
             Pair(sharedPreferences.getBoolean(PreferenceKeys.AUTO_MODE_KEY, false), sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name)))
 
     /*
@@ -215,7 +215,7 @@ class MainActivity :
         } else {
             /* configuración del modo de trabajo */
             autoMode = getAutoModeAndRoomName().first
-            roomName = getAutoModeAndRoomName().second.toString()
+            roomName = getAutoModeAndRoomName().second
 
             if (autoMode) {
 
@@ -880,7 +880,7 @@ class MainActivity :
                                 Log.d(TAG, "$scoringDoc updated and removed")
                             }
                             .addOnFailureListener {
-                                it.message?.let { it1 -> Log.d(TAG, it1) }
+                                Log.d(TAG, it.message)
                             }
                 }
             } else { // no connection
@@ -988,7 +988,7 @@ class MainActivity :
     * */
     override fun onAppPreferenceFragmentAutoModeRoomNameChanged(autoMode: Boolean) {
 
-        roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name)).toString()
+        roomName = sharedPreferences.getString(PreferenceKeys.ROOM_KEY, resources.getString(R.string.pref_default_room_name))
         this.autoMode = autoMode
 
         if (autoMode) {

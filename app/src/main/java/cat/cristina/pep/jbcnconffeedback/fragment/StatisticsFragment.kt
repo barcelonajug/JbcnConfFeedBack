@@ -8,8 +8,8 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Environment
-import android.support.v4.app.Fragment
-import android.support.v7.preference.PreferenceManager
+import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import android.util.Log
 import android.view.*
 import android.widget.Toast
@@ -202,7 +202,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
             val labels = ArrayList<String>()
             val entries = ArrayList<BarEntry>()
             var index = 0.0F
-            val talkDao: Dao<Talk, String> = databaseHelper.getTalkDao()
+            val talkDao: Dao<Talk, Int> = databaseHelper.getTalkDao()
             val utilDAOImpl = UtilDAOImpl(context!!, databaseHelper)
 
             dataFromFirestore
@@ -217,8 +217,8 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                                 ?.map { doc ->
                                     doc.get(MainActivity.FIREBASE_COLLECTION_FIELD_SCORE) as Long
                                 }?.average()
-                        var title: String = talkDao.queryForId(it.key?.toString()).title
-                        var refAuthor = talkDao.queryForId(it.key?.toString()).speakers?.get(0)
+                        var title: String = talkDao.queryForId(it.key?.toInt()).title
+                        var refAuthor = talkDao.queryForId(it.key?.toInt()).speakers?.get(0)
                         var author = utilDAOImpl.lookupSpeakerByRef(refAuthor!!).name
                         /* Si el nombre es demasiado largo se saldra de la barra  */
                         author = author.substring(0, 1) + "." + author.substring(author.indexOf(" "))
@@ -318,7 +318,7 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                             ?.asSequence()
                             ?.map { doc ->
                                 val id = doc.getLong("id_talk")
-                                val title = databaseHelper.getTalkDao().queryForId(id?.toString()).title
+                                val title = databaseHelper.getTalkDao().queryForId(id?.toInt()).title
                                 val score = doc.get("score") as Int
                                 val date = doc.getDate("date") as Date
                                 statistics.add(Statistic(id!!, title, score, date))

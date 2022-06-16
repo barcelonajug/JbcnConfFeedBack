@@ -3,8 +3,8 @@ package cat.cristina.pep.jbcnconffeedback.fragment
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.support.v7.preference.PreferenceFragmentCompat
-import android.support.v7.preference.PreferenceManager
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceManager
 import cat.cristina.pep.jbcnconffeedback.R
 import cat.cristina.pep.jbcnconffeedback.utils.PreferenceKeys
 
