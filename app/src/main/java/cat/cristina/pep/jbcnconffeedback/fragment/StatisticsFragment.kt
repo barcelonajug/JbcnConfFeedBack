@@ -119,14 +119,15 @@ class StatisticsFragment : Fragment(), OnChartGestureListener {
                 .get()
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
-                        dataFromFirestore = it.result.groupBy {
+                        Log.d(TAG, "Firebase connected")
+                        dataFromFirestore = it.result!!.groupBy {
                             it.getLong(MainActivity.FIREBASE_COLLECTION_FIELD_TALK_ID)
                         }
                         setupGraphTopNTalks(10L)
                     } else {
                         dialog.dismiss()
                         Toast.makeText(context, R.string.sorry_no_graphic_available, Toast.LENGTH_LONG).show()
-                        //Log.d(TAG, "*** Error *** ${it.exception?.message}")
+                        Log.d(TAG, "*** Error *** ${it.exception?.message}")
                     }
                 }
     }

@@ -23,10 +23,11 @@ data class UtilDAOImpl(val context: Context, private val databaseHelper: Databas
         joinQueryBuilder.selectColumns(SpeakerTalk.SPEAKER_ID_FIELD_NAME)
         joinQueryBuilder.where().eq(SpeakerTalk.TALK_ID_FIELD_NAME, SelectArg())
 
-        val moduleQueryBuilder: QueryBuilder<Speaker, Int> = databaseHelper
+        val moduleQueryBuilder: QueryBuilder<Speaker, String> = databaseHelper
                 .getSpeakerDao().queryBuilder()
-        moduleQueryBuilder.where().`in`(Speaker.ID_FIELD_NAME, joinQueryBuilder)
-        moduleQueryBuilder.orderBy(Speaker.ID_FIELD_NAME, true)
+        moduleQueryBuilder.where().`in`(Speaker.SQL_ID_NAME, joinQueryBuilder)
+        moduleQueryBuilder.orderBy(Speaker.SQL_ID_NAME, true)
+
         val preparedQuery: PreparedQuery<Speaker> = moduleQueryBuilder.prepare()
         preparedQuery.setArgumentHolderValue(0, talk)
 
@@ -40,7 +41,7 @@ data class UtilDAOImpl(val context: Context, private val databaseHelper: Databas
     *
     * */
     fun lookupSpeakerByRef(ref: String): Speaker {
-        val qb: QueryBuilder<Speaker, Int> = databaseHelper.getSpeakerDao().queryBuilder()
+        val qb: QueryBuilder<Speaker, String> = databaseHelper.getSpeakerDao().queryBuilder()
         // val where: Where<Speaker, Int> = qb.where()
         val selectArg: SelectArg = SelectArg()
 

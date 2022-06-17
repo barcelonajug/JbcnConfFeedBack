@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.*
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
+import android.support.v4.content.FileProvider
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
@@ -52,8 +53,8 @@ import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
 
-private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/speakers.json"
-private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2018/_data/talks.json"
+private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2019/_data/speakers.json"
+private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2019/_data/talks.json"
 
 private val TAG = MainActivity::class.java.name
 
@@ -277,7 +278,7 @@ class MainActivity :
 
         /* TODO("REMOVE in production") */
 
-//        val today = GregorianCalendar(2018, Calendar.JUNE, 11, 9, 0)
+        //val today = GregorianCalendar(2019, Calendar.MAY, 29, 10, 35)
 
         Log.d(TAG, "****** ${simpleDateFormatCSV.format(today.time)} ******")
 
@@ -296,14 +297,14 @@ class MainActivity :
 
                         /* compare today amb les dates de cada talk pero nomes dia, mes i any */
 
-                        val talkId = talk.id
+                        val talkId = talk.oid
                         val talkTitle = talk.title
                         val talkAuthorRef = talk.speakers?.get(0) ?: "Unknown"
                         val talkAuthor = utilDAOImpl.lookupSpeakerByRef(talkAuthorRef)
                         val talkAuthorName = talkAuthor.name
 
-                        val startTime = pair.first.getStartScheduleDateTime().time.time - System.currentTimeMillis()
-                        val endTime = pair.first.getEndScheduleDateTime().time.time - System.currentTimeMillis()
+                        val startTime = pair.first.getStartScheduleDateTime().time.time - today.timeInMillis
+                        val endTime = pair.first.getEndScheduleDateTime().time.time - today.timeInMillis
 
                         /* Aixo calcula el temps que queda a que comenci i acabi l'event actual considerant un offset de 15 minuts  */
 
@@ -340,8 +341,7 @@ class MainActivity :
         }
 
         //Toast.makeText(this, R.string.setting_timers, Toast.LENGTH_LONG).show()
-        Toast.makeText(this, """${scheduledFutures?.size?.div(2)
-                ?: "0"} timers set""", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, """${scheduledFutures?.size?.div(2) ?: "0"} timers set""", Toast.LENGTH_SHORT).show()
 
         /* Cerramos el executor service para que no se sirvan más tareas, pero las tareas pendientes no se cancelan  */
 
@@ -387,7 +387,7 @@ class MainActivity :
 
         val json = JSONObject(speakersJson)
         val items = json.getJSONArray(JBCNCONF_JSON_COLLECTION_NAME)
-        val speakerDao: Dao<Speaker, Int> = databaseHelper.getSpeakerDao()
+        val speakerDao: Dao<Speaker, String> = databaseHelper.getSpeakerDao()
         val gson = Gson()
 
         for (i in 0 until (items.length())) {
@@ -458,7 +458,7 @@ class MainActivity :
             } catch (error: Exception) {
                 if (dialog.isShowing)
                     dialog.dismiss()
-                Log.e(TAG, "Could not insert talk ${talk.id} ${error.message}")
+                Log.e(TAG, "Could not insert talk ${talk.oid} ${error.message}")
             }
 
             /* relacionamos cada talk con su speaker/s not necessary because there are no joins */
@@ -767,14 +767,19 @@ class MainActivity :
 
         var emailAddress = arrayOf(sharedPreferences.getString(PreferenceKeys.EMAIL_KEY, resources.getString(R.string.pref_default_email)))
         val file = File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
-        val emailIntent = Intent(Intent.ACTION_SEND)
 
+
+        //val uri = Uri.fromFile(file)
+        val uri = FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".fileprovider", file)
+
+        val emailIntent = Intent(Intent.ACTION_SEND)
         emailIntent.type = "text/plain"
         emailIntent.putExtra(Intent.EXTRA_EMAIL, emailAddress)
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.email_subject))
         emailIntent.putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.email_message))
-        val uri = Uri.fromFile(file)
+
         emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
+        emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
         val componentName = emailIntent.resolveActivity(packageManager)
 
@@ -809,7 +814,7 @@ class MainActivity :
                 .addOnCompleteListener {
 
                     if (it.isSuccessful) {
-                        dataFromFirestore = it.result.groupBy {
+                        dataFromFirestore = it.result!!.groupBy {
                             it.getLong(FIREBASE_COLLECTION_FIELD_TALK_ID)
                         }
                         dialog.dismiss()
@@ -829,7 +834,7 @@ class MainActivity :
     override fun onChooseTalk(item: TalkContent.TalkItem?) {
 
         if (isLogIn) {
-            val voteFragment = VoteFragment.newInstance(item?.talk?.id.toString(), item?.talk?.title!!, item.speaker.name)
+            val voteFragment = VoteFragment.newInstance(item?.talk?.oid.toString(), item?.talk?.title!!, item.speaker.name)
             switchFragment(voteFragment, VOTE_FRAGMENT, true)
         }
     }
@@ -864,8 +869,9 @@ class MainActivity :
                 scoreDao.queryForAll().forEach {
                     val id = it.id
                     val scoringDoc = mapOf(FIREBASE_COLLECTION_FIELD_TALK_ID to it.talk_id,
-                            FIREBASE_COLLECTION_FIELD_SCHEDULE_ID to it.score,
-                            FIREBASE_COLLECTION_FIELD_SCORE to it.date)
+                            FIREBASE_COLLECTION_FIELD_SCORE to it.score,
+                            FIREBASE_COLLECTION_FIELD_DATE to it.date,
+                            FIREBASE_COLLECTION_FIELD_SCHEDULE_ID to it.schedule_id)
                     firestore
                             .collection(FIREBASE_COLLECTION)
                             .add(scoringDoc)
@@ -929,11 +935,11 @@ class MainActivity :
                     .collection(FIREBASE_COLLECTION)
                     .add(scoringDoc)
                     .addOnSuccessListener {
-                        // Log.d(TAG, "$scoringDoc added")
+                        Log.d(TAG, "$scoringDoc added")
                     }
                     .addOnFailureListener {
                         scoreDao.create(Score(0, talkId, scheduleId, score, Date()))
-                        // Log.d(TAG, it.message)
+                        Log.d(TAG, it.message)
                     }
         } else {
             val scoreObj = Score(0, talkId, scheduleId, score, Date())
@@ -1074,7 +1080,7 @@ class MainActivity :
 
     companion object {
 
-        const val URL_SPEAKERS_IMAGES = "http://www.jbcnconf.com/2018/"
+        const val URL_SPEAKERS_IMAGES = "http://www.jbcnconf.com/2019/"
 
         const val MAIN_ACTIVITY = "MainActivity"
         const val CHOOSE_TALK_FRAGMENT = "ChooseTalkFragment"

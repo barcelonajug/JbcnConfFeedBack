@@ -136,7 +136,7 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
         super.onOpen(db)
     }
 
-    internal fun getSpeakerDao(): Dao<Speaker, Int> = getDao(Speaker::class.java)
+    internal fun getSpeakerDao(): Dao<Speaker, String> = getDao(Speaker::class.java)
 
     internal fun getTalkDao(): Dao<Talk, Int> = getDao(Talk::class.java)
 

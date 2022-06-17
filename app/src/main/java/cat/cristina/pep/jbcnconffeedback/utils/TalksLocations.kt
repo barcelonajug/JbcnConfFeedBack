@@ -9,26 +9,21 @@ package cat.cristina.pep.jbcnconffeedback.utils
 
 enum class TalksLocations {
 
-    MON_TC1 { override fun getRoomName() = "Fatal 5" },
-    MON_TC2 { override fun getRoomName() = "Traci 13" },
-    MON_TC3 { override fun getRoomName() = "Warriors 3" },
-    MON_TC4 { override fun getRoomName() = "Fantastic 4" },
-//    MON_TC5 { override fun getRoomName() = "Great 10" },
-    MON_TC5 { override fun getRoomName() = "Jane 11 Ives" },
-    MON_TC6 { override fun getRoomName() = "Android 16" },
-    TUE_TC1 { override fun getRoomName() = "Fatal 5" },
-    TUE_TC2 { override fun getRoomName() = "Traci 13" },
-    TUE_TC3 { override fun getRoomName() = "Warriors 3" },
-    TUE_TC4 { override fun getRoomName() = "Fantastic 4" },
-//    TUE_TC5 { override fun getRoomName() = "Great 10" },
-    TUE_TC5 { override fun getRoomName() = "Jane 11 Ives" },
-    TUE_TC6 { override fun getRoomName() = "Android 16" },
-    WED_TC1 { override fun getRoomName() = "Sitges" },
-    WED_TC2 { override fun getRoomName() = "Llivia" },
-    WED_TC3 { override fun getRoomName() = "Llavorsí" },
-    WED_TC4 { override fun getRoomName() = "Cadaqués" },
-    WED_TC5 { override fun getRoomName() = "Not used" },
-    WED_TC6 { override fun getRoomName() = "Not used" };
+    MON_TC1 { override fun getRoomName() = "Aba English Room" },
+    MON_TC2 { override fun getRoomName() = "Apollo Room" },
+    MON_TC3 { override fun getRoomName() = "Mariner Room" },
+    MON_TC4 { override fun getRoomName() = "Exomars Room" },
+    MON_TC5 { override fun getRoomName() = "Voyager Room" },
+    TUE_TC1 { override fun getRoomName() = "Aba English Room" },
+    TUE_TC2 { override fun getRoomName() = "Apollo Room" },
+    TUE_TC3 { override fun getRoomName() = "Mariner Room" },
+    TUE_TC4 { override fun getRoomName() = "Exomars Room" },
+    TUE_TC5 { override fun getRoomName() = "Voyager Room" },
+    WED_TC1 { override fun getRoomName() = "Aba English Room" },
+    WED_TC2 { override fun getRoomName() = "Apollo Room" },
+    WED_TC3 { override fun getRoomName() = "Mariner Room" },
+    WED_TC4 { override fun getRoomName() = "Exomars Room" },
+    WED_TC5 { override fun getRoomName() = "Voyager Room" };
 
     abstract fun getRoomName(): String
 }

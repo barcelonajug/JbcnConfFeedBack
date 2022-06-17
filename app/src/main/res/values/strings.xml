@@ -3,7 +3,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Java Conference</string>
-    <string name="nav_header_subtitle">Barcelona 2018</string>
+    <string name="nav_header_subtitle">Barcelona 2019</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="action_update">Update</string>
@@ -35,7 +35,7 @@
 
     <!-- LicenseDialogFragment  -->
 
-    <string name="license_text"><strong>Copyright &#169; 2018 JBCNConf</strong>\
+    <string name="license_text"><strong>Copyright &#169; 2019 JBCNConf</strong>\
 
 \
         This source, every third party library and all external resources files\
@@ -75,7 +75,7 @@
 
     <string name="email_subject">Statistics Report</string>
     <string name="email_message">Please, double click the CSV file to download. Tested with LibreOffice.</string>
-    <string name="chart_description">JBCNConf 2018.</string>
+    <string name="chart_description">JBCNConf 2019.</string>
 
     <!-- ChooseFragment -->
 
@@ -148,29 +148,19 @@
     <string name="pref_default_room_name">Room Not Defined</string>
 
     <string-array name="pref_room_names_titles">
-        <item>Fatal 5</item>
-        <item>Traci 13</item>
-        <item>Warriors 3</item>
-        <item>Fantastic 4</item>
-        <item>Jane 11 Ives</item>
-        <item>Android 16</item>
-        <item>Sitges (Workshop)</item>
-        <item>Llivia (Workshop)</item>
-        <item>Llavorsí (Workshop)</item>
-        <item>Cadaqués (Workshop)</item>
+        <item>Aba English Room</item>
+        <item>Apollo Room</item>
+        <item>Mariner Room</item>
+        <item>Exomars Room</item>
+        <item>Voyager Room</item>
     </string-array>
 
     <string-array name="pref_room_names_values">
-        <item>Fatal 5</item>
-        <item>Traci 13</item>
-        <item>Warriors 3</item>
-        <item>Fantastic 4</item>
-        <item>Jane 11 Ives</item>
-        <item>Android 16</item>
-        <item>Sitges</item>
-        <item>Llivia</item>
-        <item>Llavorsí</item>
-        <item>Cadaqués</item>
+        <item>Aba English</item>
+        <item>Apollo Room</item>
+        <item>Mariner Room</item>
+        <item>Exomars Room</item>
+        <item>Voyager Room</item>
     </string-array>
 
     <string name="pref_title_auto_mode">Auto Mode</string>
