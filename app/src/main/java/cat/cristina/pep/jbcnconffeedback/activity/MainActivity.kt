@@ -52,9 +52,9 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
-
-private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2019/_data/speakers.json"
-private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2019/_data/talks.json"
+private const val URL_PATH = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/main/2022/_data"
+private const val SPEAKERS_URL = "$URL_PATH/speakers.json"
+private const val TALKS_URL = "$URL_PATH/talks.json"
 
 private val TAG = MainActivity::class.java.name
 
