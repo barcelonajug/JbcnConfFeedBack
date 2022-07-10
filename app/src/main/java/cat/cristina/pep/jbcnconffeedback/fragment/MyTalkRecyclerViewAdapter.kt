@@ -77,80 +77,10 @@ class MyTalkRecyclerViewAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = mValues[position]
         holder.mIdView.text = item.id
+        val imageUrl: String = URL_SPEAKERS_IMAGES + item.speaker.image
         Glide
                 .with(context)
-                .load(URL_SPEAKERS_IMAGES + item.speaker.image)
-                /*
-                .bitmapTransform(object : BitmapTransformation(context) {
-                    /**
-                     *
-                     * NOT WORKING WITH PLACEHOLDER
-                     *
-                     * A method to get a unique identifier for this particular transformation that can be used as part of a cache key.
-                     * The fully qualified class name for this class is appropriate if written out, but getClass().getName() is not
-                     * because the name may be changed by proguard.
-                     *
-                     *
-                     *
-                     * If this transformation does not affect the data that will be stored in cache, returning an empty string here
-                     * is acceptable.
-                     *
-                     *
-                     * @return A string that uniquely identifies this transformation.
-                     */
-                    override fun getId(): String {
-                        return "Rounded Transformation"
-                    }
-
-                    /**
-                     * Transforms the given [android.graphics.Bitmap] based on the given dimensions and returns the transformed
-                     * result.
-                     *
-                     *
-                     *
-                     * The provided Bitmap, toTransform, should not be recycled or returned to the pool. Glide will automatically
-                     * recycle and/or reuse toTransform if the transformation returns a different Bitmap. Similarly implementations
-                     * should never recycle or return Bitmaps that are returned as the result of this method. Recycling or returning
-                     * the provided and/or the returned Bitmap to the pool will lead to a variety of runtime exceptions and drawing
-                     * errors. See #408 for an example. If the implementation obtains and discards intermediate Bitmaps, they may
-                     * safely be returned to the BitmapPool and/or recycled.
-                     *
-                     *
-                     *
-                     *
-                     * outWidth and outHeight will never be [com.bumptech.glide.request.target.Target.SIZE_ORIGINAL], this
-                     * class converts them to be the size of the Bitmap we're going to transform before calling this method.
-                     *
-                     *
-                     * @param pool A [com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool] that can be used to obtain and
-                     * return intermediate [Bitmap]s used in this transformation. For every
-                     * [android.graphics.Bitmap] obtained from the pool during this transformation, a
-                     * [android.graphics.Bitmap] must also be returned.
-                     * @param toTransform The [android.graphics.Bitmap] to transform.
-                     * @param outWidth The ideal width of the transformed bitmap (the transformed width does not need to match exactly).
-                     * @param outHeight The ideal height of the transformed bitmap (the transformed heightdoes not need to match
-                     * exactly).
-                     */
-                    override fun transform(pool: BitmapPool?, toTransform: Bitmap?, outWidth: Int, outHeight: Int): Bitmap {
-
-                        val size = Math.min(toTransform!!.width, toTransform!!.height)
-                        val x = (toTransform.width - size) / 2
-                        val y = (toTransform.height - size) / 2
-                        val squared = Bitmap.createBitmap(toTransform, x, y, size, size)
-//                        val result: Bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
-                        val result: Bitmap = pool!!.get(size, size, Bitmap.Config.ARGB_8888)
-                        val canvas = Canvas(result)
-                        val paint = Paint()
-                        paint.shader = BitmapShader(squared, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
-                        paint.isAntiAlias = true
-                        val r = size / 2F
-                        canvas.drawCircle(r, r, r, paint)
-                        return
-                    }
-
-                })
-                */
-                //.override(65, 43)
+                .load(imageUrl)
                 .error(R.drawable.missing_photo)
                 .listener(object : RequestListener<String, GlideDrawable> {
                     /**
@@ -208,21 +138,24 @@ class MyTalkRecyclerViewAdapter(
         holder.mSpeakerView.text = item.speaker.name
 
         val scheduleId = item.talk.scheduleId
-        val session = SessionsTimes.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}")
-        val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")
+        if(scheduleId.isNotEmpty()) {
+            val session = SessionsTimes.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}")
+            val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")
 
-        val simpleTimeFormat = SimpleDateFormat("HH:mm")
-        val startTime = simpleTimeFormat.format(session.getStartTalkDateTime().time)
-        val endTime = simpleTimeFormat.format(session.getEndTalkDateTime().time)
-        // eg. Monday 11 March
-        simpleTimeFormat.applyPattern("EEEE dd MMMM")
-        val due = simpleTimeFormat.format(session.getStartTalkDateTime().time)
+            val simpleTimeFormat = SimpleDateFormat("HH:mm")
+            val startTime = simpleTimeFormat.format(session.getStartTalkDateTime().time)
+            val endTime = simpleTimeFormat.format(session.getEndTalkDateTime().time)
+            // eg. Monday 11 March
+            simpleTimeFormat.applyPattern("EEEE dd MMMM")
+            val due = simpleTimeFormat.format(session.getStartTalkDateTime().time)
 //        holder.mScheduleId.text = "Code: ${item.talk.scheduleId}. Starting: ${startTime}. Ending: ${endTime}. Location: ${location.getRoomName()}"
-        holder.mScheduleId.text = "Due on $due from $startTime to $endTime in '${location.getRoomName()}'"
-        with(holder.mView) {
-            tag = item
-            setOnClickListener(mOnClickListener)
-            setOnLongClickListener(mOnLongClickListener)
+            holder.mScheduleId.text =
+                "Due on $due from $startTime to $endTime in '${location.getRoomName()}'"
+            with(holder.mView) {
+                tag = item
+                setOnClickListener(mOnClickListener)
+                setOnLongClickListener(mOnLongClickListener)
+            }
         }
     }
 
