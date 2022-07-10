@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
-import android.net.Uri
 import android.os.*
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
@@ -53,8 +52,8 @@ import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
 
-private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2019/_data/speakers.json"
-private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/gh-pages/2019/_data/talks.json"
+private const val SPEAKERS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/main/2022/_data/speakers.json"
+private const val TALKS_URL = "https://raw.githubusercontent.com/barcelonajug/jbcnconf_web/main/2022/_data/talks.json"
 
 private val TAG = MainActivity::class.java.name
 
@@ -452,29 +451,30 @@ class MainActivity :
 
             val talkObject = items.getJSONObject(i)
             val talk: Talk = gson.fromJson(talkObject.toString(), Talk::class.java)
-
+            talk.description = talkObject.getString("abstract")
             try {
-                talkDao.create(talk)
+                val instanceList: List<Talk> = talkDao.query(talkDao.queryBuilder().where().eq("title", talk.title.replace("'", "''")).prepare())
+                if(instanceList != null && !instanceList.isEmpty()) {
+                    var instance = instanceList[0]
+                    instance.title = talk.title
+                    instance.description = talk.description
+                    instance.level = talk.level
+                    instance.id = talk.id
+                    instance.scheduleId = talk.scheduleId
+                    instance.type = talk.type
+                    instance.speakers = talk.speakers
+                    talkDao.update(instance)
+                } else {
+                    talkDao.create(talk)
+                }
             } catch (error: Exception) {
                 if (dialog.isShowing)
                     dialog.dismiss()
                 Log.e(TAG, "Could not insert talk ${talk.oid} ${error.message}")
+                error.printStackTrace()
             }
 
-            /* relacionamos cada talk con su speaker/s not necessary because there are no joins */
-//            for (j in 0 until (talk.speakers!!.size)) {
-//                val speakerRef: String = talk.speakers!!.get(j)
-//                val dao: UtilDAOImpl = UtilDAOImpl(applicationContext, databaseHelper)
-//                Log.d(TAG, "Looking for ref $speakerRef")
-//                val speaker: Speaker = dao.lookupSpeakerByRef(speakerRef)
-//                val speakerTalk = SpeakerTalk(0, speaker, talk)
-//                try {
-//                    speakerTalkDao.create(speakerTalk)
-//                    Log.d(TAG, "Speaker-Talk ${speakerTalk}  from ${speaker} and  ${talk} created")
-//                } catch (e: Exception) {
-//                    Log.e(TAG, "Could not insert Speaker-Talk ${speakerTalk.id} ${e.message}")
-//                }
-//            }
+
         }
 
         if (dialog.isShowing)
@@ -1080,7 +1080,7 @@ class MainActivity :
 
     companion object {
 
-        const val URL_SPEAKERS_IMAGES = "http://www.jbcnconf.com/2019/"
+        const val URL_SPEAKERS_IMAGES = "http://www.jbcnconf.com/2022/"
 
         const val MAIN_ACTIVITY = "MainActivity"
         const val CHOOSE_TALK_FRAGMENT = "ChooseTalkFragment"
