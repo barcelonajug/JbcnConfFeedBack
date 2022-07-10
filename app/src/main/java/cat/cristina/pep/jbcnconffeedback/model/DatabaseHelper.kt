@@ -113,7 +113,7 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
 
     @Throws()
     override fun onUpgrade(database: SQLiteDatabase?, connectionSource: ConnectionSource?, oldVersion: Int, newVersion: Int) {
-        super.onUpgrade(database, oldVersion, newVersion)
+        // super.onUpgrade(database, oldVersion, newVersion)
         try {
             Log.i(TAG, "onUpgrade")
 
@@ -146,7 +146,7 @@ data class DatabaseHelper(val context: Context) : OrmLiteSqliteOpenHelper(contex
 
     companion object DatabaseHelperData {
         private const val DATABASE_NAME = "db_feedback.sql"
-        private const val DATABASE_VERSION = 101
+        private const val DATABASE_VERSION = 104
     }
 
 }
