@@ -61,18 +61,27 @@ class TalkContent(val context: Context, val date: Date) {
         val today = GregorianCalendar()
         today.time = date
 
-        val scheduleId = item.talk.scheduleId
-        val session = SessionsTimes.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}")
-        val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-        val roomName =
-                sharedPreferences?.getString(PreferenceKeys.ROOM_KEY, context.resources.getString(R.string.pref_default_room_name))
-        if (today.get(Calendar.DATE) == session.getStartTalkDateTime().get(Calendar.DATE)
+        val scheduleId = item.talk.scheduleId
+        if(!scheduleId.isEmpty()) {
+            val session = SessionsTimes.valueOf(
+                "${scheduleId.substring(1, 4)}_${scheduleId.substring(9, 12)}"
+            )
+            val location = TalksLocations.valueOf("${scheduleId.substring(1, 4)}_${scheduleId.substring(5, 8)}")
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+
+            val roomName =
+                sharedPreferences?.getString(
+                    PreferenceKeys.ROOM_KEY,
+                    context.resources.getString(R.string.pref_default_room_name)
+                )
+            if (today.get(Calendar.DATE) == session.getStartTalkDateTime().get(Calendar.DATE)
                 && today.get(Calendar.MONTH) == session.getStartTalkDateTime().get(Calendar.MONTH)
                 && today.get(Calendar.YEAR) == session.getStartTalkDateTime().get(Calendar.YEAR)
-                && roomName == location.getRoomName()) {
-            ITEMS_FILTERED_BY_DATE_AND_ROOM_NAME.add(item)
+                && roomName == location.getRoomName() && item.talk.scheduleId.isNotEmpty()
+            ) {
+                ITEMS_FILTERED_BY_DATE_AND_ROOM_NAME.add(item)
+            }
         }
     }
 
