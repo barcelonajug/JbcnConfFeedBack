@@ -7,7 +7,7 @@ import com.j256.ormlite.table.DatabaseTable
 @DatabaseTable(tableName = Talk.TABLE_NAME)
 data class Talk(
         @DatabaseField(columnName = ID_FIELD_NAME, dataType = DataType.STRING)
-        val id: String = "",
+        var id: String = "",
 
         @DatabaseField(generatedId = true, columnName = SQL_ID_NAME, dataType = DataType.INTEGER)
         val oid: Int = 0,
