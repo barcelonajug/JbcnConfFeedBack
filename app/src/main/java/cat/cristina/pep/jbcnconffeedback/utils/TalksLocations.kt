@@ -9,21 +9,21 @@ package cat.cristina.pep.jbcnconffeedback.utils
 
 enum class TalksLocations {
 
-    MON_TC1 { override fun getRoomName() = "Aba English Room" },
-    MON_TC2 { override fun getRoomName() = "Apollo Room" },
-    MON_TC3 { override fun getRoomName() = "Mariner Room" },
-    MON_TC4 { override fun getRoomName() = "Exomars Room" },
-    MON_TC5 { override fun getRoomName() = "Voyager Room" },
-    TUE_TC1 { override fun getRoomName() = "Aba English Room" },
-    TUE_TC2 { override fun getRoomName() = "Apollo Room" },
-    TUE_TC3 { override fun getRoomName() = "Mariner Room" },
-    TUE_TC4 { override fun getRoomName() = "Exomars Room" },
-    TUE_TC5 { override fun getRoomName() = "Voyager Room" },
-    WED_TC1 { override fun getRoomName() = "Aba English Room" },
-    WED_TC2 { override fun getRoomName() = "Apollo Room" },
-    WED_TC3 { override fun getRoomName() = "Mariner Room" },
-    WED_TC4 { override fun getRoomName() = "Exomars Room" },
-    WED_TC5 { override fun getRoomName() = "Voyager Room" };
+    MON_TC1 { override fun getRoomName() = "Grace Hopper" },
+    MON_TC2 { override fun getRoomName() = "Katherine Johnson" },
+    MON_TC3 { override fun getRoomName() = "Dynatrace" },
+    MON_TC4 { override fun getRoomName() = "Oracle NetSuite" },
+    MON_TC5 { override fun getRoomName() = "Ada Lovelace" },
+    TUE_TC1 { override fun getRoomName() = "Grace Hopper" },
+    TUE_TC2 { override fun getRoomName() = "Katherine Johnson" },
+    TUE_TC3 { override fun getRoomName() = "Dynatrace" },
+    TUE_TC4 { override fun getRoomName() = "Oracle NetSuite" },
+    TUE_TC5 { override fun getRoomName() = "Ada Lovelace" },
+    WED_TC1 { override fun getRoomName() = "Margaret Hamilton" },
+    WED_TC2 { override fun getRoomName() = "Barbara Liskov" },
+    WED_TC3 { override fun getRoomName() = "Dynatrace" },
+    WED_TC4 { override fun getRoomName() = "Oracle NetSuite" },
+    WED_TC5 { override fun getRoomName() = "Megan Smith" };
 
     abstract fun getRoomName(): String
 }

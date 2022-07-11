@@ -148,19 +148,25 @@
     <string name="pref_default_room_name">Room Not Defined</string>
 
     <string-array name="pref_room_names_titles">
-        <item>Aba English Room</item>
-        <item>Apollo Room</item>
-        <item>Mariner Room</item>
-        <item>Exomars Room</item>
-        <item>Voyager Room</item>
+        <item>Grace Hopper Room</item>
+        <item>Katherine Johnson Room</item>
+        <item>Dynatrace Room</item>
+        <item>Oracle NetSuite Room</item>
+        <item>Ada Lovelace Room</item>
+        <item>Margaret Hamilton Room</item>
+        <item>Barbara Liskov Room</item>
+        <item>Megan Smith Room</item>
     </string-array>
 
     <string-array name="pref_room_names_values">
-        <item>Aba English</item>
-        <item>Apollo Room</item>
-        <item>Mariner Room</item>
-        <item>Exomars Room</item>
-        <item>Voyager Room</item>
+        <item>Grace Hopper</item>
+        <item>Katherine Johnson</item>
+        <item>Dynatrace</item>
+        <item>Oracle NetSuite</item>
+        <item>Ada Lovelace</item>
+        <item>Margaret Hamilton</item>
+        <item>Barbara Liskov</item>
+        <item>Megan Smith</item>
     </string-array>
 
     <string name="pref_title_auto_mode">Auto Mode</string>
